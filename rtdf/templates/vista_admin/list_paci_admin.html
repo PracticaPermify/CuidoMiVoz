@@ -1,0 +1,49 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/css_profesionales/detalle_prof_infor.css' %}"/>
+<link rel="stylesheet" href="{% static 'app/css/tablas_titulo.css' %}"/>
+
+    <body class="is-preload">
+        <div class="global-container">
+            <div class="card login-form">
+                <div class="card-body">
+                    <h1 class="card-title text-center">Listado de pacientes</h1>
+                    <div class="card-text">
+                      <section id="tabla_fonos">
+                        <table class="table">
+                            <thead class="thead-dark">
+                              <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Nombre completo</th>
+                                <th scope="col">Tipo de usuario</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                {% for paciente in pacientes %}
+                                <th scope="row">{{ paciente.id_usuario }}</th>
+                                <th>
+                                <a href="{% url 'detalle_paciente' paciente.id_usuario %}">
+                                {{ paciente.primer_nombre }} {{ paciente.segundo_nombre }} 
+                                {{ paciente.ap_paterno }} {{ paciente.ap_materno }}
+                                </a>
+                                </th>
+                                <th>{{ paciente.id_tp_usuario }}</th>
+                              </tr>
+                              {% empty %}
+                              <tr>
+                                  <th colspan="8">No hay pacientes.</th>
+                              </tr>
+                              {% endfor %}    
+                            </tbody>
+                          </table>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+{% endblock %}

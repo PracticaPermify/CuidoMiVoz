@@ -1,0 +1,151 @@
+{% extends "rtdf/base.html" %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/tablas_titulo.css' %}"/>
+<link rel="stylesheet" href="{% static 'app/css/perfil.css' %}"/>
+
+<body class="fondo-negro">
+    <header class="row text-left titulo_header">
+        <div class="col-lg-8">
+            <h1 class="titulo_index">Bienvenid@ <span class="span_title">{{ user.primer_nombre }} {{ user.ap_paterno }}</span></h1>
+            <p class="texto_header">Recursos Terapéuticos para Fonoaudiólogos</p>
+        </div>
+        <div class="col-lg-4">
+            <h1 id="logo"><a class="w-50 float-right" href="{% url 'index' %}">RTDF</a></h1>
+        </div>
+    </header>
+    
+
+
+        <section id="tabla_fonos">
+
+            <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar mt-5">
+                <h1 class=" display-5 fw-bolder sub_titulo">Mi<span class="span_title"> perfil </span></h1>
+                <p class="texto_pauta">Datos de perfil:</p>
+            </div>
+
+
+
+                <div class="row">
+                    <div class="col-lg-4 my-auto">
+                        <img class="imagen_perfil" src="{% static 'app\recursos\img\foto_perfil2.png' %}" alt="perfil">
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="table-container">
+                            <div class="boton-editar">
+                                <a href="{% url 'editar_perfil' datos_usuario.id_usuario %}" class="btn btn-primary  mb-3">
+                                    Editar mis datos <i class="fas fa-pencil-alt" style="margin-left: 5px;"></i> 
+                                </a>
+                            </div>
+
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                    <th>Rut:</th>
+                                    <td scope="row">{{ datos_usuario.rut }}</td>
+                                    </tr>
+                    
+                                    <tr>
+                                    <th>Nombre completo:</th>
+                                    <td scope="row">{{ datos_usuario.nombre_completo }}</td>
+                                    </tr>
+                    
+                                    <tr>
+                                    <th>Fecha de nacimiento:</th>
+                                    <td scope="row">{{ datos_usuario.fecha_nacimiento}}</td>
+                                    </tr>
+                    
+                                    <tr>
+                                    <th>Correo:</th>
+                                    <td scope="row">{{ datos_usuario.email}}</td>
+                                    </tr>
+                    
+                                    <tr>
+                                    <th>Numero Telefónico:</th>
+                                    <td scope="row">{{ datos_usuario.celular}}</td>
+                                    </tr> 
+                                    
+                                    <tr>
+                                    <th>Comuna:</th>
+                                    <td scope="row">{{ datos_usuario.comuna}}</td>
+                                    </tr>
+                    
+                                    <tr>
+                                    <th>Rol:</th>
+                                    <td scope="row">{{ datos_usuario.rol}}</td>
+                                    </tr>    
+                    
+                                    {% if datos_profesional %}
+                                    <tr>
+                                    <th>Título:</th>
+                                    <td scope="row">{{ datos_profesional.titulo_profesional}}</td>
+                                    </tr>    
+                    
+                                    <tr>
+                                    <th>Institución:</th>
+                                    <td scope="row">{{ datos_profesional.id_institucion}}</td>
+                                    </tr>    
+                                    {% endif %}
+                                    
+                                    {% if datos_paciente %}
+                    
+                                    <tr>
+                                    <th>Telegram:</th>
+                                    <td scope="row">{{ datos_paciente.telegram}}</td>
+                                    </tr>    
+                    
+                                    <tr>
+                                    <th>Tipo de hipertensión:</th>
+                                    <td scope="row">{{ datos_paciente.fk_tipo_hipertension}}</td>
+                                    </tr>  
+                    
+                                    <tr>
+                                    <th>Tipo de diabetes:</th>
+                                    <td scope="row">{{ datos_paciente.fk_tipo_diabetes}}</td>
+                                    </tr>  
+                    
+                                    {% endif %}
+                    
+                                    {% if datos_familiar %}
+                                    {% endif %} 
+                        
+                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+            </div>
+
+        </section>
+
+</div>
+
+
+
+</body>
+
+
+
+{% if datos_paciente %}
+
+{% endif %} 
+
+{% if datos_familiar %}
+
+{% endif %} 
+
+{% if datos_profesional %}
+
+{% endif %} 
+
+
+{% if tipo_usuario == 'Admin' %}
+{% endif %} 
+
+
+
+
+{% endblock %}

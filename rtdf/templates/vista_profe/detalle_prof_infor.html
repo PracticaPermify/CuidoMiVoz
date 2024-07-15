@@ -1,0 +1,434 @@
+
+{% extends 'rtdf/base.html' %}
+
+
+{% block content %}
+{% load static%}
+<link rel="stylesheet" href="{% static 'app/css/css_profesionales/detalle_prof_infor.css' %}"/>
+<link rel="stylesheet" href="{% static 'app/css/tablas_titulo.css' %}"/>
+
+
+
+
+<body class="fondo-negro">
+    <header class="row text-left titulo_header">
+        <div class="col-lg-8">
+
+            <a class="btn btn-outline-primary" href="{{ url_regreso }}"><i class="fa-solid fa-arrow-left"></i> Volver a listado de informes</a>
+
+        </div>
+    </header>
+
+
+
+    <section id="tabla_fonos">
+
+        <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+            <h1 class=" display-5 fw-bolder sub_titulo">Detalles del <span class="span_title"> Informe N°{{ informe.id_informe }} </span></h1>
+        </div>
+            <a href="#" onclick="eliminarInforme({{ informe.id_informe }})" class="btn btn-danger btn-derecha">
+                Eliminar <i class="fas fa-trash-alt" style="margin-left: 5px;"></i>
+            </a>
+            <a href="{% url 'editar_informe' informe.id_informe %}" class="btn btn-primary btn-derecha">
+                Editar <i class="fas fa-pencil-alt" style="margin-left: 5px;"></i>
+            </a>
+        </br>
+        <div class="col-lg-12 col-xl-12 col-xxl-12">
+
+            <div class="table-responsive">
+                <table class="table">
+                    <tbody>
+                        {% if grbas %}
+        
+                        {% if paciente_relacionado %}</p>
+                        <tr>
+                            <th>Rut del paciente:</th>
+                            <td>{{ paciente_relacionado.id_usuario.numero_identificacion }}</td>
+                        </tr>
+                        <tr>
+                            <th>Paciente:</th>
+                            <td>{{ paciente_relacionado.id_usuario.primer_nombre }} {{paciente_relacionado.id_usuario.ap_paterno }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>Titulo:</th>
+                            <td>{{ informe.titulo }}</td>
+                        </tr>
+                        <tr>
+                            <th>Descripción:</th>
+                            <td>{{ informe.descripcion }}</td>
+                        </tr>
+                        <tr>
+                            <th>Observación:</th>
+                            <td>{{ informe.observacion }}</td>
+                        </tr>
+                        <tr>
+                            <th>Fecha:</th>
+                            <td>{{ informe.fecha }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tipo de informe:</th>
+                            <td>GRBAS</td>
+                        </tr>
+                        <tr>
+                            <th>Grado disfonía:</th>
+                            <td class="valor-traducir" >{{ grbas.g_grado_disfonia }}</td>
+                        </tr>
+                        <tr>
+                            <th>Rugosidad de voz: </th>
+                            <td class="valor-traducir" >{{ grbas.r_aspereza }}</td>
+                        </tr>
+                        <tr>
+                            <th>B (Respiración dificultosa):</th>
+                            <td class="valor-traducir"> {{ grbas.b_soplo }}</td>
+                        </tr>
+                        <tr>
+                            <th>Astenia o grado de fatiga de voz</th>
+                            <td class="valor-traducir">{{ grbas.a_debilidad }}</td>
+                        </tr>
+                        <tr>
+                            <th>S (Grado de tensión vocal): </th>
+                            <td class="valor-traducir">{{ grbas.s_tension }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if rasati %}
+                        {% if paciente_relacionado %}</p>
+                        <tr>
+                            <th>Rut del paciente:</th>
+                            <td>{{ paciente_relacionado.id_usuario.numero_identificacion }}</td>
+                        </tr>
+                        <tr>
+                            <th>Paciente:</th>
+                            <td>{{ paciente_relacionado.id_usuario.primer_nombre }} {{paciente_relacionado.id_usuario.ap_paterno }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>Tipo de informe:</th>
+                            <td>RASATI</td>
+                        </tr>
+                        <tr>
+                            <th>Titulo:</th>
+                            <td>{{ informe.titulo }}</td>
+                        </tr>
+                        <tr>
+                            <th>Descripción:</th>
+                            <td>{{ informe.descripcion }}</td>
+                        </tr>
+                        <tr>
+                            <th>Observación:</th>
+                            <td>{{ informe.observacion }}</td>
+                        </tr>
+                        <tr>
+                            <th>Fecha:</th>
+                            <td>{{ informe.fecha }}</td>
+                        </tr>
+                        <tr>
+                            <th>Ronquera:</th>
+                            <td class="valor-traducir" >{{ rasati.r_ronquedad }}</td>
+                        </tr>
+                        <tr>
+                            <th>Aspereza: </th>
+                            <td class="valor-traducir" >{{ rasati.a_aspereza }}</td>
+                        </tr>
+                        <tr>
+                            <th>Soplosidad:</th>
+                            <td class="valor-traducir"> {{ rasati.s_soplo }}</td>
+                        </tr>
+                        <tr>
+                            <th>Astenia:</th>
+                            <td class="valor-traducir" >{{ rasati.a_astenia }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tensión: </th>
+                            <td class="valor-traducir">{{ rasati.t_tension }}</td>
+                        </tr>
+                        <tr>
+                            <th>Inestabilidad: </th>
+                            <td class="valor-traducir">{{ rasati.i_inestabilidad }}</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+                </br>
+                <button type="button" class="btn btn-primary btn-block" id="mostrar-formulario-btn">Agregar nueva pauta
+                    terapéutica</button>
+            </div>
+        </div>
+
+        <div class="container">
+            <div id="formulario-pauta" class="general-form" style="display: none;">
+        
+        
+                    <h2 class="hh2 mt-3">Ingresar nueva pauta terapéutica</h2>
+        
+                    {% if error_message %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error_message }}
+                    </div>
+                    {% endif %}
+                    <p class="required-message">
+                        <span class="asterisk">* </span> Campos requeridos
+                    </p>
+                <form method="post">
+                    {% csrf_token %}
+        
+                    
+                    <br>
+        
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="tipo_usuario"><i class="fa-solid fa-file-waveform"></i>Tipo de pauta terapeutica para diagnostico<span class="required">*</span></label>
+                            {{ form.fk_tp_terapia }}
+                        </div>
+                    </div>
+        
+        
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="cant_veces_dia"><i class="fa-solid fa-rotate-left"></i>Cantidad de veces al día <span class="required">*</span></label>
+                            {{ form.cant_veces_dia }}
+                        </div>
+                    </div>
+        
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="descripcion"><i class="fa-solid fa-notes-medical"></i>Descripción <span class="required">*</span></label>
+                            {{ form.descripcion }}
+                        </div>
+                    </div>
+        
+                    <div class="form-row">
+                        <div class="form-group col-md-12 col-lg-6">
+                            <label for="fecha_inicio"><i class="fas fa-calendar"></i>Fecha Inicio <span class="required">*</span></label><br>
+                            <input type="datetime-local" class="campo_fecha" id="fecha_inicio" name="fecha_inicio" value="{{ form.fecha_inicio.value|date:'Y-m-d\TH:i' }}">
+                        </div>
+            
+                        <div class="form-group col-md-12 col-lg-6">
+                            <label for="fecha_fin"><i class="fas fa-calendar"></i>Fecha fin <span class="required">*</span></label><br>
+                            <input type="datetime-local" class="campo_fecha" id="fecha_fin" name="fecha_fin" value="{{ form.fecha_fin.value|date:'Y-m-d\TH:i' }}">
+                        </div>
+                    </div>
+        
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="comentario"><i class="fa-solid fa-comment-medical"></i>Comentario <span class="required">*</span></label>
+                            {{ form.comentario }}
+                        </div>
+                    </div>
+        
+        
+        
+                    {% comment %}Aqui va campos para vocalización{% endcomment %}
+        
+                    <div class="campos-vocalizacion">
+        
+                        <h2 class="hh2 col-md-12 mx-auto mt-3 mb-4">Campos de pauta de Vocalización</h2>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="{{ vocalizacion_form.duracion_seg.id_for_label }}"><i class="fa-solid fa-stopwatch-20"></i>Duración en segundos <span class="required">*</span></label>
+                                {{ vocalizacion_form.duracion_seg }}
+                                <span class="text-danger">{{ vocalizacion_form.errors.duracion_seg }}</span>
+                            </div>
+            
+                            <div class="form-group col-md-4">
+                                <label for="{{ vocalizacion_form.bpm.id_for_label }}"><i class="fa-solid fa-wave-square"></i>BPM <span class="required">*</span></label>
+                                {{ vocalizacion_form.bpm }}
+                                <span class="text-danger">{{ vocalizacion_form.errors.bpm }}</span>
+                            </div>
+            
+                            <div class="form-group col-md-4">
+                                <label for="{{ vocalizacion_form.tempo.id_for_label }}"><i class="fa-solid fa-gauge"></i>Tempo <span class="required">*</span></label>
+                                {{ vocalizacion_form.tempo }}
+                                <span class="text-danger">{{ vocalizacion_form.errors.tempo }}</span>
+                            </div>
+                        </div>
+        
+                    </div>
+        
+                    {% comment %}Aca termina los campos para vocalización{% endcomment %}
+        
+                    {% comment %}Aqui va campos para intensidad{% endcomment %}
+        
+                    <div class="campos-intensidad">
+        
+                        <h3 class="hh2 col-md-12 mx-auto mt-3 mb-4">Campos de pauta de Intensidad</h3>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="{{ intensidad_form.intensidad.id_for_label }}"><i class="fa-solid fa-ear-listen"></i>Intensidad en dB <span class="required">*</span></label>
+                                {{ intensidad_form.intensidad }}
+                            </div>
+            
+                            <div class="form-group col-md-4">
+                                <label for="{{ intensidad_form.min_db.id_for_label }}"><i class="fa-solid fa-ear-listen"></i>dB mínimo</label>
+                                {{ intensidad_form.min_db }}
+                            </div>
+            
+                            <div class="form-group col-md-4">
+                                <label for="{{ intensidad_form.max_db.id_for_label }}"><i class="fa-solid fa-ear-listen"></i>dB máximo</label>
+                                {{ intensidad_form.max_db }}
+                            </div>
+                        </div>
+        
+                    </div>
+        
+                    {% comment %}Aca termina los campos para intensidad{% endcomment %}
+                    </br>
+                    <div class="row">
+                        <div class="col-sm-6 mb-2">
+                            <button type="button" class="btn btn-danger w-100" id="ocultar-formulario-btn">Descartar la
+                                nueva pauta terapéutica</button>
+                        </div>
+                        <div class="col-sm-6 mb-2 custom-div">
+                            <button type="submit" class="btn btn-primary w-100">Guardar la nueva pauta terapéutica</button>
+                        </div>
+                    </div>
+        
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section id="tabla_fonos">
+
+        <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+            <div class="form-row">
+                <div class="form-group col-md-8 col-sm-8">
+                    <h1 class=" display-5 fw-bolder sub_titulo">Pauta Terapéutica <span class="span_title"> Vocalización </span></h1>
+                </div>
+        
+                <div class="form-group col-md-4 col-sm-4">
+        
+                    <a href="{% url 'analisis_estadistico_profe' informe.id_informe %}" class="btn btn-primary btn-derecha" style="margin-top: 5px;">
+                        Análisis estadístico <i class="fa-solid fa-chart-simple" style="margin-left: 5px;"></i>
+                    </a>
+                </div>
+                <p class="texto_pauta">Aquí se enumeran todos las pautas terapéuticas de vocalización. Para obtener más información, haz clic en el id en azul de la pauta terapéutica:</p>
+                
+            </div> 
+        </div>
+
+        <div class="col-lg-12 col-xl-12 col-xxl-12">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">N° veces al día</th>
+                            <th scope="col">Fecha de inicio</th>
+                            <th scope="col">Fecha fin</th>
+                            <th scope="col">Duración segundos</th>
+                            <th scope="col">BPM</th>
+        
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vocalizacion in datos_vocalizacion %}
+                        <tr>
+                            <th><a href="{% url 'detalle_prof_pauta' vocalizacion.id_pauta_terapeutica_id %}">
+                                Pauta {{ vocalizacion.id_pauta_terapeutica_id}}</a></th>
+                            <td>{{ vocalizacion.id_pauta_terapeutica.cant_veces_dia}}</td>
+                            <td>{{ vocalizacion.id_pauta_terapeutica.fecha_inicio }}</td>
+                            <td>{{ vocalizacion.id_pauta_terapeutica.fecha_fin }}</td>
+                            <td>{{ vocalizacion.duracion_seg }}</td>
+                            <td>{{ vocalizacion.bpm }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8">Este informe aún no cuenta con pautas terapéuticas de vocalización adjuntas.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </section>
+
+    <section id="tabla_fonos">
+
+    <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+        <h1 class=" display-5 fw-bolder sub_titulo">Pauta Terapéutica<span class="span_title"> Intensidad </span></h1>
+        <p class="texto_pauta">Aquí se enumeran todos las pautas terapéuticas de intensidad. Para obtener más información, haz clic en el id en azul de la pauta terapéutica:</p>
+    </div>
+
+    <div class="col-lg-12 col-xl-12 col-xxl-12">
+        <div class="table-responsive">
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">N° veces al día</th>
+                        <th scope="col">Fecha de inicio</th>
+                        <th scope="col">Fecha fin</th>
+                        <th scope="col">Intensidad</th>
+                        <th scope="col">dB Minimo</th>
+                        <th scope="col">dB Maximo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for intensidad in datos_intensidad %}
+                    <tr>
+                        <th><a href="{% url 'detalle_prof_pauta' intensidad.id_pauta_terapeutica_id %}">
+                            Pauta {{ intensidad.id_pauta_terapeutica_id}}</a></th>
+                        <td>{{ intensidad.id_pauta_terapeutica.cant_veces_dia}}</td>
+                        <td>{{ intensidad.id_pauta_terapeutica.fecha_inicio }}</td>
+                        <td>{{ intensidad.id_pauta_terapeutica.fecha_fin }}</td>
+                        <td>{{ intensidad.intensidad }}</td>
+                        <td>{{ intensidad.min_db }}</td>
+                        <td>{{ intensidad.max_db }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+    
+                        <td colspan="8">Este informe aún no cuenta con pautas terapéuticas de intensidad adjuntas.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+
+
+
+
+
+</div>
+</body>
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="{% static 'app/js/template/pauta_terapeutica.js' %}"></script>
+<script src="{% static 'app/js/traductor_numerico.js' %}"></script>
+
+<script>
+
+    function eliminarInforme(id_informe) {
+        Swal.fire({
+            "title":"¿Estas seguro?",
+            "text": "esta acción no se puede deshacer.",
+            "icon":"error",
+            "showCancelButton": true,
+            "cancelButtonText": "No, Cancelar",
+            "cancelButtonColor": "#3085d6",
+            "confirmButtonText": "Si, Eliminar",
+            "reverseButtons":true,
+            "confirmButtonColor":"#d33"
+        })
+            .then(function(result){
+                if(result.isConfirmed){
+                    window.location.href = "/eliminar_informe/"+id_informe+"/"
+                }
+            })
+
+    }
+
+</script>
+
+
+{% endblock %}

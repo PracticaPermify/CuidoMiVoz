@@ -1,0 +1,110 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/tablas_titulo.css' %}"/>
+
+
+<body class="fondo-negro">
+    <header class="row text-left titulo_header">
+        <div class="col-lg-8">
+            <h1 class="titulo_index">
+                
+                {% if tipo_usuario == 'Fonoaudiologo' %}   
+                    Fonoaudiólogo
+                {% else %}
+                    {{user.id_tp_usuario}} 
+                {% endif %}    
+
+                
+                <span class="span_title">{{ user.primer_nombre }} {{ user.ap_paterno }}</span></h1>
+            <p class="texto_header">Recursos Terapéuticos para Fonoaudiólogos</p>
+        </div>
+        <div class="col-lg-4">
+            <h1 id="logo"><a class="w-50 float-right" href="{% url 'index' %}">RTDF</a></h1>
+        </div>
+    </header>
+    
+
+
+        <section id="tabla_fonos">
+
+            <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+                <h1 class=" display-5 fw-bolder sub_titulo">Pacientes  <span class="span_title"> disponibles </span></h1>
+                <p class="texto_pauta">Solo puedes tener un máximo de 10 pacientes.</p>
+            </div>
+
+            <div class="col-lg-12 col-xl-12 col-xxl-12">
+                <div class="table-responsive">
+                    <table class="table">
+                      <thead class="thead-dark">
+                          <tr>
+                              <th>ID del paciente</th>
+                              <th>Nombre del paciente</th>
+                              <th>Correo electronico</th>
+                              <th>telegram</th>
+                              <th>Añadir paciente</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          {% for paciente in pacientes_disponibles %}
+                              <tr>
+                                  <td>{{ paciente.id_usuario.id_usuario }}</td>
+                                  <td>{{ paciente.id_usuario.primer_nombre }}
+                                    {{ paciente.id_usuario.segundo_nombre }}
+                                    {{ paciente.id_usuario.ap_paterno }}
+                                    {{ paciente.id_usuario.ap_materno }}
+                                  </td>
+                                  <td>{{ paciente.id_usuario.email }}</td>
+                                  <td>{{ paciente.telegram }}</td>
+                                  <td>
+                                    <a href="#" class="btn btn-primary" onclick="AñadirPaciente({{paciente.id_paciente}})">Añadir paciente</a>
+                  
+                                </td>
+                              </tr>
+                          {% empty %}
+                              <tr>
+                                  <td colspan="3">No hay pacientes disponibles sin profesional asignado.</td>
+                              </tr>
+                          {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+            </div>
+        </section>
+
+
+
+
+</div>
+
+
+
+</body>
+
+
+
+
+<script>
+      function AñadirPaciente(paciente_id) {
+        Swal.fire({
+            "title":"¿Estás seguro?",
+            "text": "¿De añadir a este paciente?",
+            "icon":"warning",
+            "showCancelButton": true,
+            "cancelButtonText": "No, Cancelar",
+            "cancelButtonColor": "#d33",
+            "confirmButtonText": "Si, Agregar",
+            "reverseButtons":true,
+            "confirmButtonColor":"#196F3D"
+        })
+            .then(function(result){
+                if(result.isConfirmed){
+                    window.location.href = "/agregar_paciente/"+paciente_id+"/"
+                }
+            })
+
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends 'rtdf/base.html' %}
+
+
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/css_paciente/css_fonoaudio.css' %}" />
+
+<body class="fondo-negro">
+        <header class="row text-left titulo_header">
+            <div class="col-lg-8">
+                <h1 class="titulo_index">Bienvenid@ <span class="span_title">{{ user.primer_nombre }} {{ user.ap_paterno }}</span></h1>
+                <p class="texto_header">Recursos Terapéuticos para Fonoaudiólogos</p>
+            </div>
+            <div class="col-lg-4">
+                <h1 id="logo"><a class="w-50 float-right" href="{% url 'index' %}">RTDF</a></h1>
+            </div>
+        </header>
+        
+
+
+            <section id="tabla_fonos">
+
+                <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+                    <h1 class=" display-5 fw-bolder sub_titulo">Mis<span class="span_title"> profesionales </span></h1>
+                    <p class="texto_pauta">Tus profesionales a cargo son:</p>
+                </div>
+
+                <div class="col-lg-12 col-xl-12 col-xxl-12">
+                    <div class="table-responsive">
+                    <table class="table">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Apellido</th>
+                            <th scope="col">Correo electrónico</th>
+                            <th scope="col">Numero telefónico</th>
+                            {% comment %} <th scope="col">Numero de contacto</th>
+                            <th scope="col">Telegram</th> {% endcomment %}
+                            <!-- <th scope="col">Fecha nacimiento</th> -->
+                            {% comment %} <th scope="col">Tipo diabetes</th>
+                            <th scope="col">Tipo Hipertensión</th> {% endcomment %}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        
+                            {% for paciente in pacientes %}
+                            <tr>
+                                <td>{{ paciente.nombre_profesional_salud }}</td>
+                                <td>{{ paciente.ap_paterno_profesional_salud }}</td>
+                                <td>{{ paciente.correo_profesional_salud }}</td>
+                                <td>{{ paciente.numero_telefonico }}</td>
+                                {% comment %} <td>{{ paciente.numero_telefonico }}</td>
+                                <td>{{ paciente.telegram }}</td>
+                                <!-- <td>{{ paciente.fecha_nacimiento }}</td> -->
+                                <td>{{ paciente.tipo_diabetes }}</td>
+                                <td>{{ paciente.tipo_hipertension }}</td> {% endcomment %}
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2">Aun no tienes un fonoaudiólogo asignado.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+
+            </section>
+
+    </div>
+
+
+
+</body>
+
+
+<script>
+    var miDiv = document.getElementById('caja-perfil');
+    function ajustarMarginBottom() {
+        var alturaPantalla = window.innerHeight;
+        var nuevoMarginBottom = Math.max(0, alturaPantalla - 945);
+
+        miDiv.style.marginBottom = nuevoMarginBottom + 'px';
+    }
+    window.onload = ajustarMarginBottom;
+    window.onresize = ajustarMarginBottom;
+</script>
+
+
+
+
+{% endblock %}

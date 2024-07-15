@@ -1,0 +1,79 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+    <div>
+        <a href="{% url 'lista_familiar' %}">Volver a la lista anterior</a>
+    </div>   
+    </br>
+    </br>
+    <div class="container">
+        <h1>Detalles del paciente {{ paciente.primer_nombre }} {{ paciente.ap_paterno }}</h1>
+      </br>
+    <table class="table">
+          <tr>
+            <th scope="col">Rut</th>
+            <td scope="row">{{ paciente.numero_identificacion }}</td>
+          </tr>
+          <tr>
+            <th scope="col">Correo electronico</th>
+            <td scope="row">{{ paciente.email }}</td>
+          </tr>
+          <tr>
+            <th scope="col">Comuna</th>
+            <td>{{ paciente.id_comuna }}</td>
+          </tr>
+          <tr>
+            <th scope="col">Numero de contacto</th>
+            <td>{{ paciente.numero_telefonico }}</td>
+          </tr>
+          <tr>
+            <th scope="col">telegram</th>
+            <td>{{ paciente_info.telegram }}</td>
+          </tr>
+          <tr>
+            <th scope="col">Diabetes</th>
+            <td>{{ paciente_info.fk_tipo_diabetes }}</td>
+          </tr>
+          <tr>
+            <th scope="col">Hipertension</th>
+            <td>{{ paciente_info.fk_tipo_hipertension }}</td>
+          </tr>
+      </table>
+    </br>
+</br>
+<h2><strong>Profesionales asignado al paciente</strong></h2>
+</br>
+
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Nombre completo</th>
+        <th scope="col">Email</th>
+        <th scope="col">Tipo de profesional</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for fonoaudiologo in fonoaudiologos_asociados %}
+      <tr>
+        <td >
+          {{ fonoaudiologo.id_usuario.id_usuario }}
+          </a>
+        </td>
+        <td>
+          {{ fonoaudiologo.id_usuario.primer_nombre }} 
+            {{ fonoaudiologo.id_usuario.segundo_nombre }}
+            {{ fonoaudiologo.id_usuario.ap_paterno }} 
+            {{ fonoaudiologo.id_usuario.ap_materno }}
+        </td>
+        <td>{{ fonoaudiologo.id_usuario.email }} 
+        </td>
+        <td>{{ fonoaudiologo.id_usuario.id_tp_usuario }} 
+      </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock %}
+

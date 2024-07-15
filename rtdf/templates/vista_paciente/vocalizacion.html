@@ -1,0 +1,196 @@
+{% extends 'rtdf/base.html' %}
+
+{% load static%}
+
+<html>
+    <script src="{% static 'app/js/jquery-3.6.1.min.js' %}"></script>
+
+    {% block content %}
+
+    
+    <head>
+        <title>RTDF</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'app/css/metronomo.css' %}"/>
+    </head>
+    <body class="is-preload">
+            <h1 style="text-align: center; font-size: 40px">Pauta terapéutica <b class="importante">Vocalización N°{{ pauta_seleccionada.id_pauta_terapeutica }}</b></h1>
+            <br/>
+            {% if pauta_seleccionada %}
+                    {% comment %} <table class="table" hidden>
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Descripción</th>
+                                <th>Cantidad de veces al día</th>
+                                <th>Duración del ejercicio (segundos)</th>
+                                <th>BPM ajustado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ pauta_seleccionada.descripcion }}</td>
+                                <td>{{ pauta_seleccionada.cant_veces_dia }}</td>
+                                <td>{{ pauta_seleccionada.vocalizacion.duracion_seg }}</td>
+                                <td>{{ pauta_seleccionada.vocalizacion.bpm }}</td>
+                            </tr>
+                        </tbody>
+                    </table> {% endcomment %}
+                    {% else %}
+                    <p style="text-align: center;">No se ha seleccionado una pauta terapéutica.</p>
+                    {% endif %}
+
+    </br>
+        
+
+    {% if pauta_seleccionada %}
+
+        <div class="container">
+            <div class="metronome">
+                <div class="metronome-info">
+                    <h1 style="text-align: center; font-size: 40px"><strong>Buenos días</strong> <p class="importante">{{ user.primer_nombre }} {{ user.ap_paterno }}</p></h1>
+                    <br/>
+                        Esta semana debes trabajar con <b class="importante">{{ pauta_seleccionada.vocalizacion.bpm }} BPM</b>. Este sera ajustado automaticamente.</p>
+                    <p>Deberas realizar el ejercicio <b class="importante">{{ pauta_seleccionada.cant_veces_dia }} veces al día</b>.</p>
+                    <p>Al ejercitar, debes respirar por la nariz y tus ejercicios deben durar aproximadamente <b class="importante">{{ pauta_seleccionada.vocalizacion.duracion_seg }} segundos</b>.</p>
+                    <p>El tempo de este ejercicio es de <b class="importante">{{ pauta_seleccionada.vocalizacion.tempo }} golpes por segundo</b>.</p>
+                </div>
+                <div class="bpm-display">
+                    <span class="tempo">{{ pauta_seleccionada.vocalizacion.bpm }}</span>
+                    <span class="bpm">BPM</span>
+                </div>
+                <div class="tempo-text">Nice and steady</div>
+                <div class="tempo-settings">
+                    <div class="adjust-tempo-btn decrease-tempo">-</div>
+                    <div class="slider-container">
+                        <input type="range" min="20" max="280" step="1" class="slider">
+                    </div>
+                    <div class="adjust-tempo-btn increase-tempo">+</div>
+                </div>
+                <div class="controlador">
+                    {% comment %} <div class="start-stop">Empezar</div> {% endcomment %}
+                    <button onclick="clickAudio(false)" id="start_stop" class="start-stop">COMENZAR EJERCITACIÓN</button>
+
+                        <form method="POST" id="post-form" enctype="multipart/form-data" >
+    
+                            {% csrf_token %}
+                           
+                            <div id="tiempo" >
+                            </br>
+                                <h3>La grabacion terminara automaticamente en<p id="segundos">{{pauta_seleccionada.vocalizacion.duracion_seg}}</p>segundos</h3>
+                                <input type="hidden" name="csrfmiddlewaretoken" value="{{csrf_token}}">
+                            </div>
+                        </form>
+                    <div class="ocultar">
+                        <div class="measures">
+                            <div class="subtract-beats stepper">-</div>
+                            <div class="measure-count">{{pauta_seleccionada.vocalizacion.tempo}}</div>
+                            <div class="add-beats stepper">+</div>
+                        </div>
+                        <span class="beats-per-measure-text">Beats per measure</span>
+                    </div>
+            </div>
+        </div>
+
+
+        <div class="container-mic" style="display:none;">
+            <div class="selector-audio">
+                <select name="listaDeDispositivos" id="listaDeDispositivos"></select>
+            </div>
+            <div class="audio">
+                <audio controls playsinline></audio>
+            </div>
+        
+            <hr>
+        </div>
+
+        {% comment %} Esto servira para declarar los valores del metronomo en el JS {% endcomment %}
+        <div id="metronome" data-bpm="{{ pauta_seleccionada.vocalizacion.bpm }}" data-tempo="{{ pauta_seleccionada.vocalizacion.tempo }}"></div>
+
+
+    {% else %}
+        <div class="container">
+            <div class="metronome">
+                <div class="metronome-info">
+                    <h1><strong>Buenos días</strong> {{ user.primer_nombre }} {{ user.ap_paterno }}</h1>
+                    <p style="text-align: center;">No se ha seleccionado una pauta terapéutica.</p>
+                </div>
+                <div class="bpm-display">
+                    <span class="tempo">50</span>
+                    <span class="bpm">BPM</span>
+                </div>
+                <div class="tempo-text">Nice and steady</div>
+                <div class="tempo-settings">
+                    <div class="adjust-tempo-btn decrease-tempo">-</div>
+                    <div class="slider-container">
+                        <input type="range" min="20" max="280" step="1" class="slider">
+                    </div>
+                    <div class="adjust-tempo-btn increase-tempo">+</div>
+                </div>
+                <div class="controlador">
+                {% comment %} <div class="start-stop">Empezar</div> {% endcomment %}
+                <button onclick="clickAudio(false)" id="start_stop" class="start-stop">COMENZAR EJERCITACIÓN</button>
+                    <form method="POST" id="post-form" enctype="multipart/form-data" >
+
+                        {% csrf_token %}
+                       
+                        <div id="tiempo" >
+                            <h3>La grabacion terminara automaticamente en<p id="segundos">{{6}}</p>segundos</h3>
+                            <input type="hidden" name="csrfmiddlewaretoken" value="{{csrf_token}}">
+                        </div>
+                    </form>
+                <div class="ocultar">
+                    <div class="measures">
+                        <div class="subtract-beats stepper">-</div>
+                        <div class="measure-count">4</div>
+                        <div class="add-beats stepper">+</div>
+                    </div>
+                        <span class="beats-per-measure-text">Beats per measure</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+        <div class="container-mic" style="display:none;">
+            <div class="selector-audio">
+                <select name="listaDeDispositivos" id="listaDeDispositivos"></select>
+            </div>
+            <div class="audio">
+                <audio controls playsinline></audio>
+            </div>
+        
+            <hr>
+        </div>
+
+
+    {% endif %}
+        
+
+    </body>
+
+    <script src="{% static 'app/js/metronomo.js' %}"></script>
+    <script src="{% static 'app/js/RecordRTC.js' %}"></script>
+    <script src="{% static 'app/js/microfono_utils.js' %}"></script>
+    <script src="{% static 'app/js/jquery.min.js' %}"></script>
+    <script src="{% static 'app/js/jquery.dropotron.min.js' %}"></script>
+    {% comment %} <script src="{% static 'app/js/grabacion_vocalizacion.js' %}"></script> {% endcomment %}
+
+    <script src="https://unpkg.com/wavefile"></script>
+    
+    <script>
+        window.tempo = {{ pauta_seleccionada.vocalizacion.tempo }};
+        window.id = {{ pauta_seleccionada.id_pauta_terapeutica }};
+
+        window.terapia = "{{ pauta_seleccionada.fk_tp_terapia.tipo_terapia}}"; //Vocalización o Intensidad
+  
+        var vocalizacionConPautaURL = "{% url 'vocalizacion_con_pauta' pauta_id=0 %}".replace('0', {{pauta_seleccionada.id_pauta_terapeutica}});
+        var vocalizacionURL = "{% url 'vocalizacion' %}";
+    </script>
+
+
+
+{% endblock %}
+</html>

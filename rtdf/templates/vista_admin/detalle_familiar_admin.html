@@ -1,0 +1,58 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/tablas_titulo.css' %}"/>
+
+
+<div class="container">
+    <div>
+        <a class="btn btn-outline-primary" href="{% url 'list_fami_admin' %}"><i class="fa-solid fa-arrow-left"></i> Volver a la lista de familiares</a>
+    </div>
+    </br>
+            <h1>Detalles del familiar {{ familiar.primer_nombre }} {{ familiar.ap_paterno }}</h1>
+        </br>
+      
+      <div class="table-responsive">
+        <table class="table">
+              <tr>
+                <th scope="col">Rut</th>
+                <td scope="row">{{ familiar.numero_identificacion }}</td>
+              </tr>
+              <tr>
+                <th scope="col">Correo electronico</th>
+                <td>{{ familiar.email }}</td>
+              </tr>
+              <tr>
+                <th scope="col">Fecha de nacimiento</th>
+                <td>{{ familiar.fecha_nacimiento }}</td>
+              </tr>
+              <tr>
+                <th scope="col">Edad</th>
+                <td>{{ edad }}</td>
+              </tr>
+              <tr>
+                <th scope="col">Numero de contacto</th>
+                <td>{{ familiar.numero_telefonico }}</td>
+              </tr>
+              <tr>
+                <th scope="col">Paciente asociado</th>
+                <th>
+                  <a href="{% url 'detalle_paciente' paciente_id=paciente_asociado.id_usuario.id_usuario %}">
+                  {{ paciente_asociado.id_usuario.primer_nombre }} 
+                  {{ paciente_asociado.id_usuario.segundo_nombre }}
+                  {{ paciente_asociado.id_usuario.ap_paterno }} 
+                  {{ paciente_asociado.id_usuario.ap_materno }}
+                  </a>
+              </th>
+              </tr>
+                <th scope="col">Parentesco con el paciente</th>
+                <td>{{ parentesco }}</td>
+              <tr>
+          </table>
+      </div>    
+</div>
+</div>
+
+{% endblock %}

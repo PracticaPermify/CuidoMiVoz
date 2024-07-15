@@ -1,0 +1,220 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/tablas_titulo.css' %}"/>
+
+<body class="fondo-negro">
+  <header class="row text-left titulo_header">
+      <div class="col-lg-8">
+
+          <a class="btn btn-outline-primary" href="{% url 'listado_pacientes' %}"><i class="fa-solid fa-arrow-left"></i> Volver a la lista de mis pacientes</a>
+
+      </div>
+  </header>
+  
+
+
+      <section id="tabla_fonos">
+
+          <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+              <h1 class=" display-5 fw-bolder sub_titulo">Detalles del paciente<span class="span_title"> {{ paciente.primer_nombre }} {{ paciente.ap_paterno }} </span></h1>
+          </div>
+
+          <div class="col-lg-12 col-xl-12 col-xxl-12">
+            <div class="table-responsive">
+              <table class="table">
+                  <tbody>
+                    <tr>
+                      <th>Rut del paciente:</th>
+                      <td scope="row">{{ paciente.numero_identificacion }}</td>
+                    </tr>
+                    <tr>
+                      <th>Correo electronico:</th>
+                      <td scope="row">{{ paciente.email }}</td>
+                    </tr>
+                    <tr>
+                      <th>Comuna:</th>
+                      <td scope="row">{{ paciente.id_comuna }}</td>
+                    </tr>
+                    <tr>
+                      <th>Numero de contacto:</th>
+                      <td scope="row">{{ paciente.numero_telefonico }}</td>
+                    </tr>
+                    <tr>
+                      <th>Telegram:</th>
+                      <td scope="row">{{ paciente_info.telegram }}</td>
+                    </tr>
+                    <tr>
+                      <th>Diabetes:</th>
+                      <td scope="row">{{ paciente_info.fk_tipo_diabetes }}</td>
+                    </tr>
+                    <tr>
+                      <th>Hipertension:</th>
+                      <td scope="row">{{ paciente_info.fk_tipo_hipertension }}</td>
+                    </tr>
+      
+                    <div id="resultado-container">
+                      <tr>
+                          <th>Criticidad vocal:</th>
+                          <td scope="row">
+                              <button id="btnEjecutarFuncion" class="btn btn-success">
+                                  Probabilidad de ocurrencia
+                              </button>
+                              <div id="resultado_kmeans_prueba_container">
+                                <span id="resultado_kmeans_prueba"></span>
+                              </div>
+                          </td>
+                      </tr>
+      
+                  </div>
+      
+                    
+                </table>
+              </div>
+            
+          </div>
+
+      </section>
+
+      <section id="tabla_fonos">
+
+        <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+            <h1 class=" display-5 fw-bolder sub_titulo">Listado de informes <span class="span_title"> GRBAS </span></h1>
+            <p class="texto_pauta">Aquí se enumeran todos los informes GRBAS relacionados al pacientes. Para obtener más información, haz clic en el id en azul del informe:</p>
+        </div>
+
+        <div class="col-lg-12 col-xl-12 col-xxl-12">
+          <div class="table-responsive">
+            <table class="table">
+                <thead class="thead-dark">
+                  <tr>
+                    <th scope="col">ID informe</th>
+                    <th scope="col">Fecha del informe</th>
+                    <th scope="col">Grado disfonia</th>
+                    <th scope="col">Rugosidad de voz</th>
+                    <th scope="col">B (Respiracion dificultosa)</th>
+                    <th scope="col">Astenia o grado de fatiga de voz</th>
+                    <th scope="col">S (Grado de tension vocal)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for informe in informes_grbas %}
+                  <tr>
+                    <td><a href="{% url 'detalle_prof_infor' informe.id_informe.id_informe %}">
+                      Informe {{ informe.id_informe.id_informe}}</a></td>
+                    <td>{{ informe.id_informe.fecha }}</td>
+                    <td class="valor-traducir">{{ informe.g_grado_disfonia }}</td>
+                    <td class="valor-traducir">{{ informe.r_aspereza }}</td>
+                    <td class="valor-traducir">{{ informe.b_soplo }}</td>
+                    <td class="valor-traducir">{{ informe.a_debilidad }}</td>
+                    <td class="valor-traducir">{{ informe.s_tension }}</td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                      <td colspan="8">Este paciente aún no cuenta con informes GRBAS adjuntos.</td>
+                  </tr>
+                  {% endfor %}   
+                </tbody>
+              </table>
+            </div>
+        </div>
+
+    </section>
+
+    <section id="tabla_fonos">
+
+      <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+          <h1 class=" display-5 fw-bolder sub_titulo">Listado de informes <span class="span_title"> RASATI </span></h1>
+          <p class="texto_pauta">Aquí se enumeran todos los informes RASATI relacionados al pacientes. Para obtener más información, haz clic en el id en azul del informe:</p>
+      </div>
+
+      <div class="col-lg-12 col-xl-12 col-xxl-12">
+        <div class="table-responsive">
+          <table class="table">
+              <thead class="thead-dark">
+                <tr>
+                  <th scope="col">ID informe</th>
+                  <th scope="col">Fecha del informe</th>
+                  <th scope="col">Ronquera</th>
+                  <th scope="col">Aspereza</th>
+                  <th scope="col">Soplosidad</th>
+                  <th scope="col">Astenia</th>
+                  <th scope="col">Tension</th>
+                  <th scope="col">Inestabilidad</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for informe in informes_rasati %}
+                <tr>
+                  <td><a href="{% url 'detalle_prof_infor' informe.id_informe.id_informe %}">
+                    Informe {{ informe.id_informe.id_informe}}</a></td>
+                  <td>{{ informe.id_informe.fecha }}</td>
+                  <td class="valor-traducir">{{ informe.r_ronquedad }}</td>
+                  <td class="valor-traducir">{{ informe.a_aspereza }}</td>
+                  <td class="valor-traducir">{{ informe.s_soplo }}</td>
+                  <td class="valor-traducir">{{ informe.a_astenia }}</td>
+                  <td class="valor-traducir">{{ informe.t_tension }}</td>
+                  <td class="valor-traducir">{{ informe.i_inestabilidad }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8">Este paciente aún no cuenta con informes RASATI adjuntos.</td>
+                </tr>
+                {% endfor %}   
+              </tbody>
+            </table>
+        </div>
+      </div>
+
+  </section>
+
+
+
+
+
+</div>
+
+
+
+</body>
+
+
+
+
+
+
+  <script src="{% static 'app/js/traductor_numerico.js' %}"></script>
+
+
+  <script>
+$(document).ready(function () {
+    $("#btnEjecutarFuncion").click(function () {
+        var datos = {
+            'edad_paciente': {{ edad }},
+            'diabetes_paciente': {{ paciente_info.fk_tipo_diabetes_id }},
+            'hipertension_paciente': {{ paciente_info.fk_tipo_hipertension_id }},
+        };
+
+        var btnEjecutar = $(this);  // Guarda referencia del boton de predicciones
+
+        $.ajax({
+            url: "/ciencia_datos/",
+            type: "GET",
+            data: datos,
+            dataType: "json"
+        })
+        .done(function (data) {
+            // Este metodo, permitira ocultar el boton 
+            btnEjecutar.hide();
+            $("#resultado_kmeans_prueba_container").html('<span id="resultado_kmeans_prueba">' + data.prediccion + '</span>');
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            console.error("Error en la llamada AJAX", errorThrown);
+        });
+    });
+});
+</script>
+
+{% endblock %}

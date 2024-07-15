@@ -1,0 +1,223 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/css_profesionales/editar_coef_manual.css' %}" />
+
+
+
+<body class="is-preload">
+    <div class="global-container">
+        <div class="card general-form">
+            <div class="card-body">
+                    
+                <div class="mb-4 mt-3">
+                    <a class="btn btn-outline-primary" href="{% url 'detalle_audio_profe' id_audio %}"><i class="fa-solid fa-arrow-left"></i> Volver al análisis del audio N°{{id_audio}} </a>
+                </div>
+
+                <h1 class="card-title text-center">Editar Coeficiente Manual</h1>
+                <br>
+                <div class="card-text">
+
+                    {% if error_message %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error_message }}
+                    </div>
+                    {% endif %}
+
+                    <p class="required-message">
+                        <span class="asterisk">* </span> Campos requeridos
+                    </p>
+<form method="post">
+    <br/>
+    {% csrf_token %}
+
+
+    <!-- Campo: Nombre del audio -->
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label for="{{ form.nombre_archivo.id_for_label }}"><i class="fa-solid fa-database"></i>Nombre del audio</label>
+            <input type="text" name="{{ form.nombre_archivo.name }}" value="{{ form.nombre_archivo.value }}" readonly>
+        </div>
+    </div>
+    <!-- Campo: Tipo de llenado -->
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="id_fk_tipo_llenado"><i class="fa-solid fa-file-signature"></i>Tipo de llenado</label>
+            {{ form.fk_tipo_llenado }}
+            <input type="text" style="display: none;" name="{{ form.fk_tipo_llenado.name }}" value="{{ form.fk_tipo_llenado.value }}" readonly>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="{{ form.fecha_coeficiente.id_for_label }}"><i class="fas fa-calendar"></i>Fecha</label></br>
+            <input type="datetime-local" class="campo_fecha" id="fecha_coeficiente" name="fecha_coeficiente" value="{% if form.fecha_coeficiente.value|date %}{{ form.fecha_coeficiente.value|date:'Y-m-d\TH:i' }}{% else %}{{ form.fecha_coeficiente.value }}{% endif %}" readonly>
+        </div>
+    </div>
+
+    <!-- Campo: ID de audio -->
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label for="id_id_audio"><i class="fa-solid fa-database"></i>ID de audio</label>
+            {{ form.id_audio }}
+            <input type="text" style="display: none;" name="{{ form.id_audio.name }}" value="{{ form.id_audio.value }}" readonly>
+        </div>
+    </div>
+
+    <!-- Campo: Fecha del coeficiente -->
+    <!-- <div class="form-group col-md-4">
+        <label for="{{ form.fecha_coeficiente.id_for_label }}">Fecha del coeficiente:</label>
+        {{ form.fecha_coeficiente }}
+    </div> -->
+
+    <div class="titulo-tp">
+        <h3 class="hh3"> CAMPOS COEFICIENTE</h3>
+    </div>
+
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="f0"><i class="fa-solid fa-file-pen"></i>Coeficiente f0 <span class="required">*</span></label>
+            {{ form.f0 }}
+            <span class="text-danger">{{ form.f0.errors }}</span>
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for="f1"><i class="fa-solid fa-file-pen"></i>Coeficiente f1 <span class="required">*</span></label>
+            {{ form.f1 }}
+            <span class="text-danger">{{ form.f1.errors }}</span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="f2"><i class="fa-solid fa-file-pen"></i>Coeficiente f2 <span class="required">*</span></label>
+            {{ form.f2 }}
+            <span class="text-danger">{{ form.f2.errors }}</span>
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for="f3"><i class="fa-solid fa-file-pen"></i>Coeficiente f3 <span class="required">*</span></label>
+            {{ form.f3 }}
+            <span class="text-danger">{{ form.f3.errors }}</span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="f4"><i class="fa-solid fa-file-pen"></i>Coeficiente f4 <span class="required">*</span></label>
+            {{ form.f4 }}
+            <span class="text-danger">{{ form.f4.errors }}</span>
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for="intensidad"><i class="fa-solid fa-file-pen"></i>Intensidad:</label>
+            {{ form.intensidad }}
+            <span class="text-danger">{{ form.intensidad.errors }}</span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="hnr"><i class="fa-solid fa-file-pen"></i>HNR <span class="required">*</span></label>
+            {{ form.hnr }}
+            <span class="text-danger">{{ form.hnr.errors }}</span>
+        </div>
+    
+
+        <div class="form-group col-md-6">
+            <label for="local_jitter"><i class="fa-solid fa-file-pen"></i>Local Jitter <span class="required">*</span></label>
+            {{ form.local_jitter }}
+            <span class="text-danger">{{ form.local_jitter.errors }}</span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="local_absolute_jitter"><i class="fa-solid fa-file-pen"></i>Local Absolute Jitter <span class="required">*</span></label>
+            {{ form.local_absolute_jitter }}
+            <span class="text-danger">{{ form.local_absolute_jitter.errors }}</span>
+        </div>
+   
+        <div class="form-group col-md-6">
+            <label for="rap_jitter"><i class="fa-solid fa-file-pen"></i>RAP Jitter <span class="required">*</span></label>
+            {{ form.rap_jitter }}
+            <span class="text-danger">{{ form.rap_jitter.errors }}</span>
+        </div>
+    </div>
+
+    <div class="form-row">    
+        <div class="form-group col-md-6">
+            <label for="ppq5_jitter"><i class="fa-solid fa-file-pen"></i>PPQ5 Jitter <span class="required">*</span></label>
+            {{ form.ppq5_jitter }}
+            <span class="text-danger">{{ form.ppq5_jitter.errors }}</span>
+        </div>
+
+        <div class= "form-group col-md-6">
+            <label for="ddp_jitter"><i class="fa-solid fa-file-pen"></i>DDP Jitter <span class="required">*</span></label>
+            {{ form.ddp_jitter }}
+            <span class="text-danger">{{ form.ddp_jitter.errors }}</span>
+        </div>
+    </div>
+
+    <div class="form-row">    
+        <div class="form-group col-md-6">
+            <label for="local_shimmer"><i class="fa-solid fa-file-pen"></i>Local Shimmer <span class="required">*</span></label>
+            {{ form.local_shimmer }}
+            <span class="text-danger">{{ form.local_shimmer.errors }}</span>
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for="local_db_shimmer"><i class="fa-solid fa-file-pen"></i>Local dB Shimmer <span class="required">*</span></label>
+            {{ form.local_db_shimmer }}
+            <span class="text-danger">{{ form.local_db_shimmer.errors }}</span>
+        </div>
+    </div>
+
+    <div class="form-row">  
+        <div class="form-group col-md-6">
+            <label for="apq3_shimmer"><i class="fa-solid fa-file-pen"></i>APQ3 Shimmer <span class="required">*</span></label>
+            {{ form.apq3_shimmer }}
+            <span class="text-danger">{{ form.apq3_shimmer.errors }}</span>
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for="apq5_shimmer"><i class="fa-solid fa-file-pen"></i>APQ5 Shimmer <span class="required">*</span></label>
+            {{ form.aqpq5_shimmer }}
+            <span class="text-danger">{{ form.aqpq5_shimmer.errors }}</span>
+        </div>
+    </div>
+
+    <div class="form-row">  
+        <div class="form-group col-md-6">
+            <label for="apq11_shimmer"><i class="fa-solid fa-file-pen"></i>APQ11 Shimmer <span class="required">*</span></label>
+            {{ form.apq11_shimmer }}
+            <span class="text-danger">{{ form.apq11_shimmer.errors }}</span>
+        </div>
+    </div>
+    <br/>
+
+
+        <button type="submit" class="btn btn-primary mx-auto">Guardar</button>
+
+
+</form>
+</div>
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+  
+            var selectField = $('#id_fk_tipo_llenado');
+
+            selectField.prop('disabled', true);
+
+            var selectIdAudio = $('#id_id_audio');
+            selectIdAudio.prop('disabled', true);
+        });
+    </script>
+
+
+{% endblock %}

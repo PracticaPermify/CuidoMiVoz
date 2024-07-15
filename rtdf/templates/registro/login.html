@@ -1,0 +1,45 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/login.css' %}"/>
+
+    <body class="is-preload">
+        <div class="global-container">
+
+            <div class="card login-form">
+                <div class="card-body ">
+                    <h3 class="card-title text-center">Iniciar sesión</h3>
+                    <div class="card-text">
+
+                        {% if error_message %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ error_message }}
+                            </div>
+                        {% endif %}
+
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="email"><i class="fas fa-envelope"></i>Correo electrónico</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password"><i class="fa-solid fa-lock"></i>Contraseña</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-primary btn-block mx-auto">Iniciar sesión</button>
+                            <br>
+                            <p class="registro-link"><small>No tienes una cuenta? <a href="{% url 'registro' %}">Regístrate</a></small></p>
+                            <p><small><a class="contrasena-olvidada" href="{% url 'custom_password_reset' %}">Olvidé mi contraseña</a></small></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+{% endblock %}

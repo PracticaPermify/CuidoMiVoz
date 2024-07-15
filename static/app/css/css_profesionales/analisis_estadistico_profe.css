@@ -1,0 +1,4 @@
+.plot-container {
+  width: 100%; /* Hace que el contenedor ocupe el 100% del ancho disponible */
+  height: auto; /* Permite que la altura se ajuste automáticamente según el contenido */
+}

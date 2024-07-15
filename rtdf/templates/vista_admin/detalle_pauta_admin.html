@@ -1,0 +1,178 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+
+{% load static%}
+    
+<link rel="stylesheet" href="{% static 'app/css/css_profesionales/detalle_prof_infor.css' %}"/>
+<link rel="stylesheet" href="{% static 'app/css/tablas_titulo.css' %}"/>
+
+<div class="container">
+<body class="is-preload">
+
+
+    <div>
+        <header class="row text-left titulo_header">
+            <div class="col-lg-8">
+                <a class="btn btn-outline-primary" href="{{ url_regreso }}"> <i class="fa-solid fa-arrow-left"></i> Volver al detalle informe</a>
+            </div>
+        </header>
+    </div>
+
+<div class="container">
+
+  <h1>Detalles de la Pauta {{ pauta.id_pauta_terapeutica }}</h1>
+
+</br>
+    <a href="#" onclick="eliminarAdminPauta({{ pauta.id_pauta_terapeutica }})" class="btn btn-danger btn-derecha">
+        Eliminar<i class="fas fa-trash-alt" style="margin-left: 5px;"></i>
+    </a>
+
+    <a href="{% url 'editar_pauta_admin' pauta.id_pauta_terapeutica %}" class="btn btn-primary btn-derecha">
+        Editar <i class="fas fa-pencil-alt" style="margin-left: 5px;"></i>
+    </a>
+  </br>
+  <div class="table-responsive">
+      <table class="table">
+          <tbody>
+              {% if intensidad %}
+
+              {% if paciente_relacionado %}</p>
+              <tr>
+                  <th>Rut del paciente</th>
+                  <td>{{ paciente_relacionado.id_usuario.numero_identificacion }}</td>
+              </tr>
+              <tr>
+                  <th>Paciente</th>
+                  <td>{{ paciente_relacionado.id_usuario.primer_nombre }} {{ paciente_relacionado.id_usuario.ap_paterno }}</td>
+              </tr>
+              {% endif %}
+              <tr>
+                <th>Tipo de informe</th>
+                <td>{{ pauta.fk_informe.tp_informe}}</td>
+              </tr>   
+              <tr>
+                <th>Cantidad de veces al día</th>
+                <td>{{ pauta.cant_veces_dia }}</td>
+              </tr>              
+              <tr>
+                  <th>Descripción</th>
+                  <td>{{ pauta.descripcion }}</td>
+              </tr>
+              <tr>
+                  <th>Fecha de inicio</th>
+                  <td>{{ pauta.fecha_inicio }}</td>
+              </tr>
+              <tr>
+                  <th>Fecha fin</th>
+                  <td>{{ pauta.fecha_fin }}</td>
+              </tr>
+              <tr>
+                <th>Comentario</th>
+                <td>{{ pauta.comentario}}</td>
+              </tr>
+              <tr>
+                <th>Tipo de terapia</th>
+                <td>{{ pauta.fk_tp_terapia }}</td>
+              </tr>
+              <tr>
+                  <th>Intensidad en dB</th>
+                  <td>{{ intensidad.intensidad }}</td>
+              </tr>
+              <tr>
+                  <th>dB Minimo </th>
+                  <td>{{ intensidad.min_db }}</td>
+              </tr>
+              <tr>
+                  <th>dB Maximo</th>
+                  <td> {{ intensidad.max_db }}</td>
+              </tr>
+
+              {% endif %}
+              {% if vocalizacion %}
+              {% if paciente_relacionado %}</p>
+              
+              <tr>
+                  <th>Rut del paciente</th>
+                  <td>{{ paciente_relacionado.id_usuario.numero_identificacion }}</td>
+              </tr>
+              <tr>
+                  <th>Paciente</th>
+                  <td>{{ paciente_relacionado.id_usuario.primer_nombre }} {{ paciente_relacionado.id_usuario.ap_paterno }}</td>
+              </tr>
+              {% endif %}
+
+            <tr>
+            <th>Tipo de informe</th>
+            <td>{{ pauta.fk_informe.tp_informe}}</td>
+            </tr>     
+            <tr>
+            <th>Cantidad de veces al día</th>
+            <td>{{ pauta.cant_veces_dia }}</td>
+            </tr>              
+            <tr>
+                <th>Descripción</th>
+                <td>{{ pauta.descripcion }}</td>
+            </tr>
+            <tr>
+                <th>Fecha de inicio</th>
+                <td>{{ pauta.fecha_inicio }}</td>
+            </tr>
+            <tr>
+                <th>Fecha fin</th>
+                <td>{{ pauta.fecha_fin }}</td>
+            </tr>
+            <tr>
+            <th>Comentario</th>
+            <td>{{ pauta.comentario}}</td>
+            </tr>
+
+            <tr>
+                <th>Tipo de terapia</th>
+                <td>{{ pauta.fk_tp_terapia }}</td>
+            </tr>
+              <tr>
+                  <th>Duración en segundos</th>
+                  <td>{{ vocalizacion.duracion_seg }}</td>
+              </tr>
+              <tr>
+                  <th>BPM</th>
+                  <td>{{ vocalizacion.bpm }}</td>
+              </tr>
+
+              <tr>
+                <th>Tempo en segundos</th>
+                <td>{{ vocalizacion.tempo }}</td>
+            </tr>
+              {% endif %}
+          </tbody>
+      </table>
+  </div>
+</div>
+</div>
+</body>
+</div>
+
+<script>
+    function eliminarAdminPauta(id_pauta_terapeutica_id) {
+        Swal.fire({
+            "title":"¿Estas seguro?",
+            "text": "esta acción no se puede deshacer.",
+            "icon":"error",
+            "showCancelButton": true,
+            "cancelButtonText": "No, Cancelar",
+            "cancelButtonColor": "#3085d6",
+            "confirmButtonText": "Si, Eliminar",
+            "reverseButtons":true,
+            "confirmButtonColor":"#d33"
+        })
+            .then(function(result){
+                if(result.isConfirmed){
+                    window.location.href = "/eliminar_pauta_admin/"+id_pauta_terapeutica_id+"/"
+                }
+            })
+
+    }
+</script>
+
+{% endblock %}

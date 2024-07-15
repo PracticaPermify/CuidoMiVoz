@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Correo Electrónico</title>
+</head>
+<body>
+    <h1>¡Hola {{usuario.id_tp_usuario}} {{ usuario.primer_nombre }} {{ usuario.ap_paterno }}!</h1>
+
+    <p>Te damos la bienvenida a nuestra plataforma RTDF.</p>
+    <p>Nos complace informarte que has sido admitido en nuestra plataforma.</p>
+    <p>A continuación, te proporcionaremos tus credenciales para que puedas iniciar sesión:</p>
+    <ul>
+        <li><strong>Correo:</strong> {{usuario.email}}</li>
+        <li><strong>Contraseña:</strong> {{pre_registro.password}}</li>
+    </ul>
+    <p>Te recomendamos cambiar tus credenciales una vez hayas iniciado sesión en la plataforma, para así garantizar la seguridad de tu cuenta. Puedes realizar este cambio desde la sección de "Mi perfil" una vez hayas iniciado sesión. Además, te recomendamos completar las casillas del formulario con tu información faltante en "Mi perfil".</p>
+    <p>Esperamos que disfrutes de tu experiencia en el equipo.</p>
+    <br>
+    <p>Saludos,<br>RTDF,<br>Recursos Terapéuticos Digitales para Fonoaudiología.</p>
+
+</body>
+</html>

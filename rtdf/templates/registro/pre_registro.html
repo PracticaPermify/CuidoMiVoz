@@ -1,0 +1,169 @@
+{% extends 'rtdf/base.html' %}
+
+
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/pre_registro.css' %}" />
+
+
+<body class="custom-background">
+    <div class="global-container">
+        <div class="card login-form">
+            <div class="card-body">
+                <h3 class="card-title text-center">Pre-registro de profesional</h3>
+                <div class="card-text">
+
+                    {% if error_message %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error_message }}
+                    </div>
+                    {% endif %}
+
+                    <p class="required-message">
+                        <span class="asterisk">* </span> Campos requeridos
+                    </p>
+
+                    <form method="post">
+
+                        {% csrf_token %}
+
+                    
+
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="tipo_usuario"> <i class="fa-solid fa-user-doctor"></i>Profesión <span class="required">*</span></label>
+                                <select id="" name="{{ registro_form.tipo_usuario.name }}"
+                                    class="form-control form-control-sm">
+                                    <option value="" selected>Selecciona un tipo de usuario</option>
+                                    {% for choice in registro_form.tipo_usuario.field.choices %}
+                                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="id_rut"><i class="fas fa-user"></i>Rut <span class="required">*</span></label>
+                                {{ registro_form.numero_identificacion }}
+                                <span class="text-danger">{{ registro_form.numero_identificacion.errors }}</span>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="id_primer_nombre"><i class="fas fa-user"></i>Primer nombre <span class="required">*</span></label>
+                                {{ registro_form.primer_nombre }}
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="id_segundo_nombre"><i class="fas fa-user"></i>Segundo nombre</label>
+                                {{ registro_form.segundo_nombre }}
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="id_ap_paterno"><i class="fas fa-user"></i>Apellido paterno <span class="required">*</span></label>
+                                {{ registro_form.ap_paterno }}
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="{{ registro_form.ap_materno.id_for_label }}"><i class="fas fa-user"></i>Apellido materno</label>
+                                {{ registro_form.ap_materno }}
+                            </div>
+                        </div>
+
+                        <!-- <div class="form-row">
+            <div class="form-group col-md-3">
+                <label for="id_fecha_nacimiento">Fecha nacimiento</label></br>
+                {{ registro_form.fecha_nacimiento }}
+            </div>
+        </div>         -->
+
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="id_email"><i class="fas fa-envelope"></i>Correo electrónico <span class="required">*</span></label>
+                                {{ registro_form.email }}
+                                <span class="text-danger">{{ registro_form.email.errors }}</span>
+                            </div>
+                        </div>
+
+                        <!-- <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="id_numero_telefonico">Numero de contacto</label>
+                {{ registro_form.numero_telefonico }}
+            </div>
+        </div>  
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="region">Región</label>
+                <select id="region" name="region">
+                    <option value="" selected>Selecciona una región</option>
+                    {% for region in regiones %}
+                        <option value="{{ region.id_region }}">{{ region.region }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>  
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="provincia">Provincia</label>
+                <select id="provincia" name="provincia" disabled>
+                    <option value="" selected>Selecciona una provincia</option>
+                </select>
+            </div>
+        </div>  
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="comuna">Comuna</label>
+                <select id="comuna" name="id_comuna" disabled>
+                    <option value="" selected>Selecciona una comuna</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="id_institucion">Institución</label>
+                <select id="id_institucion" name="id_institucion" disabled>
+                    <option value="" selected>Selecciona una institución</option>
+                </select>
+            </div>
+        </div>
+
+
+
+
+    
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="id_passowrd">Contraseña</label>
+                {{ registro_form.password }}
+                <small id="passwordHelpBlock" class="form-text text-muted">
+                <p>*La contraseña debe tener al menos 8 caracteres, al menos una letra mayúscula, 
+                    una minúscula, un número y un carácter especial.</p>
+                </small>
+            </div>
+        </div> -->
+
+
+                        <button type="submit" class="btn btn-primary btn-block mx-auto">Pre-Registrarse</button>
+
+                </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+
+<!-- <script src="{% static 'app/js/ubicacion_preregistro.js' %}"></script> -->
+
+
+
+
+{% endblock %}

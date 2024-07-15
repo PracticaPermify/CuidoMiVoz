@@ -1,0 +1,97 @@
+{% extends "rtdf/base.html" %}
+
+{% block content %}
+
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'app/css/css_profesionales/editar_pauta_esv.css' %}"/>
+
+<div class="container">
+    <div id="formulario-pauta" class="general-form" >
+        <form method="post">
+            <a href="{% url 'detalle_pauta_esv_admin' pauta.id_pauta_terapeutica %}">Volver a detalle de la pauta</a>
+            </br>
+            </br>
+            <h1 class="card-title text-center">Editar Pauta Terapéutica de Escala Vocal</h1>
+            </br>
+
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="cant_veces_dia"><i class="fa-solid fa-rotate-left"></i>Cantidad de veces al día <span class="required">*</span></label>
+                {{ form.cant_veces_dia }}
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion"><i class="fa-solid fa-notes-medical"></i>Descripción <span class="required">*</span></label>
+                {{ form.descripcion }}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-12 col-lg-6">
+                    <label for="fecha_inicio"><i class="fas fa-calendar"></i>Fecha Inicio <span class="required">*</span></label><br>
+                    <input type="datetime-local" class="campo_fecha" id="fecha_inicio" name="fecha_inicio"
+                        value="{{ form.fecha_inicio.value|date:'Y-m-d\TH:i' }}">
+                </div>
+
+                <div class="form-group col-md-12 col-lg-6">
+                    <label for="fecha_fin"><i class="fas fa-calendar"></i> Fecha fin <span class="required">*</span></label><br>
+                    <input type="datetime-local" class="campo_fecha" id="fecha_fin" name="fecha_fin"
+                        value="{{ form.fecha_fin.value|date:'Y-m-d\TH:i' }}">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <label for="comentario"><i class="fa-solid fa-comment-medical"></i>Comentario <span class="required">*</span></label>
+                    {{ form.comentario }}
+                </div>
+            </div>
+
+            <h2 class="card-title text-center" >Palabras para la Pauta</h2>
+            </br>
+
+            <div class="form-row" id="select-groups-container">
+                {% for select in selects %}
+                    <div class="col-md-6 select-separado select-group">
+                        <label for="palabra{{ select.id }}">Selecciona palabra {{ select.id }}</label>
+                        <select name="palabra{{ select.id }}" id="palabra{{ select.id }}" class="form-control">
+                            <option value="">Selecciona una palabra</option>
+                            {% for palabra in select.palabras_pacientes %}
+                            <option value="{{ palabra.id_palabras_pacientes }}"
+                                {% if select.palabra_seleccionada and palabra.palabras_paciente == select.palabra_seleccionada %}selected{% endif %}>
+                                {{ palabra.palabras_paciente }}
+                            </option>
+                        {% endfor %}
+                        </select>
+                        </br>
+                    </div>
+                {% endfor %}
+            </div>
+
+
+            </br>
+
+            <div class="row text-center">
+                <div class="col-md-6">
+                    <button type="button" class="btn btn-primary btn-block mx-auto float-right boton-preguntas" id="anterior-btn"><i class="fa-solid fa-arrow-left flecha-izquierda"></i> Anterior</button>
+                </div>
+                <div class="col-md-6">
+                    <button type="button" class="btn btn-primary btn-block mx-auto float-left boton-preguntas" id="siguiente-btn">Siguiente <i class="fa-solid fa-arrow-right flecha-derecha"></i></button>
+                </div>
+            </div>
+
+            </br>
+
+            </br>
+
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+
+        </form>
+
+    </div>
+</div>
+
+<script src="{% static 'app/js/desplazador_palabras.js' %}"></script>
+
+{% endblock %}

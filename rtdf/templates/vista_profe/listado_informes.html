@@ -1,0 +1,183 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/tablas_titulo.css' %}"/>
+
+
+<body class="fondo-negro">
+    <header class="row text-left titulo_header">
+        <div class="col-lg-8">
+            <h1 class="titulo_index">
+                
+            {% if tipo_usuario == 'Fonoaudiologo' %}   
+                Fonoaudiólogo
+            {% else %}
+                {{user.id_tp_usuario}} 
+            {% endif %}    
+
+                
+                <span class="span_title">{{ user.primer_nombre }} {{ user.ap_paterno }}</span></h1>
+            <p class="texto_header">Recursos Terapéuticos para Fonoaudiólogos</p>
+        </div>
+        <div class="col-lg-4">
+            <h1 id="logo"><a class="w-50 float-right" href="{% url 'index' %}">RTDF</a></h1>
+        </div>
+    </header>
+    
+
+
+        <section id="tabla_fonos">
+
+            <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+                <h1 class=" display-5 fw-bolder sub_titulo">Listado de  <span class="span_title"> informes </span></h1>
+                <p class="texto_pauta">Aquí se enumeran todos los informes RASATI y GRBAS completados para sus pacientes. Para obtener más información, haz clic en el nombre en azul del informe:</p>
+            </div>
+
+            <div class="col-lg-12 col-xl-12 col-xxl-12">
+                {% if tipo_usuario %}
+                {% if tipo_usuario == 'Fonoaudiologo' %}
+            
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID informe</th>
+                            <th>Paciente</th>
+                            <th>Tipo de informe</th>
+                            <th>Título</th>
+                            <th>Descripción</th>
+                            <th>Fecha</th>
+                            <th>Pauta terapéutica</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for informe in page %}
+                            {% if informe.tp_informe.tipo_informe == "GRBAS" or informe.tp_informe.tipo_informe == "RASATI" %}
+                                <tr>
+                                    <th><a href="{% url 'detalle_prof_infor' informe.id_informe %}">
+                                        Informe {{ informe.id_informe }}</a></th>
+                                    <td>{{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre }} 
+                                        {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno }}</td>
+                                    <td>{{ informe.tp_informe.tipo_informe }}</td>
+                                    <td>{{ informe.titulo }}</td>
+                                    <td>{{ informe.descripcion }}</td>
+                                    <td>{{ informe.fecha }}</td>
+                                    <td>{% if informe.num_pautas_terapeuticas > 0 %} 
+                                        Tiene pauta terapéutica 
+                                        {% else %} 
+                                        No tiene pauta terapéutica 
+                                        {% endif %}</td>
+                                </tr>
+                            {% endif %}
+                        {% empty %}
+                            <tr>
+                                <td colspan="8">No se han añadido informes para los pacientes.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    {% if page.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1#lista_usuario" aria-label="Primero">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page.previous_page_number }}#lista_usuario" aria-label="Anterior">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            Página {{ page.number }} de {{ page.paginator.num_pages }}.
+                        </span>
+                    </li>
+                    
+                    {% if page.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page.next_page_number }}#lista_usuario" aria-label="Siguiente">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page.paginator.num_pages }}#lista_usuario" aria-label="Último">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            
+            </div>
+
+        </section>
+
+
+        <section id="tabla_fonos">
+
+            <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+                <h1 class=" display-5 fw-bolder sub_titulo">Listado de  <span class="span_title"> informe ESV </span></h1>
+                <p class="texto_pauta">Aquí se enumeran todos los informes de escala de síntomas vocales completados para sus pacientes. Para obtener más información, haz clic en el nombre en azul del informe:</p>
+            </div>
+
+            <div class="col-lg-12 col-xl-12 col-xxl-12">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>ID informe ESV</th>
+                                <th>Paciente ESV</th>
+                                <th>Fecha ESV</th>
+                                <th>Puntaje Total ESV</th>
+                                <th>Limitación ESV</th>
+                                <th>Emocional ESV</th>
+                                <th>Físico ESV</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for informe in page %}
+                                {% if informe.tp_informe.tipo_informe == "ESV" %}
+                                    <tr>
+                                        <th><a href="{% url 'detalle_esv' informe.id_informe %}">
+                                            ESV {{ informe.id_informe }}</a></th>
+                                        <td>{{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre }} 
+                                            {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno }}</td>
+                                        <td>{{ informe.fecha }}</td>
+                                        <td>{{ informe.esv.total_esv }}</td>
+                                        <td>{{ informe.esv.limitacion }}</td>
+                                        <td>{{ informe.esv.emocional }}</td>
+                                        <td>{{ informe.esv.fisico }}</td>
+                                    </tr>
+                                {% endif %}
+                            {% empty %}
+                                <tr>
+                                    <td colspan="9">No se han añadido informes ESV para los pacientes. Para obtener más información, haz clic en el nombre en azul del informe:</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                
+                {% endif %}
+                {% endif %}
+            </div>
+
+        </section>
+</div>
+
+
+
+</body>
+
+
+
+{% endblock %}

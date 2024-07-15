@@ -1,0 +1,77 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/css_profesionales/editar_esv.css' %}"/>
+
+<body class="is-preload">
+    <div class="global-container">
+        <div class="card general-form">
+            <div class="card-body">
+
+                <div class="mb-4 mt-3">
+                  <a class="btn btn-outline-primary" href="{% url 'detalle_esv' informe.id_informe %}"><i class="fa-solid fa-arrow-left"></i> Volver al detalle del informe</a>
+                </div>
+
+                <h1 class="card-title text-center">Editar ESV {{ informe.id_informe }} de {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre }}
+                  {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno }}
+                  {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_materno }}</h1>
+                    
+                <div class="card-text">
+
+                    {% if error_message %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error_message }}
+                    </div>
+                    {% endif %}
+
+                    <p class="required-message">
+                        <span class="asterisk">* </span> Campos requeridos
+                    </p>
+<form method="post">
+    {% csrf_token %}
+
+
+
+
+    <br>
+    <div class="form-row">
+      <div class="form-group col-md-12">
+        <label for="titulo"><i class="fa-solid fa-heading"></i>Título <span class="required">*</span></label>
+        <input type="text" name="titulo" value="{{ informe.titulo }}">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-12">
+        <label for="descripcion"><i class="fa-solid fa-notes-medical"></i>Descripción <span class="required">*</span></label>
+        <textarea name="descripcion">{{ informe.descripcion }}</textarea>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-6">
+          <label for="fecha"><i class="fas fa-calendar"></i>Fecha</label><br>
+          <input type="datetime-local" class="campo_fecha" id="fecha" name="fecha" value="{{ informe.fecha|date:'Y-m-d\TH:i' }}">
+      </div>
+  </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-12">
+        <label for="observacion"><i class="fa-solid fa-notes-medical"></i>Observación <span class="required">*</span></label>
+        <textarea name="observacion">{{ informe.observacion }}</textarea>
+      </div>
+    </div>
+
+
+      <br>
+      <button type="submit" class="btn btn-primary btn-block mx-auto">Guardar Cambios</button>
+
+
+  </form>
+  </div>
+  </div>
+  </div>
+
+{% endblock %}

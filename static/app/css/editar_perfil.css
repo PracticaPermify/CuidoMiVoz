@@ -1,0 +1,196 @@
+/* main.css */
+
+/* Estilos generales para el formulario */
+.general-form {
+    max-width: 90%; /* Cambia el ancho máximo a 600px para la vista de computadora */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    padding: 20px;
+    margin: 0 auto; /* Centra horizontalmente el formulario */
+}
+
+#fk_tp_terapia{
+    display: none;
+}
+
+.general-form .card-title {
+text-align: center;
+font-size: 36px;
+font-weight: 500 !important;
+color: #c94663;
+margin-bottom: 40px;
+}
+
+.general-form .form-control {
+width: 100%;
+height: 40px;
+font-size: 16px;
+border: 1px solid #ccc;
+border-radius: 4px;
+}
+
+.general-form .form-row {
+display: flex;
+justify-content: space-between;
+}
+
+.general-form .boton-preguntas {
+background-color: #2c2929;
+width: 66%;
+padding: 10px;
+font-size: 16px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+transition: background-color 0.2s;
+margin-top: 20px;
+}
+
+.general-form button {
+display: block;
+width: 66%;
+padding: 15px;
+font-size: 20px;
+background-color: #c94663;
+color: #fff;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+transition: background-color 0.2s;
+margin-top: 10px;
+}
+
+.general-form button:hover {
+background-color: #00741b;
+}
+
+/* .preguntas-container{
+border: 1px solid #ddd;
+border-radius: 5px;
+margin-right: none;
+
+} */
+
+.campo_fecha {
+width: 100%;
+padding: 10px;
+height: 40px;
+font-size: 16px;
+border: 1px solid #ccc;
+border-radius: 4px;
+}
+
+.general-form label i {
+margin-right: 10px;
+font-size: 18px;
+color: #c94663;
+}
+
+.required-message {
+display: flex;
+align-items: center;
+color: #000000;
+font-size: 18px;
+margin-top: 10px;
+justify-content: flex-end;
+font-family: 'Open Sans Condensed', sans-serif;
+font-weight: 700;
+color: #232323;
+margin: 0 0 0.75em 0;
+margin-bottom: 0;
+}
+
+.flecha-izquierda{
+margin-right: 10px;
+}
+
+.flecha-derecha{
+margin-left: 10px;
+font-size: large;
+}
+
+.asterisk {
+font-size: 24px;
+margin-right: 5px;
+color: red;
+}
+
+.campo_descripcion{
+resize: none;
+height: 100px;
+}
+
+.campo_observacion{
+    resize: none;
+    }
+
+.titulo-tp{
+    margin-top: 20px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.hh3{
+    color: #c94663;
+}
+
+.hh2{
+    color:#c94663;
+    text-align: center !important;
+}
+
+.boton-moda{
+    width: 100%;
+}
+
+.error{
+    color: red;
+}
+
+    @media screen and (max-width: 768px) {
+    .general-form {
+        max-width: 100%;
+    }
+
+    .card-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .general-form button {
+        width: 100%;
+        margin-top: 0px;
+    }
+
+    .required-fields {
+        font-size: 14px;
+    }
+
+    .required-message {
+        margin-bottom: 10px;
+        font-size: 15px;
+        justify-content: center;
+    }
+
+    .general-form .boton-preguntas {
+        width: 100%;
+    }
+
+    .preguntas-container{
+        border: none;
+        border-radius: none;
+
+    }
+
+}
+
+
+
+@media screen and (max-width: 992px) {
+
+.general-form .boton-preguntas {
+    width: 100%;
+}
+}

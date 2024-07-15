@@ -1,0 +1,45 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'app/css/css_profesionales/detalle_prof_infor.css' %}"/>
+<link rel="stylesheet" href="{% static 'app/css/tablas_titulo.css' %}"/>
+
+    <body class="is-preload">
+        <div class="global-container">
+            <div class="card login-form">
+                <div class="card-body">
+                    <h1 class="card-title text-center">Listado de fonoaudiólogos</h1>
+                    <div class="card-text">
+                        <table class="table">
+                            <thead class="thead-dark">
+                              <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Nombre completo</th>
+                                <th scope="col">Tipo de usuario</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                {% for fonoaudiologo in fonoaudiologos %}
+                                <th scope="row">{{ fonoaudiologo.id_usuario }}</th>
+                                <th>
+                                <a href="{% url 'detalle_fonoaudiologo' fonoaudiologo.id_usuario %}">
+                                {{ fonoaudiologo.primer_nombre }} {{ fonoaudiologo.segundo_nombre }} 
+                                {{ fonoaudiologo.ap_paterno }} {{ fonoaudiologo.ap_materno }}
+                                </a>
+                                </th>
+                                <th>{{ fonoaudiologo.id_tp_usuario }}</th>
+                              </tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>    
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+{% endblock %}

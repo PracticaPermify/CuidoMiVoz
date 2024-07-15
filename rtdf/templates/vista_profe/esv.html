@@ -1,0 +1,113 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/esv.css' %}"/>
+
+<body class="is-preload">
+    <div class="global-container">
+        <div class="card general-form">
+            <div class="card-body">
+                <h3 class="card-title text-center">Informe ESV</h3>
+                <div class="card-text">
+
+                    {% if error_message %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error_message }}
+                    </div>
+                    {% endif %}
+
+                    <p class="required-message">
+                        <span class="asterisk">* </span> Campos requeridos
+                    </p>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-row">
+            <div class="form-group col-md-12 col-lg-6">
+                <label for="{{ form.fk_relacion_pa_pro.id_for_label }}"><i class="fas fa-user"></i>Paciente <span class="required">*</span></label>
+                {{ form.fk_relacion_pa_pro }}
+            </div>
+
+            <div class="form-group col-md-6">
+                <label for="fecha"><i class="fas fa-calendar"></i>Fecha Automática</label></br>
+                <input type="datetime-local" class="campo_fecha" id="fecha" name="fecha" value="{{ form.fecha.value|date:'Y-m-d\TH:i' }}" readonly>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                <label for="{{ form.titulo.id_for_label }}"><i class="fa-solid fa-heading"></i>Título <span class="required">*</span></label>
+                {{ form.titulo }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col">
+                <label for="{{ form.descripcion.id_for_label }}"><i class="fa-solid fa-notes-medical"></i>Descripción <span class="required">*</span></label>
+                {{ form.descripcion }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                <label for="{{ form.observacion.id_for_label }}"><i class="fa-solid fa-notes-medical"></i>Observación <span class="required">*</span></label>
+                {{ form.observacion }}
+            </div>
+        </div>    
+
+
+
+        <div class="form-row">
+            <div class="preguntas-container form-group col-md-12">
+                <div class="form-row">
+                    <h3 class="card-title col-md-12 mx-auto mt-3">Preguntas ESV</h3>
+                    <p class="preguntas-requeridas mx-auto">
+                        <span class="asterisk">* </span> Todas las preguntas deben ser respondidas
+                    </p>
+                </div>
+                {% for pregunta in preguntas %}
+                    <div class=" pregunta" style="display: none;">
+                        <p class="col-lg-8 col-md-12 mx-auto"> {{ forloop.counter }}. {{ pregunta }}</p>
+                        <div class="form-row">
+                            <div class="form-group col-md-12 col-lg-8 mx-auto">
+                                <select name="respuesta_{{ forloop.counter }}" required class="form-control">
+                                    {% for opcion in opciones_respuesta %}
+                                        <option value="{{ opcion }}">{{ opcion }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="form-row  mt-2 ">
+                    <div class="form-group col-sm-6 col-md-6 order-2 order-md-1">
+                        <button type="button" class="btn btn-primary btn-block mx-auto float-right boton-preguntas" onclick="cambiarPreguntas(-5)" id="anterior-btn"><i class="fa-solid fa-arrow-left flecha-izquierda"></i>Anterior </button>
+                    </div>
+                    <div class="form-group col-sm-6 col-md-6 order-1 order-md-2">
+                        <button type="button" class="btn btn-primary btn-block mx-auto float-left boton-preguntas" onclick="cambiarPreguntas(5)" id="siguiente-btn">Siguiente<i class="fa-solid fa-arrow-right flecha-derecha"></i></button>
+                    </div>  
+                </div>
+            </div>
+        </div>
+
+
+    </br>
+
+
+        <button type="submit" class="btn btn-primary btn-block mx-auto">Guardar cuestionario</button>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script src="{% static 'app/js/desplazador_preguntas.js' %}"></script>
+
+
+{% endblock %}

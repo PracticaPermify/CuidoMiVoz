@@ -1,0 +1,11 @@
+
+
+.boton-editar{
+    text-align:end !important;
+}
+
+@media (max-width: 768px) {
+    .boton-editar{
+        text-align: center !important;
+    }
+  }

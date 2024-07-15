@@ -1,0 +1,162 @@
+{% extends 'rtdf/base.html' %}
+
+{% load static%}
+
+<html>
+    <script src="{% static 'app/js/jquery-3.6.1.min.js' %}"></script>
+
+    {% block content %}
+
+    
+    <head>
+        <title>RTDF</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'app/css/metronomo.css' %}"/>
+    </head>
+    <body class="is-preload">
+            <h1 style="text-align: center; font-size: 40px">Pauta terapéutica <b class="importante">Escala vocal N°{{ pauta_seleccionada.id_pauta_terapeutica }}</b></h1>
+            <br/>
+            {% if pauta_seleccionada %}
+                    {% comment %} <table class="table" hidden>
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Descripción</th>
+                                <th>Cantidad de veces al día</th>
+                                <th>Duración del ejercicio (segundos)</th>
+                                <th>BPM ajustado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ pauta_seleccionada.descripcion }}</td>
+                                <td>{{ pauta_seleccionada.cant_veces_dia }}</td>
+                                <td>{{ pauta_seleccionada.vocalizacion.duracion_seg }}</td>
+                                <td>{{ pauta_seleccionada.vocalizacion.bpm }}</td>
+                            </tr>
+                        </tbody>
+                    </table> {% endcomment %}
+                    {% else %}
+                    <p style="text-align: center;">No se ha seleccionado una pauta terapéutica.</p>
+                    {% endif %}
+
+    </br>
+        
+
+    {% if pauta_seleccionada %}
+
+        <div class="container">
+            <div class="metronome">
+                <div class="metronome-info">
+                    <h1 style="text-align: center; font-size: 40px"><strong>Buenos días</strong> <p class="importante">{{ user.primer_nombre }} {{ user.ap_paterno }}</p></h1>
+                    <br/>
+
+                    <p style="text-align: center;"></strong>Esta semana debes trabajar con las <b class="importante"> Escalas vocales</b>.</p>
+                    <p style="text-align: center;">Deberas realizar el ejercicio <b class="importante">{{ pauta_seleccionada.cant_veces_dia }} veces al día </b> </p>
+                    <p>Al ejercitar, debes respirar por la nariz y tus ejercicios deben durar aproximadamente <b class="importante">50 segundos</b>.</p>
+                    <p style="text-align: center;">Deberas repetir las palabras que se te mostraran a continuación:</p>
+                    </br>
+                    <h3 style="text-align: center;"><b>
+                        <div id="palabras-container">
+                            <h3 style="text-align: center;"><b class="importante">{{ pauta_seleccionada.escalavocales.palabras }}
+                        </div>
+                    </b></h3>
+                <div class="controlador">
+                    {% comment %} <div class="start-stop">Empezar</div> {% endcomment %}
+                    <button onclick="clickAudio(true)" id="start_stop" class="start-stop">COMENZAR</button>
+                </div>
+                </br>
+                <p style="text-align: center;"></strong>Al terminar debera presionar <b>PARAR</b>, para completar el ejercicio</b>.</p>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container-mic" style="display:none;">
+            <div class="selector-audio">
+                <select name="listaDeDispositivos" id="listaDeDispositivos"></select>
+            </div>
+            <div class="audio">
+                <audio controls playsinline></audio>
+            </div>
+        
+            <hr>
+        </div>
+
+    {% else %}
+
+    <div class="container">
+        <div class="metronome">
+            <div class="metronome-info">
+                <h1><strong>Buenos días</strong> {{ user.primer_nombre }} {{ user.ap_paterno }}</h1>
+                <br/>
+
+                <p style="text-align: center;"></strong>Esta semana debes trabajar con las <b> Escalas vocales</b>.</p>
+                <p style="text-align: center;">Deberas realizar el ejercicio <b>{{ pauta_seleccionada.cant_veces_dia }} </b> veces al día </p>
+                <p>Al ejercitar, debes respirar por la nariz y tus ejercicios deben durar aproximadamente <b>0 segundos</b>.</p>
+                <p style="text-align: center;">Deberas repetir las palabras que se te mostraran a continuación:</p>
+                </br>
+                <h3 style="text-align: center;"><b>{{ pauta_seleccionada.escalavocales.palabras }}</b></h3>
+               
+            <div class="controlador">
+                {% comment %} <div class="start-stop">Empezar</div> {% endcomment %}
+                <button onclick="clickAudio(true)" id="start_stop" class="start-stop">COMENZAR</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container-mic" style="display:none;">
+        <div class="selector-audio">
+            <select name="listaDeDispositivos" id="listaDeDispositivos"></select>
+        </div>
+        <div class="audio">
+            <audio controls playsinline></audio>
+        </div>
+    
+        <hr>
+    </div>
+
+    {% endif %}
+        
+
+    </body>
+
+    <script src="{% static 'app/js/RecordRTC.js' %}"></script>
+    <script src="{% static 'app/js/microfono_utils.js' %}"></script>
+    <script src="{% static 'app/js/jquery.min.js' %}"></script>
+    <script src="{% static 'app/js/jquery.dropotron.min.js' %}"></script>
+    {% comment %} <script src="{% static 'app/js/grabacion_vocalizacion.js' %}"></script> {% endcomment %}
+    
+    <script>
+        window.id = {{ pauta_seleccionada.id_pauta_terapeutica }};
+        window.terapia = "{{ pauta_seleccionada.fk_tp_terapia.tipo_terapia }}";
+        window.csrftoken = "{{ csrf_token }}";
+        var escalavocalesConPautaURL = "{% url 'escalas_vocales_con_pauta' pauta_id=0 %}".replace('0', {{ pauta_seleccionada.id_pauta_terapeutica }});
+
+    </script>
+    
+    <script>
+        var palabras = "{{ pauta_seleccionada.escalavocales.palabras }}";
+        var listaPalabras = palabras.split(',').map(palabra => (palabra.trim()));
+    
+        var resultadoHTML = '<h3 style="text-align: center;"><b class="importante">';
+        listaPalabras.forEach((palabra, index) => {
+            resultadoHTML += `${index + 1}-${palabra}`;
+            if ((index + 1) % 5 === 0 && index !== listaPalabras.length - 1) {
+                resultadoHTML += '</b></h3><h3 style="text-align: center;"><b class="importante">';
+            } else {
+                resultadoHTML += ', ';
+            }
+        });
+        resultadoHTML += '</b></h3>';
+    
+        document.getElementById('palabras-container').innerHTML = resultadoHTML;
+    </script>
+    
+
+{% endblock %}
+</html>

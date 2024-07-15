@@ -1,0 +1,92 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'app/css/css_profesionales/detalle_prof_infor.css' %}"/>
+<link rel="stylesheet" href="{% static 'app/css/tablas_titulo.css' %}"/>
+
+<div class="container">
+    <div>
+        <a class="btn btn-outline-primary" href="{% url 'list_neur_admin' %}"><i class="fa-solid fa-arrow-left"></i> Volver a la lista de neurologos</a>
+    </div>
+    </br>
+            <h1>Detalles del neurólogo {{ neurologo.primer_nombre }} {{ neurologo.ap_paterno }}</h1>
+        </br>
+        </div>
+
+    <div class="container">
+      <div class="table-responsive">
+        <table class="table">
+              <tr>
+                <th scope="col">Rut</th>
+                <td scope="row">{{ neurologo.numero_identificacion }}</td>
+              </tr>
+              <tr>
+                <th scope="col">Correo electronico</th>
+                <td>{{ neurologo.email }}</td>
+              </tr>
+              <tr>
+                <th scope="col">Fecha de nacimiento</th>
+                <td>{{ neurologo.fecha_nacimiento }}</td>
+              </tr>
+              <tr>
+                <th scope="col">Edad</th>
+                <td>{{ edad }}</td>
+              </tr>
+              <tr>
+                <th scope="col">Numero de contacto</th>
+                <td>{{ neurologo.numero_telefonico }}</td>
+              </tr>
+              <tr>
+                <th scope="col">Universidad estudiada</th>
+                <td>{{ institucion }}</td>
+              </tr>
+          </table>
+        </div>
+      </div>
+
+        </br>
+
+    <div class="container">
+      <h2><strong>Pacientes asignados</strong></h2>
+      </br>
+  
+    <div class="table-responsive"> 
+      <table class="table">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">ID paciente</th>
+              <th scope="col">Nombre completo</th>
+              <th scope="col">telegram</th>
+              <th scope="col">Diabetes</th>
+              <th scope="col">hipertension</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for paciente_asociado in pacientes_asociados %}
+            <tr>
+              <td>{{ paciente_asociado.id_usuario.id_usuario }}</td>
+              <td>
+                <a href="{% url 'detalle_paciente' paciente_id=paciente_asociado.id_usuario.id_usuario %}">
+                {{ paciente_asociado.id_usuario.primer_nombre }} 
+                {{ paciente_asociado.id_usuario.segundo_nombre }}
+                {{ paciente_asociado.id_usuario.ap_paterno }}
+                {{ paciente_asociado.id_usuario.ap_materno }}
+                </a>
+              </td>
+              <td>{{ paciente_asociado.telegram  }}</td>
+              <td>{{ paciente_asociado.fk_tipo_diabetes  }}</td>
+              <td>{{ paciente_asociado.fk_tipo_hipertension  }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+</div>
+</div>
+
+{% endblock %}

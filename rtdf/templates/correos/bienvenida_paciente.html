@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a RTDF</title>
+</head>
+
+<body>
+    <p>
+        ¡Tienes un nuevo fonoaudiologo!
+    </p>
+
+    <p>
+        Hola {{ paciente.primer_nombre }},
+    </p>
+
+    <p>
+        Te informamos que has sido asignado a un nuevo fonoaudiólogo en RTDF. Aquí están los detalles de tu fonoaudiólogo:
+    </p>
+
+    <p>
+        <strong>Fonoaudiólogo:</strong> {{ profesional_salud.id_usuario.primer_nombre }} {{ profesional_salud.id_usuario.ap_paterno }}
+    </p>
+
+    <p>
+        <strong>Correo electronico:</strong> {{ profesional_salud.id_usuario.email }} 
+    </p>
+
+    <p>
+        Estate atento a su correo electronico para agendar su hora.
+    </p>
+
+    <p>
+        ¡Que tengas suerte en tu tratamiento!
+    </p>
+
+    <p>
+        Atentamente,
+        <br>
+        El equipo de RTDF
+    </p>
+</body>
+
+</html>
+
+
+
+

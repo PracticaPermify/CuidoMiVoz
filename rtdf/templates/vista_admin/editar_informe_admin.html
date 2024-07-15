@@ -1,0 +1,184 @@
+
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/css_admin/editar_informe_admin.css' %}" />
+
+
+
+<body class="is-preload">
+    <div class="global-container">
+        <div class="card general-form">
+            <div class="card-body">
+                    
+                <div class="mb-4 mt-3">
+                    <header class="row text-left titulo_header">
+                        <div class="col-lg-8">
+                            <a class="btn btn-outline-primary" href="{% url 'detalle_informe' informe.id_informe %}"><i class="fa-solid fa-arrow-left"></i> Volver al detalle del informe</a>
+                        </div>
+                    </header>
+                </div>
+
+                <h1 class="card-title text-center">Editar Informe {{ informe.id_informe }} de 
+                    {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre }}
+                    {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno }}</h1>
+
+                    
+                <div class="card-text">
+
+                    {% if error_message %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error_message }}
+                    </div>
+                    {% endif %}
+                    <br>
+                    <p class="required-message">
+                        <span class="asterisk">* </span> Campos requeridos
+                    </p>
+<body class="is-preload">
+    <form method="post">
+
+    
+
+    <br>
+        {% csrf_token %}
+
+
+        <div id="div_fk_relacion_pa_pro" class="form-group col-md-4">
+            <label for="fk_relacion_pa_pro">Pacientes de {{ informe.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.primer_nombre}} {{ informe.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.ap_paterno}}:</label>
+            {{ form.fk_relacion_pa_pro }}
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                <label for="titulo"><i class="fa-solid fa-heading"></i>Título <span class="required">*</span></label>
+                {{ form.titulo }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                <label for="descripcion"><i class="fa-solid fa-notes-medical"></i>Descripción <span class="required">*</span></label>
+                {{ form.descripcion }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="fecha"><i class="fas fa-calendar"></i>Fecha Automática</label><br>
+                <input type="datetime-local" class="campo_fecha" id="fecha" name="fecha" readonly value="{{ form.fecha.value|date:'Y-m-d\TH:i' }}">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                <label for="observacion"><i class="fa-solid fa-notes-medical"></i>Observación <span class="required">*</span></label>
+                {{ form.observacion }}
+            </div>
+        </div>
+
+        <div id="div_tp_informe"  class="form-group col-md-4">
+            <label for="tp_informe">Tipo de Informe:</label>
+            <select id="tp_informe" name="{{ form.tp_informe.name }}" class="form-control form-control-sm" readonly>
+                {% for choice in form.tp_informe.field.choices %}
+                    <option value="{{ choice.0 }}" {% if choice.0 == form.tp_informe.value %}selected{% endif %}>
+                        {{ choice.1 }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Verificar si tiene un tipo de informe asociado -->
+        {% if informe.tp_informe.tipo_informe == 'GRBAS' %}
+        <div class="titulo-tp">
+            <h3 class="hh3"> CAMPOS GRBAS</h3>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group col-md-12 col-lg-6">
+                <label for="{{ grbas_form.g_grado_disfonia.id_for_label }}"><i class="fa-solid fa-g"></i>Grado de Disfonía <span class="required">*</span></label>
+                {{ grbas_form.g_grado_disfonia }}
+            </div>
+
+            <div class="form-group col-md-12 col-lg-6">
+                <label for="{{ grbas_form.r_aspereza.id_for_label }}"><i id="icono-tp" class="fa-solid fa-r"></i>Rugosidad de la voz <span class="required">*</span></label>
+                {{ grbas_form.r_aspereza }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-12 col-lg-6">
+                <label for="{{ grbas_form.b_soplo.id_for_label }}"><i class="fa-solid fa-b"></i>Respiración dificultosa <span class="required">*</span></label>
+                {{ grbas_form.b_soplo }}
+            </div>
+        
+
+            <div class="form-group col-md-12 col-lg-6">
+                <label for="{{ grbas_form.a_debilidad.id_for_label }}"><i class="fa-solid fa-a"></i>Astenia o grado de fatiga de
+                    voz <span class="required">*</span></label>
+                {{ grbas_form.a_debilidad }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col">
+                <label for="{{ grbas_form.s_tension.id_for_label }}"><i class="fa-solid fa-s"></i>Grado de tension vocal <span class="required">*</span></label>
+                {{ grbas_form.s_tension }}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Campos para RASATI si es un informe de tipo RASATI -->
+        {% if informe.tp_informe.tipo_informe == 'RASATI' %}
+        <div class="titulo-tp">
+            <h3 class="hh3"> CAMPOS RASATI</h3>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-12 col-lg-6">
+                <label for="{{ rasati_form.r_ronquedad.id_for_label }}"><i id="icono-tp" class="fa-solid fa-r"></i>Ronquedad  <span class="required">*</span></label>
+                {{ rasati_form.r_ronquedad }}
+            </div>
+
+            <div class="form-group col-md-12 col-lg-6">
+                <label for="{{ rasati_form.a_aspereza.id_for_label }}"><i class="fa-solid fa-a"></i>Aspereza <span class="required">*</span></label>
+                {{ rasati_form.a_aspereza }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-12 col-lg-6">
+                <label for="{{ rasati_form.s_soplo.id_for_label }}"><i class="fa-solid fa-s"></i>Soplo <span class="required">*</span></label>
+                {{ rasati_form.s_soplo }}
+            </div>
+
+            <div class="form-group col-md-12 col-lg-6">
+                <label for="{{ rasati_form.a_astenia.id_for_label }}"><i class="fa-solid fa-a"></i>Astenia <span class="required">*</span></label>
+                {{ rasati_form.a_astenia }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-12 col-lg-6">
+                <label for="{{ rasati_form.t_tension.id_for_label }}"><i class="fa-solid fa-t"></i>Tension <span class="required">*</span></label>
+                {{ rasati_form.t_tension }}
+            </div>
+
+            <div class="form-group col-md-12 col-lg-6">
+                <label for="{{ rasati_form.i_inestabilidad.id_for_label }}"><i class="fa-solid fa-i"></i>Inestabilidad <span class="required">*</span></label>
+                {{ rasati_form.i_inestabilidad }}
+            </div>
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary btn-block mx-auto mt-md-5 mt-4">Actualizar</button>
+    </div>
+
+</form>
+</div>
+</div>
+</div>
+</body>
+{% endblock %}
+
+

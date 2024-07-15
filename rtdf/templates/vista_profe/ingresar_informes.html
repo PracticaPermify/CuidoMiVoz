@@ -1,0 +1,186 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/ingresar_informe.css' %}" />
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<body class="is-preload">
+    <div class="global-container">
+        <div class="card general-form">
+            <div class="card-body">
+                <h3 class="card-title text-center">Ingresar informe</h3>
+                <div class="card-text">
+
+                    {% if error_message %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error_message }}
+                    </div>
+                    {% endif %}
+
+                    <p class="required-message">
+                        <span class="asterisk">* </span> Campos requeridos
+                    </p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <br>
+                        <div class="form-row">  
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="tp_informe"><i class="fa-solid fa-file-medical"></i>Tipo de Informe <span class="required">*</span></label>
+                                {{ form.tp_informe }}
+                            </div>
+                        
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="fk_relacion_pa_pro"><i class="fas fa-user"></i>Paciente <span class="required">*</span></label>
+                                {{ form.fk_relacion_pa_pro }}
+                            </div>
+                        </div>
+
+
+                    <div class="form-row">
+                        <div class="form-group col">
+                            <label for="titulo"><i class="fa-solid fa-heading"></i>Título <span class="required">*</span></label>
+                            {{ form.titulo }}
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col">
+                            <label for="descripcion"><i class="fa-solid fa-notes-medical"></i>Descripción <span class="required">*</span></label>
+                            {{ form.descripcion }}
+                        </div>
+                    </div>
+
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="fecha"><i class="fas fa-calendar"></i>Fecha Automática</label></br>
+                            <input type="datetime-local" id="fecha" class="campo_fecha" name="fecha"
+                                value="{{ form.fecha.value|date:'Y-m-d\TH:i' }}" readonly>
+                        </div>
+                    </div>
+
+
+                    <div class="form-row">
+                        <div class="form-group col">
+                            <label for="observacion"><i class="fa-solid fa-notes-medical"></i>Observación <span class="required">*</span></label>
+                            {{ form.observacion }}
+                        </div>
+                    </div>
+
+
+
+                        {% comment %}Aqui va campos para GRBAS{% endcomment %}
+
+                        <div class="campos-grbas">
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="{{ grbas_form.g_grado_disfonia.id_for_label }}"><i class="fa-solid fa-g"></i>Grado de Disfonía <span class="required">*</span></label>
+                                    {{ grbas_form.g_grado_disfonia }}
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label for="{{ grbas_form.r_aspereza.id_for_label }}"><i id="icono-tp" class="fa-solid fa-r"></i>Rugosidad de la voz <span class="required">*</span></label>
+                                    {{ grbas_form.r_aspereza }}
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="{{ grbas_form.b_soplo.id_for_label }}"><i class="fa-solid fa-b"></i>Respiración dificultosa <span class="required">*</span></label>
+                                    {{ grbas_form.b_soplo }}
+                                </div>
+
+
+
+                                <div class="form-group col-md-6">
+                                    <label for="{{ grbas_form.a_debilidad.id_for_label }}"><i class="fa-solid fa-a"></i>Astenia o grado de fatiga de
+                                        voz <span class="required">*</span></label>
+                                    {{ grbas_form.a_debilidad }}
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for="{{ grbas_form.s_tension.id_for_label }}"><i class="fa-solid fa-s"></i>Grado de tension vocal <span class="required">*</span></label>
+                                    {{ grbas_form.s_tension }}
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        {% comment %} Aca termina campos para GRBAS {% endcomment %}
+
+
+                        {% comment %}Aqui va campos para RASATI{% endcomment %}
+
+                        <div class="campos-rasati">
+
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="{{ rasati_form.r_ronquedad.id_for_label }}"><i id="icono-tp" class="fa-solid fa-r"></i>Ronquedad  <span class="required">*</span></label>
+                                {{ rasati_form.r_ronquedad }}
+                            </div>
+
+                            <div class="form-group col-md-4">
+                                <label for="{{ rasati_form.a_aspereza.id_for_label }}"><i class="fa-solid fa-a"></i>Aspereza <span class="required">*</span></label>
+                                {{ rasati_form.a_aspereza }}
+                            </div>
+
+                            <div class="form-group col-md-4">
+                                <label for="{{ rasati_form.s_soplo.id_for_label }}"><i class="fa-solid fa-s"></i>Soplo <span class="required">*</span></label>
+                                {{ rasati_form.s_soplo }}
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="{{ rasati_form.a_astenia.id_for_label }}"><i class="fa-solid fa-a"></i>Astenia <span class="required">*</span></label>
+                                {{ rasati_form.a_astenia }}
+                            </div>
+
+                            <div class="form-group col-md-4">
+                                <label for="{{ rasati_form.t_tension.id_for_label }}"><i class="fa-solid fa-t"></i>Tension <span class="required">*</span></label>
+                                {{ rasati_form.t_tension }}
+                            </div>
+
+                            <div class="form-group col-md-4">
+                                <label for="{{ rasati_form.i_inestabilidad.id_for_label }}"><i class="fa-solid fa-i"></i>Inestabilidad <span class="required">*</span></label>
+                                {{ rasati_form.i_inestabilidad }}
+                            </div>
+                        </div>
+
+
+                        </div>
+
+                        {% comment %} Aca termina campos para RASATI {% endcomment %}
+
+
+                        <button type="submit" class="btn btn-primary btn-block mx-auto">Registrar informe</button>
+
+                </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('form').addEventListener('submit', function(event) {
+            var tipoInforme = document.querySelector('select[name="tp_informe"]').value;
+            if (!tipoInforme) {
+                alert('El campo Tipo de Informe es requerido.');
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+
+<script src="{% static 'app/js/formularios.js' %}"></script>
+{% endblock %}

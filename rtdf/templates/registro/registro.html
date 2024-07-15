@@ -1,0 +1,199 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/main.css' %}"/>
+<link rel="stylesheet" href="{% static 'app/css/registro.css' %}" />
+
+
+<body class="is-preload">
+    <div class="global-container">
+        <div class="card login-form">
+            <div class="card-body">
+                <h3 class="card-title text-center">Registro de usuario</h3>
+                <div class="card-text">
+
+                    {% if error_message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error_message }}
+                        </div>
+                    {% endif %}
+
+                    <p class="required-message">
+                        <span class="asterisk">* </span> Campos requeridos
+                    </p>
+                    
+                    
+
+                    <form method="post">
+                        {% csrf_token %}
+
+
+    
+        <div class="form-row">
+            <div class="form-group col">
+                <label for="id_rut"> <i class="fas fa-user"></i>Número de identificación <span class="required">*</span></label>
+                {{ registro_form.numero_identificacion }}
+                <span class="text-danger">{{ registro_form.numero_identificacion.errors }}</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6 col-sm-6">
+                <label for="id_primer_nombre"><i class="fas fa-user"></i>Primer nombre <span class="required">*</span></label>
+                {{ registro_form.primer_nombre }}
+            </div>
+            <div class="form-group col-md-6 col-sm-6">
+                <label for="id_segundo_nombre"><i class="fas fa-user"></i>Segundo nombre</label>
+                {{ registro_form.segundo_nombre }}
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group col-md-6 col-sm-6">
+                <label for="id_ap_paterno"><i class="fas fa-user"></i>Apellido paterno <span class="required">*</span></label>
+                {{ registro_form.ap_paterno }}
+            </div>
+            <div class="form-group col-md-6 col-sm-6">
+                <label for="{{ registro_form.ap_materno.id_for_label }}"><i class="fas fa-user"></i>Apellido materno</label>
+                {{ registro_form.ap_materno }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="id_fecha_nacimiento"><i class="fas fa-calendar"></i>Fecha de nacimiento <span class="required">*</span></label></br>
+                {{ registro_form.fecha_nacimiento }}
+                <span class="text-danger">{{ registro_form.fecha_nacimiento.errors }}</span>
+            </div>
+        </div>        
+
+        <div class="form-row">
+            <div class="form-group col-md-6 col-sm-6">
+                <label for="id_email"><i class="fas fa-envelope"></i>Correo electrónico <span class="required">*</span></label>
+                {{ registro_form.email }}
+                <span class="text-danger">{{ registro_form.email.errors }}</span>
+            </div>
+            <div class="form-group col-md-6 col-sm-6">
+                <label for="id_numero_telefonico"><i class="fas fa-phone"></i>Numero de contacto <span class="required">*</span></label>
+                {{ registro_form.numero_telefonico }}
+                <span class="text-danger">{{ registro_form.numero_telefonico.errors }}</span>
+            </div>
+        </div>  
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="region"><i class="fa-solid fa-location-dot"></i>Región <span class="required">*</span></label>
+                <select id="region" name="region">
+                    <option value="" selected>Selecciona una región</option>
+                    {% for region in regiones %}
+                        <option value="{{ region.id_region }}">{{ region.region }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="provincia"><i class="fa-solid fa-location-dot"></i>Provincia <span class="required">*</span></label>
+                <select id="provincia" name="provincia" disabled>
+                    <option value="" selected>Selecciona una provincia</option>
+                </select>
+            </div>
+        </div>  
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="comuna"><i class="fa-solid fa-location-dot"></i>Comuna <span class="required">*</span></label>
+                <select id="comuna" name="id_comuna" disabled>
+                    <option value="" selected>Selecciona una comuna</option>
+                </select>
+            </div>
+        </div>
+    
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="tipo_usuario"><i class="fas fa-user"></i>Tipo de usuario <span class="required">*</span></label>
+                {{ registro_form.tipo_usuario }}
+                <span class="text-danger">{{ registro_form.tipo_usuario.errors }}</span>
+            </div>
+        </div>
+
+
+{% comment %} Aquí va los campos por usuario Paciente{% endcomment %}
+
+<div id="campos-paciente" class="form-row campos-paciente" style="display: none;">
+    <div class="form-group col-md-6">
+        <label for="telegram"><i class="fa-brands fa-telegram"></i>Telegram <span class="required">*</span></label>
+        {{ registro_form.telegram }}
+    </div>
+</div>
+
+<div class="form-row campos-paciente" style="display: none;">
+    <div class="form-group col-md-6">
+        <label for="fk_tipo_hipertension"><i class="fa-solid fa-file-medical"></i>Tipo de Hipertensión <span class="required">*</span></label>
+        {{ registro_form.fk_tipo_hipertension }}
+    </div>
+</div>
+
+<div class="form-row campos-paciente" style="display: none;">
+    <div class="form-group col-md-6">
+        <label for="fk_tipo_diabetes"><i class="fa-solid fa-file-medical"></i>Tipo de Diabetes <span class="required">*</span></label>
+        {{ registro_form.fk_tipo_diabetes }}
+    </div>
+</div>
+
+{% comment %} Aqui termina los campos por usuario Paciente {% endcomment %}
+
+{% comment %} Aqui comienza los campos por usuario Familiar  {% endcomment %}
+
+<div class="form-row campos-familiar" style="display: none;">
+    <div class="form-group col-md-6">
+        <label for="fk_tipo_familiar"><i class="fas fa-user"></i>Parentesco con el paciente <span class="required">*</span></label>
+        {{ registro_form.fk_tipo_familiar }}
+    </div>
+</div>
+
+<div class="form-row campos-familiar" style="display: none;">
+    <div class="form-group col-md-6">
+        <label for="rut_paciente"><i class="fas fa-user"></i>Rut del paciente <span class="required">*</span></label>
+        {{ registro_form.rut_paciente }}
+        <span class="text-danger">{{ registro_form.rut_paciente.errors }}</span>
+    </div>
+</div>
+
+
+<div class="form-row">
+    <div class="form-group col-md-6">
+        <label for="id_passowrd"><i class="fa-solid fa-lock"></i>Contraseña <span class="required">*</span></label>
+        {{ registro_form.password }}
+        <small id="passwordHelpBlock" class="form-text text-muted">
+            <span class="text-danger">{{ registro_form.password.errors }}</span>
+        </small>
+    </div>
+</div>
+
+
+<br>
+
+{% comment %} Aqui termina los campos por usuario Familiar {% endcomment %}
+
+
+<button type="submit" class="btn btn-primary btn-block mx-auto" registro-button>Crear Cuenta</button>
+
+</div>
+
+</form>
+</div>
+</div>
+</div>
+</div>
+</body>
+
+<script src="{% static 'app/js/selector_ubicacion.js' %}"></script>
+<script src="{% static 'app/js/registro_final.js' %}"></script>
+
+
+</body>
+{% endblock %}

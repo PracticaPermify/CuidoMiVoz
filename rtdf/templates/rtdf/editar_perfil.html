@@ -1,0 +1,846 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/editar_perfil.css' %}"/>
+
+<body class="is-preload">
+    <div class="global-container">
+        <div class="card general-form">
+            <div class="card-body">
+
+                <div class="mb-4 mt-3">
+                    <a class="btn btn-outline-primary" href="{% url 'perfil' request.user.id_usuario %}"><i class="fa-solid fa-arrow-left"></i> Volver a mi perfil</a>
+                </div>
+
+                <h1 class="card-title text-center">Editar Perfil</h1>
+
+                    
+                <div class="card-text">
+
+                    {% if error_message %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error_message }}
+                    </div>
+                    {% endif %}
+                    <p class="required-message">
+                        <span class="asterisk">* </span> Campos requeridos
+                    </p>
+
+{% if profesional_salud %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-row error">
+            <div class="form-group col-md-12 col-lg-12">
+            {{ form.non_field_errors }}
+            </div>
+        </div>
+        <br>
+
+        <div class="form-row">
+            <div class="form-group col-md-12 col-lg-6">
+                <label for="{{ form.primer_nombre.id_for_label }}"><i class="fas fa-user"></i>Primer nombre <span class="required">*</span></label>
+                {{ form.primer_nombre }}
+                {{ form.primer_nombre.errors }}
+            </div>
+        
+            <div class="form-group col-md-12 col-lg-6">
+                <label for="{{ form.segundo_nombre.id_for_label }}"><i class="fas fa-user"></i>Segundo nombre</label>
+                {{ form.segundo_nombre }}
+                {{ form.segundo_nombre.errors }}
+            </div>
+        </div>
+    
+        <div class="form-row">
+            <div class="form-group col-md-12 col-lg-6">
+                <label for="{{ form.ap_paterno.id_for_label }}"><i class="fas fa-user"></i>Apellido paterno <span class="required">*</span></label>
+                {{ form.ap_paterno }}
+                {{ form.ap_paterno.errors }}
+            </div>
+    
+            <div class="form-group col-md-12 col-lg-6">
+                <label for="{{ form.ap_materno.id_for_label }}"><i class="fas fa-user"></i>Apellido materno</label>
+                {{ form.ap_materno }}
+                {{ form.ap_materno.errors }}
+            </div>
+        </div>
+    
+        <div class="form-row">
+        <div class="form-group col-md-12 col-lg-6">
+            <label for="{{ form.fecha_nacimiento.id_for_label }}"><i class="fas fa-calendar"></i>Fecha de nacimiento <span class="required">*</span></label> <br>
+            <input class="campo_fecha" type="date" name="{{ form.fecha_nacimiento.name }}" value="{% if form.fecha_nacimiento.value|date %}{{ form.fecha_nacimiento.value|date:'Y-m-d' }}{% else %}{{ form.fecha_nacimiento.value }}{% endif %}">
+            {{ form.fecha_nacimiento.errors }}
+        </div>
+    
+        <div class="form-group col-md-12 col-lg-6">
+            <label for="{{ form.numero_telefonico.id_for_label }}"><i class="fas fa-phone"></i>Numero de contacto <span class="required">*</span></label>
+            {{ form.numero_telefonico }}
+            {{ form.numero_telefonico.errors }}
+        </div>
+    </div>
+
+
+    <div class="form-row">
+        <div class="form-group col-md-12 col-lg-6">
+            <label for="{{ form.id_comuna.id_for_label }}"><i class="fa-solid fa-location-dot"></i>Comuna <span class="required">*</span></label>
+            {{ form.id_comuna }}
+            {{ form.id_comuna.errors }}
+        </div>
+    </div>
+
+
+        <dialog id="modal2">
+
+            <h2 class="hh2">Selecciona la comuna</h2>
+            <br>
+            <div class="form-row">
+                <div class="form-group col">
+                    <label for="region_modal2"><i class="fa-solid fa-location-dot"></i>Región</label>
+                    <select id="region_modal2" name="region_modal2">
+                        <option value="" selected>Selecciona una región</option>
+                        {% for region in regiones %}
+                            <option value="{{ region.id_region }}">{{ region.region }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>  
+    
+            <div class="form-row">
+                <div class="form-group col">
+                    <div class="form-group">
+                        <label for="provincia_modal2"><i class="fa-solid fa-location-dot"></i>Provincia</label>
+                        <select id="provincia_modal2" name="provincia_modal2" disabled>
+                            <option value="" selected>Selecciona una provincia</option>
+                        </select>
+                    </div>
+                </div>  
+            </div>
+    
+            <div class="form-row">
+                <div class="form-group col">
+                    <div class="form-group">
+                        <label for="comuna_modal2"><i class="fa-solid fa-location-dot"></i>Comuna</label>
+                        <select id="comuna_modal2" name="id_comuna" disabled>
+                            <option value="" selected>Selecciona una comuna</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+    
+            <button id="close-modal2" class="btn mx-auto btn-block mt-3 boton-moda">Cerrar</button>
+        </dialog>
+
+        <div class="form-row">
+            <div class="form-group col-md-12 col-lg-6">
+                <label for="{{ form.titulo_profesional.id_for_label }}"><i class="fa-solid fa-graduation-cap"></i>Título Profesional <span class="required">*</span> </label>
+                {{ form.titulo_profesional }}
+                {{ form.titulo_profesional.errors }}
+            </div>
+
+            <div class="form-group col-md-12 col-lg-6">
+                <label for="{{ form.id_institucion.id_for_label }}"><i class="fa-solid fa-building-columns"></i>Institución <span class="required">*</span> </label>
+                {{ form.id_institucion }}
+                {{ form.id_institucion.errors }}
+            </div>
+        </div>
+
+        <dialog id="modal">
+            <h2 class="hh2">Selecciona la institución</h2>
+            <br>
+            <div class="form-row">
+                <div class="form-group col">
+                    <label for="region_modal">Región</label>
+                    <select id="region_modal" name="region_modal">
+                        <option value="" selected>Selecciona una región</option>
+                        {% for region in regiones %}
+                            <option value="{{ region.id_region }}">{{ region.region }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group col">
+                    <label for="provincia_modal">Provincia</label>
+                    <select id="provincia_modal" name="provincia_modal" disabled>
+                        <option value="" selected>Selecciona una provincia</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group col">
+                    <label for="comuna_modal">Comuna</label>
+                    <select id="comuna_modal" name="comuna_modal" disabled>
+                        <option value="" selected>Selecciona una comuna</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group col">
+                    <label for="id_institucion_modal">Institución</label>
+                    <select id="id_institucion_modal" name="id_institucion_modal" disabled>
+                        <option value="" selected>Selecciona una institución</option>
+                    </select>
+                </div>
+            </div>
+            <button id="close-modal" class="btn mx-auto btn-block mt-4 boton-moda">Cerrar</button>
+        </dialog>
+
+        <div class="form-row">
+            <div class="form-group col-md-12 col-lg-12">
+                <label for="{{ form.password.id_for_label }}"><i class="fa-solid fa-lock"></i>Nueva Contraseña</label>
+                {{ form.password }}
+                {{ form.password.errors }}
+            </div>
+        </div>
+    
+        <div class="form-row">
+            <div class="form-group col-md-12 col-lg-12" id="confirmPasswordDiv" style="display: none;">
+                <label for="{{ form.confirm_password.id_for_label }}"><i class="fa-solid fa-lock"></i>Confirmar Nueva Contraseña <span class="required">*</span></label>
+                <input type="password" name="{{ form.confirm_password.name }}">
+                {{ form.confirm_password.errors }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-12 col-lg-12" id="originalPasswordDiv" style="display: none;">
+                <label for="{{ form.original_password.id_for_label }}"><i class="fa-solid fa-lock"></i>Contraseña Actual <span class="required">*</span></label>
+                <input type="password" name="{{ form.original_password.name }}">
+                {{ form.original_password.errors }}
+            </div>
+        </div>
+
+        <!-- <input type="submit" class="btn btn-primary" value="Guardar Cambios"> -->
+        <button type="submit" class="btn btn-primary btn-block mx-auto mt-md-4 mt-3">Guardar Cambios</button>
+
+{% endif %} 
+
+
+{% if paciente %}
+
+<form method="post">
+    {% csrf_token %}
+    <div class="form-row error">
+        <div class="form-group col-md-12 col-lg-12">
+        {{ form.non_field_errors }}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12 col-lg-6">
+            <label for="{{ form.primer_nombre.id_for_label }}"><i class="fas fa-user"></i>Primer nombre <span class="required">*</span></label>
+            {{ form.primer_nombre }}
+            {{ form.primer_nombre.errors }}
+        </div>
+    
+        <div class="form-group col-md-12 col-lg-6">
+            <label for="{{ form.segundo_nombre.id_for_label }}"><i class="fas fa-user"></i>Segundo nombre</label>
+            {{ form.segundo_nombre }}
+            {{ form.segundo_nombre.errors }}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12 col-lg-6">
+            <label for="{{ form.ap_paterno.id_for_label }}"><i class="fas fa-user"></i>Apellido paterno <span class="required">*</span></label>
+            {{ form.ap_paterno }}
+            {{ form.ap_paterno.errors }}
+        </div>
+
+        <div class="form-group col-md-12 col-lg-6">
+            <label for="{{ form.ap_materno.id_for_label }}"><i class="fas fa-user"></i>Apellido materno</label>
+            {{ form.ap_materno }}
+            {{ form.ap_materno.errors }}
+        </div>
+    </div>
+
+    <div class="form-row">
+    <div class="form-group col-md-12 col-lg-6">
+        <label for="{{ form.fecha_nacimiento.id_for_label }}"><i class="fas fa-calendar"></i>Fecha de nacimiento <span class="required">*</span></label> <br>
+        <input class="campo_fecha" type="date" name="{{ form.fecha_nacimiento.name }}" value="{% if form.fecha_nacimiento.value|date %}{{ form.fecha_nacimiento.value|date:'Y-m-d' }}{% else %}{{ form.fecha_nacimiento.value }}{% endif %}">
+        {{ form.fecha_nacimiento.errors }}
+    </div>
+
+    <div class="form-group col-md-12 col-lg-6">
+        <label for="{{ form.numero_telefonico.id_for_label }}"><i class="fas fa-phone"></i>Numero de contacto <span class="required">*</span></label>
+        {{ form.numero_telefonico }}
+        {{ form.numero_telefonico.errors }}
+    </div>
+</div>
+
+<div class="form-row">
+        <div class="form-group col-md-12 col-lg-6">
+            <label for="{{ form.id_comuna.id_for_label }}"><i class="fa-solid fa-location-dot"></i>Comuna <span class="required">*</span></label>
+            {{ form.id_comuna }}
+            {{ form.id_comuna.errors }}
+        </div>
+
+
+
+        <div class="form-group col-md-12 col-lg-6">
+
+            <label for="{{ form.telegram.id_for_label }}"><i class="fa-brands fa-telegram"></i>Telegram <span class="required">*</span></label>
+            {{ form.telegram }}
+            {{ form.telegram.errors }}
+        </div>
+</div>
+
+    <dialog id="modal2">
+
+        <h2 class="hh2">Selecciona la comuna</h2>
+        <br>
+        <div class="form-row">
+            <div class="form-group col">
+                <label for="region_modal2"><i class="fa-solid fa-location-dot"></i>Región</label>
+                <select id="region_modal2" name="region_modal2">
+                    <option value="" selected>Selecciona una región</option>
+                    {% for region in regiones %}
+                        <option value="{{ region.id_region }}">{{ region.region }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>  
+
+        <div class="form-row">
+            <div class="form-group col">
+                <div class="form-group">
+                    <label for="provincia_modal2"><i class="fa-solid fa-location-dot"></i>Provincia</label>
+                    <select id="provincia_modal2" name="provincia_modal2" disabled>
+                        <option value="" selected>Selecciona una provincia</option>
+                    </select>
+                </div>
+            </div>  
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col">
+                <div class="form-group">
+                    <label for="comuna_modal2"><i class="fa-solid fa-location-dot"></i>Comuna</label>
+                    <select id="comuna_modal2" name="id_comuna" disabled>
+                        <option value="" selected>Selecciona una comuna</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button id="close-modal2" class="btn mx-auto btn-block mt-3 boton-moda">Cerrar</button>
+    </dialog>
+
+
+    <div class="form-row">
+        <div class="form-group col-md-12 col-lg-6">
+            <label for="{{ form.fk_tipo_hipertension.id_for_label }}"><i class="fa-solid fa-file-medical"></i>Tipo de Hipertensión <span class="required">*</span></label>
+            {{ form.fk_tipo_hipertension }}
+            {{ form.fk_tipo_hipertension.errors }}
+        </div>
+
+
+        <div class="form-group col-md-12 col-lg-6">
+            <label for="{{ form.fk_tipo_diabetes.id_for_label }}"><i class="fa-solid fa-file-medical"></i>Tipo de Diabetes <span class="required">*</span></label>
+            {{ form.fk_tipo_diabetes }}
+            {{ form.fk_tipo_diabetes.errors }}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12 col-lg-12">
+            <label for="{{ form.password.id_for_label }}"><i class="fa-solid fa-lock"></i>Nueva Contraseña</label>
+            {{ form.password }}
+            {{ form.password.errors }}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12 col-lg-12" id="confirmPasswordDiv" style="display: none;">
+            <label for="{{ form.confirm_password.id_for_label }}"><i class="fa-solid fa-lock"></i>Confirmar Nueva Contraseña <span class="required">*</span></label>
+            <input type="password" name="{{ form.confirm_password.name }}">
+            {{ form.confirm_password.errors }}
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-12 col-lg-12" id="originalPasswordDiv" style="display: none;">
+            <label for="{{ form.original_password.id_for_label }}"><i class="fa-solid fa-lock"></i>Contraseña Actual <span class="required">*</span></label>
+            <input type="password" name="{{ form.original_password.name }}">
+            {{ form.original_password.errors }}
+        </div>
+    </div>
+
+    <!-- <input type="submit" class="btn btn-primary" value="Guardar Cambios"> -->
+    <button type="submit" class="btn btn-primary btn-block mx-auto mt-md-4 mt-3">Guardar Cambios</button>
+</form>
+
+{% endif %} 
+
+{% if familiar %}
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <label for="{{ form.primer_nombre.id_for_label }}"><span class="required">*</span> Primer Nombre:</label>
+    {{ form.primer_nombre }}
+    {{ form.primer_nombre.errors }}
+    <br>
+
+    <label for="{{ form.segundo_nombre.id_for_label }}">Segundo Nombre:</label>
+    {{ form.segundo_nombre }}
+    {{ form.segundo_nombre.errors }}
+    <br>
+
+    <label for="{{ form.ap_paterno.id_for_label }}"><span class="required">*</span> Apellido Paterno:</label>
+    {{ form.ap_paterno }}
+    {{ form.ap_paterno.errors }}
+    <br>
+
+    <label for="{{ form.ap_materno.id_for_label }}">Apellido Materno:</label>
+    {{ form.ap_materno }}
+    {{ form.ap_materno.errors }}
+    <br>
+
+    <label for="{{ form.fecha_nacimiento.id_for_label }}"><span class="required">*</span> Fecha de Nacimiento:</label> <br>
+    <input type="date" name="{{ form.fecha_nacimiento.name }}" value="{% if form.fecha_nacimiento.value|date %}{{ form.fecha_nacimiento.value|date:'Y-m-d' }}{% else %}{{ form.fecha_nacimiento.value }}{% endif %}">
+    {{ form.fecha_nacimiento.errors }}
+    <br>
+    <br>
+
+    <label for="{{ form.numero_telefonico.id_for_label }}"><span class="required">*</span> Número Telefónico:</label>
+    {{ form.numero_telefonico }}
+    {{ form.numero_telefonico.errors }}
+    <br>
+
+    <label for="{{ form.id_comuna.id_for_label }}"><span class="required">*</span> Comuna:</label>
+    {{ form.id_comuna }}
+    {{ form.id_comuna.errors }}
+
+    <dialog id="modal2">
+
+        <h2>Selecciona la comuna:</h2>
+        <br>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="region_modal2">Región</label>
+                <select id="region_modal2" name="region_modal2">
+                    <option value="" selected>Selecciona una región</option>
+                    {% for region in regiones %}
+                        <option value="{{ region.id_region }}">{{ region.region }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>  
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="provincia_modal2">Provincia</label>
+                <select id="provincia_modal2" name="provincia_modal2" disabled>
+                    <option value="" selected>Selecciona una provincia</option>
+                </select>
+            </div>
+        </div>  
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="comuna_modal2">Comuna</label>
+                <select id="comuna_modal2" name="id_comuna" disabled>
+                    <option value="" selected>Selecciona una comuna</option>
+                </select>
+            </div>
+        </div>
+        <button id="close-modal2">Cerrar</button>
+    </dialog>
+
+    <br>
+
+    <label for="{{ form.password.id_for_label }}">Nueva Contraseña:</label>
+    {{ form.password }}
+    {{ form.password.errors }}
+    <br>
+
+    <div id="confirmPasswordDiv" style="display: none;">
+        <label for="{{ form.confirm_password.id_for_label }}">Confirmar Nueva Contraseña:</label>
+        <input type="password" name="{{ form.confirm_password.name }}">
+        {{ form.confirm_password.errors }}
+        <br>
+    </div>
+    
+    <div id="originalPasswordDiv" style="display: none;">
+        <label for="{{ form.original_password.id_for_label }}">Contraseña Original:</label>
+        <input type="password" name="{{ form.original_password.name }}">
+        {{ form.original_password.errors }}
+        <br>
+    </div>
+
+    <!-- <input type="submit" class="btn btn-primary" value="Guardar Cambios"> -->
+    <button type="submit" class="btn btn-primary btn-block">Guardar Cambios</button>
+</form>
+
+{% endif %} 
+
+
+{% if admin %}
+
+<form method="post">
+    {% csrf_token %}
+    <div class="form-row error">
+        <div class="form-group col-md-12 col-lg-12">
+        {{ form.non_field_errors }}
+        </div>
+    </div>
+    
+    <br>
+
+    <div class="form-row">
+        <div class="form-group col-md-12 col-lg-6">
+            <label for="{{ form.primer_nombre.id_for_label }}"><i class="fas fa-user"></i>Primer nombre <span class="required">*</span></label>
+            {{ form.primer_nombre }}
+            {{ form.primer_nombre.errors }}
+        </div>
+    
+        <div class="form-group col-md-12 col-lg-6">
+            <label for="{{ form.segundo_nombre.id_for_label }}"><i class="fas fa-user"></i>Segundo nombre</label>
+            {{ form.segundo_nombre }}
+            {{ form.segundo_nombre.errors }}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12 col-lg-6">
+            <label for="{{ form.ap_paterno.id_for_label }}"><i class="fas fa-user"></i>Apellido paterno <span class="required">*</span></label>
+            {{ form.ap_paterno }}
+            {{ form.ap_paterno.errors }}
+        </div>
+
+        <div class="form-group col-md-12 col-lg-6">
+            <label for="{{ form.ap_materno.id_for_label }}"><i class="fas fa-user"></i>Apellido materno</label>
+            {{ form.ap_materno }}
+            {{ form.ap_materno.errors }}
+        </div>
+    </div>
+
+    <div class="form-row">
+    <div class="form-group col-md-12 col-lg-6">
+        <label for="{{ form.fecha_nacimiento.id_for_label }}"><i class="fas fa-calendar"></i>Fecha de nacimiento <span class="required">*</span></label> <br>
+        <input class="campo_fecha" type="date" name="{{ form.fecha_nacimiento.name }}" value="{% if form.fecha_nacimiento.value|date %}{{ form.fecha_nacimiento.value|date:'Y-m-d' }}{% else %}{{ form.fecha_nacimiento.value }}{% endif %}">
+        {{ form.fecha_nacimiento.errors }}
+    </div>
+
+    <div class="form-group col-md-12 col-lg-6">
+        <label for="{{ form.numero_telefonico.id_for_label }}"><i class="fas fa-phone"></i>Numero de contacto <span class="required">*</span></label>
+        {{ form.numero_telefonico }}
+        {{ form.numero_telefonico.errors }}
+    </div>
+</div>
+
+<div class="form-row">
+    <div class="form-group col-md-12 col-lg-6">
+        <label for="{{ form.id_comuna.id_for_label }}"><i class="fa-solid fa-location-dot"></i>Comuna <span class="required">*</span></label>
+        {{ form.id_comuna }}
+        {{ form.id_comuna.errors }}
+    </div>
+</div>
+
+    <dialog id="modal2">
+
+        <h2 class="hh2">Selecciona la comuna</h2>
+        <br>
+        <div class="form-row">
+            <div class="form-group col">
+                <label for="region_modal2"><i class="fa-solid fa-location-dot"></i>Región</label>
+                <select id="region_modal2" name="region_modal2">
+                    <option value="" selected>Selecciona una región</option>
+                    {% for region in regiones %}
+                        <option value="{{ region.id_region }}">{{ region.region }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>  
+
+        <div class="form-row">
+            <div class="form-group col">
+                <div class="form-group">
+                    <label for="provincia_modal2"><i class="fa-solid fa-location-dot"></i>Provincia</label>
+                    <select id="provincia_modal2" name="provincia_modal2" disabled>
+                        <option value="" selected>Selecciona una provincia</option>
+                    </select>
+                </div>
+            </div>  
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col">
+                <div class="form-group">
+                    <label for="comuna_modal2"><i class="fa-solid fa-location-dot"></i>Comuna</label>
+                    <select id="comuna_modal2" name="id_comuna" disabled>
+                        <option value="" selected>Selecciona una comuna</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button id="close-modal2" class="btn mx-auto btn-block mt-3 boton-moda">Cerrar</button>
+    </dialog>
+
+    <div class="form-row">
+        <div class="form-group col-md-12 col-lg-12">
+            <label for="{{ form.password.id_for_label }}"><i class="fa-solid fa-lock"></i>Nueva Contraseña</label>
+            {{ form.password }}
+            {{ form.password.errors }}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12 col-lg-12" id="confirmPasswordDiv" style="display: none;">
+            <label for="{{ form.confirm_password.id_for_label }}"><i class="fa-solid fa-lock"></i>Confirmar Nueva Contraseña <span class="required">*</span></label>
+            <input type="password" name="{{ form.confirm_password.name }}">
+            {{ form.confirm_password.errors }}
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-12 col-lg-12" id="originalPasswordDiv" style="display: none;">
+            <label for="{{ form.original_password.id_for_label }}"><i class="fa-solid fa-lock"></i>Contraseña Actual <span class="required">*</span></label>
+            <input type="password" name="{{ form.original_password.name }}">
+            {{ form.original_password.errors }}
+        </div>
+    </div>
+
+    <!-- <input type="submit" class="btn btn-primary" value="Guardar Cambios"> -->
+    <button type="submit" class="btn btn-primary btn-block mx-auto mt-md-4 mt-3">Guardar Cambios</button>
+</form>
+</div>
+</div>
+</div>
+
+{% endif %} 
+
+
+
+<script src="{% static 'app/js/editar_perfil.js' %}"></script>
+ 
+    
+
+<script>
+    document.getElementById("{{ form.password.id_for_label }}").addEventListener("input", function() {
+    var newPassword = this.value;
+    var confirmPasswordDiv = document.getElementById("confirmPasswordDiv");
+    var originalPasswordDiv = document.getElementById("originalPasswordDiv");
+
+    if (newPassword.trim() === "") {
+        confirmPasswordDiv.style.display = "none";
+        originalPasswordDiv.style.display = "none";
+    } else {
+        confirmPasswordDiv.style.display = "block";
+        originalPasswordDiv.style.display = "block";
+    }
+});
+
+
+document.getElementById("close-modal2").addEventListener("click", (event) => {
+        event.preventDefault(); // Prevenir la redirección
+        modal.close(); // Cerrar la ventana modal
+    });
+
+</script>
+
+{% if profesional_salud %}
+<script>   
+    document.getElementById("close-modal").addEventListener("click", (event) => {
+        event.preventDefault(); 
+        modal.close(); 
+    });
+</script>
+{% endif %} 
+
+
+
+<!-- VENTANA MODAL PARA COMUNA -->
+<script>
+    const modal2 = document.getElementById("modal2");
+    const field2 = document.getElementById("{{ form.id_comuna.auto_id }}");
+    
+    field2.addEventListener("click", () => {
+        modal2.showModal();
+    });
+
+    const regionModal2 = document.getElementById("region_modal2");
+    const provinciaModal2 = document.getElementById("provincia_modal2");
+    const comunaModal2 = document.getElementById("comuna_modal2");
+    const ComunaPrincipal2 = document.getElementById("{{ form.id_comuna.auto_id }}");
+    const valorInicialComuna2 = ComunaPrincipal2.value;
+
+    document.getElementById("close-modal2").addEventListener("click", function() {
+        // Copia el valor seleccionado en la ventana modal al campo "Institución" del formulario principal 
+        
+
+        if (comunaModal2.value === "") {
+            comunaModal2.value = valorInicialComuna2;
+            } else {ComunaPrincipal2.value = comunaModal2.value;}  
+
+        document.getElementById("modal2").close();
+    });
+
+    regionModal2.addEventListener("change", function() {
+        const regionId = this.value;
+        provinciaModal2.removeAttribute('disabled');
+        comunaModal2.removeAttribute('disabled');
+
+        provinciaModal2.innerHTML = '<option value="" selected>Selecciona una provincia</option>';
+        comunaModal2.innerHTML = '<option value="" selected>Selecciona una comuna</option>';
+
+        if (regionId) {
+
+            fetch(`/obtener_provincias/?region_id=${regionId}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Datos de provincias obtenidos:", data);
+                    data.forEach(provincia => {
+                        const option = document.createElement('option');
+                        option.value = provincia.id_provincia;
+                        option.textContent = provincia.provincia;
+                        provinciaModal2.appendChild(option);
+                    });
+
+                    if (data.length > 0) {
+                        const primeraProvincia = data[0].id_provincia;
+                        cargarComunasPorProvincia2(primeraProvincia);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    });
+
+    provinciaModal2.addEventListener("change", function() {
+        const provinciaId = this.value;
+        console.log("Cambio de provincia seleccionada a:", provinciaId);
+        cargarComunasPorProvincia2(provinciaId);
+    });
+
+    function cargarComunasPorProvincia2(provinciaId) {
+        console.log("Cargando comunas para provincia con ID:", provinciaId);
+        comunaModal2.innerHTML = '<option value="" selected>Selecciona una comuna</option>';
+
+        if (provinciaId) {
+ 
+            fetch(`/obtener_comunas/?provincia_id=${provinciaId}`)
+            
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(comuna => {
+                        const option = document.createElement('option');
+                        option.value = comuna.id_comuna;
+                        option.textContent = comuna.comuna;
+                        comunaModal2.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }
+    </script>
+<!-- FIN VENTANA MODAL PARA COMUNA -->
+
+
+<!-- VENTANA MODAL PARA INSTITUCION -->
+{% if profesional_salud %}
+<script>
+    const modal = document.getElementById("modal");
+    const field = document.getElementById("{{ form.id_institucion.auto_id }}");
+    
+    field.addEventListener("click", () => {
+        modal.showModal();
+    });
+
+    const regionModal = document.getElementById("region_modal");
+    const provinciaModal = document.getElementById("provincia_modal");
+    const comunaModal = document.getElementById("comuna_modal");
+    const institucionModal = document.getElementById("id_institucion_modal");
+    const institucionPrincipal = document.getElementById("{{ form.id_institucion.auto_id }}");
+    const valorInicialInstitucion = institucionPrincipal.value;
+
+    document.getElementById("close-modal").addEventListener("click", function() {      
+
+        if (institucionModal.value === "") {
+            institucionModal.value = valorInicialInstitucion;
+            } else {institucionPrincipal.value = institucionModal.value;}  
+
+        document.getElementById("modal").close();
+    });
+
+    regionModal.addEventListener("change", function() {
+        const regionId = this.value;
+        provinciaModal.removeAttribute('disabled');
+        comunaModal.removeAttribute('disabled');
+        institucionModal.removeAttribute('disabled');
+
+        provinciaModal.innerHTML = '<option value="" selected>Selecciona una provincia</option>';
+        comunaModal.innerHTML = '<option value="" selected>Selecciona una comuna</option>';
+        institucionModal.innerHTML = '<option value="" selected>Selecciona una institución</option>';
+
+        if (regionId) {
+            fetch(`/obtener_provincias/?region_id=${regionId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(provincia => {
+                        const option = document.createElement('option');
+                        option.value = provincia.id_provincia;
+                        option.textContent = provincia.provincia;
+                        provinciaModal.appendChild(option);
+                    });
+
+                    if (data.length > 0) {
+                        const primeraProvincia = data[0].id_provincia;
+                        cargarComunasPorProvincia(primeraProvincia);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    });
+
+    provinciaModal.addEventListener("change", function() {
+        const provinciaId = this.value;
+        cargarComunasPorProvincia(provinciaId);
+    });
+
+    function cargarComunasPorProvincia(provinciaId) {
+        comunaModal.innerHTML = '<option value="" selected>Selecciona una comuna</option>';
+
+        if (provinciaId) {
+            fetch(`/obtener_comunas/?provincia_id=${provinciaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(comuna => {
+                        const option = document.createElement('option');
+                        option.value = comuna.id_comuna;
+                        option.textContent = comuna.comuna;
+                        comunaModal.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }
+
+    comunaModal.addEventListener("change", function() {
+        const comunaId = this.value;
+
+        institucionModal.innerHTML = '<option value="" selected>Selecciona una institución</option>';
+
+        if (comunaId) {
+            fetch(`/obtener_instituciones/?comuna_id=${comunaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(institucion => {
+                        const option = document.createElement('option');
+                        option.value = institucion.id_institucion;
+                        option.textContent = institucion.nombre_institucion;
+                        institucionModal.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    });
+    
+    </script>
+{% endif %}
+<!-- FIN VENTANA MODAL PARA INSTITUCION -->
+
+{% endblock %}

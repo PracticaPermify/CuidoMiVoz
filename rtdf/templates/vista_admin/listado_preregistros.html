@@ -1,0 +1,149 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/tablas_titulo.css' %}"/>
+
+<body class="is-preload">
+    <div class="global-container">
+        <div class="card login-form">
+            <div class="card-body">
+            </br>
+                <h1 class="card-title text-center">Listado de pre-registros</h1>
+            </br>
+                <h2 class="card-title">Pre-registros por validar</h2>
+
+
+                <div class="card-text">
+                    <table class="table">
+                        <thead class="thead-dark">
+                          <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Nombre completo</th>
+                            <th scope="col">Área</th>
+                            <th scope="col">Fecha de nacimiento</th>
+                            <th scope="col">Institución</th>
+                            <th scope="col">Ver</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            {% for pre_registrado in pre_registrados %}
+                            <th scope="row">{{ pre_registrado.id_pre_registro }}</th>
+                            <th>
+                            <a href="">
+                            {{ pre_registrado.primer_nombre }} {{ pre_registrado.segundo_nombre }} 
+                            {{ pre_registrado.ap_paterno }} {{ pre_registrado.ap_materno }}
+                            </a>
+                            </th>
+                            <td>{{ pre_registrado.id_tp_usuario }}</td>
+                            <td>{{ pre_registrado.fecha_nacimiento }}</td>
+                            <td>{{ pre_registrado.id_institucion }}</td>
+                            <td><a href="{% url 'detalle_preregistro' pre_registrado.id_pre_registro %}" class="btn btn-primary">Detalles</a></td>
+                          </tr>
+                          {% empty %}
+                            <tr>
+                              <td colspan="6">No hay pre-registros por validar.</td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>    
+
+                      <!-- Paginator primera tabla -->
+
+                        <span class="step-links">
+                            {% if pre_registrados.has_previous %}
+                                <a href="?page=1">&laquo; Primero</a>
+                                <a href="?page={{ pre_registrados.previous_page_number }}">Anterior</a>
+                            {% endif %}
+                            
+                            <span class="current-page">
+                                Pagina {{ pre_registrados.number }} de {{ pre_registrados.paginator.num_pages }}.
+                            </span>
+                            
+                            {% if pre_registrados.has_next %}
+                                <a href="?page={{ pre_registrados.next_page_number }}">Siguiente</a>
+                                <a href="?page={{ pre_registrados.paginator.num_pages }}">Ultimo &raquo;</a>
+                            {% endif %}
+                        </span>
+
+                      </br>
+
+                
+
+                      <!-- Fin paginator 1 -->
+
+
+
+                    </br>
+                  <h2 class="card-title">Pre-registros validados</h2>
+                    <div class="card-text">
+                        <table class="table">
+                            <thead class="thead-dark">
+                              <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Nombre completo</th>
+                                <th scope="col">Área</th>
+                                <th scope="col">Fecha de nacimiento</th>
+                                <th scope="col">Institución</th>
+                                <th scope="col">Ver</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                {% for validado in validados %}
+                                <th scope="row">{{ validado.id_pre_registro }}</th>
+                                <th>
+                                <a href="">
+                                {{ validado.primer_nombre }} {{ validado.segundo_nombre }} 
+                                {{ validado.ap_paterno }} {{ validado.ap_materno }}
+                                </a>
+                                </th>
+                                <td>{{ validado.id_tp_usuario }}</td>
+                                <td>{{ validado.fecha_nacimiento }}</td>
+                                <td>{{ validado.id_institucion }}</td>
+                                <td><a href="{% url 'detalle_preregistro' validado.id_pre_registro %}" class="btn btn-primary">Detalles</a></td>
+                              </tr>
+                              {% empty %}
+                                <tr>
+                                  <td colspan="6">Sin registros.</td>
+                              </tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>    
+
+                          <!-- Paginator 2 -->
+
+                          <span class="step-links">
+                            {% if validados.has_previous %}
+                                <a href="?page=1">&laquo; Primero</a>
+                                <a href="?page={{ validados.previous_page_number }}">Anterior</a>
+                            {% endif %}
+                            
+                            <span class="current-page">
+                              Pagina {{ validados.number }} de {{ validados.paginator.num_pages }}.
+                            </span>
+                            
+                            {% if validados.has_next %}
+                                <a href="?page={{ validados.next_page_number }}">Siguiente</a>
+                                <a href="?page={{ validados.paginator.num_pages }}">Ultimo &raquo;</a>
+                            {% endif %}
+                        </span>
+
+                          <!-- Fin paginator 2 -->
+
+
+                </div>
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</body>
+
+{% endblock %}

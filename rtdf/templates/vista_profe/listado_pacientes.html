@@ -1,0 +1,156 @@
+{% extends 'rtdf/base.html' %}
+
+    {% block content %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/css/tablas_titulo.css' %}"/>
+
+
+    <body class="fondo-negro">
+        <header class="row text-left titulo_header">
+            <div class="col-lg-8">
+                <h1 class="titulo_index">
+                    
+                {% if tipo_usuario == 'Fonoaudiologo' %}   
+                    Fonoaudiólogo
+                {% else %}
+                    {{user.id_tp_usuario}} 
+                {% endif %}    
+
+                <span class="span_title">{{ user.primer_nombre }} {{ user.ap_paterno }}</span></h1>
+                <p class="texto_header">Recursos Terapéuticos para Fonoaudiólogos</p>
+            </div>
+            <div class="col-lg-4">
+                <h1 id="logo"><a class="w-50 float-right" href="{% url 'index' %}">RTDF</a></h1>
+            </div>
+        </header>
+        
+
+
+            <section id="tabla_fonos">
+
+                <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+                    <h1 class=" display-5 fw-bolder sub_titulo">Listado de  <span class="span_title"> pacientes </span></h1>
+                    <p class="texto_pauta">Aquí se enumeran todos tus pacientes. Para obtener más información, haz clic en el nombre en azul del paciente:</p>
+                </div>
+
+                <div class="col-lg-12 col-xl-12 col-xxl-12">
+                    {% if tipo_usuario %}
+                    {% if tipo_usuario == 'Fonoaudiologo' %}
+                        <!-- Listado de pacientes del fonoaudiologo-->
+                        <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Correo electronico</th>
+                                <th scope="col">Numero de contacto</th>
+                                <th scope="col">Telegram</th>
+                                <!-- <th scope="col">Fecha nacimiento</th> -->
+                                <th scope="col">Tipo diabetes</th>
+                                <th scope="col">Tipo Hipertensión</th>
+                                {% comment %} <th scope="col">Desvincular paciente</th> {% endcomment %}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            
+                                {% for paciente in pacientes %}
+                                <tr>
+                                    <td>{{ paciente.id_paciente }}</td>
+                                    <th><a href="{% url 'detalle_prof_paci' paciente.id_usuario %}">
+                                        {{ paciente.primer_nombre }} {{ paciente.segundo_nombre }}
+                                        {{ paciente.ap_paterno }} {{ paciente.ap_materno }}
+                                        </a></th>
+                                    <td>{{ paciente.email }}</td>
+                                    <td>{{ paciente.numero_telefonico }}</td>
+                                    <td>{{ paciente.telegram }}</td>
+                                    <!-- <td>{{ paciente.fecha_nacimiento }}</td> -->
+                                    <td>{{ paciente.tipo_diabetes }}</td>
+                                    <td>{{ paciente.tipo_hipertension }}</td>
+                                    {% comment %} <td>
+                                        <a href="{% url 'desvincular_paciente' paciente.id_paciente %}" class="btn btn-danger">Desvincular</a>
+                                    </td> {% endcomment %}
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="2">No hay pacientes vinculados.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                        {% elif tipo_usuario == 'Neurologo' %}
+                        <h2><p>Pacientes del neurologo <b>{{ user.primer_nombre }} {{ user.ap_paterno }}</b></p></h2>
+                        <p>
+                            Listado de mis pacientes:
+                        </p>
+                        <!-- Listado de pacientes del fonoaudiologo-->
+                        <table class="table">
+                            <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Correo electronico</th>
+                                <th scope="col">Numero de contacto</th>
+                                <th scope="col">Telegram</th>
+                                <!-- <th scope="col">Fecha nacimiento</th> -->
+                                <th scope="col">Tipo diabetes</th>
+                                <th scope="col">Tipo Hipertensión</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            
+                                {% for paciente in pacientes %}
+                                <tr>
+                                    <td>{{ paciente.id_paciente }}</td>
+                                    <td><a href="{% url 'detalle_prof_paci' paciente.id_usuario %}">
+                                        {{ paciente.primer_nombre }} {{ paciente.ap_paterno }}
+                                        </a></td>
+                                    <td>{{ paciente.email }}</td>
+                                    <td>{{ paciente.numero_telefonico }}</td>
+                                    <td>{{ paciente.telegram }}</td>
+                                    <!-- <td>{{ paciente.fecha_nacimiento }}</td> -->
+                                    <td>{{ paciente.tipo_diabetes }}</td>
+                                    <td>{{ paciente.tipo_hipertension }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="2">No hay pacientes vinculados.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    {% endif %}
+                {% else %}
+                <article class="box post post-excerpt">
+                    <header>
+                        <h2><a href="#">Lorem ipsum dolor sit amet</a></h2>
+                        <p>Feugiat interdum sed commodo ipsum consequat dolor nullam metus</p>
+                    </header>
+                    <a href="#" class="image featured"><img src="images/pic02.jpg" alt="" /></a>
+                    <p>
+                        Quisque vel sapien sit amet tellus elementum ultricies. Nunc vel orci turpis. Donec id malesuada metus.
+                        Nunc nulla velit, fermentum quis interdum quis, tate etiam commodo lorem ipsum dolor sit amet dolore.
+                        Quisque vel sapien sit amet tellus elementum ultricies. Nunc vel orci turpis. Donec id malesuada metus.
+                        Nunc nulla velit, fermentum quis interdum quis, convallis eu sapien. Integer sed ipsum ante.
+                    </p>
+                </article>
+            {% endif %}
+                </div>
+
+            </section>
+
+
+    </div>
+
+
+
+</body>
+
+
+        
+    {% endblock %}
+
+

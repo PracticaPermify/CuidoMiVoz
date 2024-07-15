@@ -1,0 +1,221 @@
+{% extends "rtdf/base.html" %}
+
+{% block content%}
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/tablas_titulo.css' %}"/>
+
+<style>
+    .table-container {
+      max-height: 400px; /* Establece la altura máxima del contenedor */
+      overflow-y: auto; /* Agrega una barra de desplazamiento vertical cuando sea necesario */
+    }
+    
+    .table {
+      width: 100%; /* Asegura que la tabla se ajuste al ancho del contenedor */
+      border-collapse: collapse; /* Borra los bordes dobles de la tabla */
+    }
+    
+    .table th, .table td {
+      border: 1px solid #ddd; /* Agrega bordes a las celdas */
+      padding: 8px; /* Agrega espacio alrededor del contenido de las celdas */
+      text-align: left; /* Alinea el texto a la izquierda en las celdas */
+    }
+    
+    .table thead {
+      background-color: #f2f2f2; /* Establece un color de fondo para el encabezado de la tabla */
+    }
+</style>
+
+<div class="container">
+    <h1 class=" display-5 fw-bolder sub_titulo">Tabla de <span class="span_title"> Análisis de audio</h1>
+    <br>
+    <div class="table-responsive">
+      <table class="table custom-table">
+        <thead class="thead-dark">
+          <tr>
+            <th>ID coeficiente audio</th>
+            <th>Rut del paciente</th>
+            <th>ID paciente</th>
+            <th>Paciente ejercicio</th>
+            <th>ID audio</th>
+            <th>Audio</th>
+            <th>ID terapia</th>
+            <th>Tipo de terapia</th>
+            <th>ID fonoaudiologo</th>
+            <th>Fonoaudiologo asociado a terapia</th>
+            <th>Fecha coeficiente</th>
+            <th>F0</th>
+            <th>F1</th>
+            <th>F2</th>
+            <th>F3</th>
+            <th>F4</th>
+            <th>Intensidad</th>
+            <th>HNR</th>
+            <th>Local Jitter</th>
+            <th>Local Absolute Jitter</th>
+            <th>RAP Jitter</th>
+            <th>PPQ5 Jitter</th>
+            <th>DDP Jitter</th>
+            <th>Local Shimmer</th>
+            <th>Local dB Shimmer</th>
+            <th>APQ3 Shimmer</th>
+            <th>APQ5 Shimmer</th>
+            <th>APQ11 Shimmer</th>
+            <th>Tipo de llenado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for audio_coef in datos_audiocoeficientes %}
+            {% with usuario=audio_coef.id_audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.id_paciente.id_usuario %}
+
+              <tr>
+                <td>{{ audio_coef.id_audiocoeficientes }}</td>
+                <td>{{ usuario.numero_identificacion }}</td>
+                <th><a href="{% url 'detalle_paciente' usuario.id_usuario %}"> Paciente {{ usuario.id_usuario }}</a></th>
+                <td>{{ usuario.primer_nombre }} {{ usuario.ap_paterno }} {{ usuario.ap_materno }}</td>
+                <td>{{ audio_coef.id_audio_id }}</td>
+                <th><a href="{% url 'detalle_audio_admin' audio_coef.id_audio_id %}">
+                  {{ audio_coef.nombre_archivo }}
+              </a></th>
+                <th>
+                  <a href="{% url 'detalle_pauta_admin' audio_coef.id_audio.fk_pauta_terapeutica.id_pauta_terapeutica  %}">
+                  Pauta {{ audio_coef.id_audio.fk_pauta_terapeutica.id_pauta_terapeutica }}</a>
+                </th>
+                <td>{{ audio_coef.id_audio.fk_origen_audio }}</td>
+                <td>{{ audio_coef.id_audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.id_usuario }}</td>
+                <td>
+                  {{ audio_coef.id_audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.primer_nombre }} 
+                  {{ audio_coef.id_audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.ap_paterno }}
+                </td>
+                <td>{{ audio_coef.fecha_coeficiente }}</td>
+                <td>{{ audio_coef.f0 }}</td>
+                <td>{{ audio_coef.f1 }}</td>
+                <td>{{ audio_coef.f2 }}</td>
+                <td>{{ audio_coef.f3 }}</td>
+                <td>{{ audio_coef.f4 }}</td>
+                <td>{{ audio_coef.intensidad }}</td>
+                <td>{{ audio_coef.hnr }}</td>
+                <td>{{ audio_coef.local_jitter }}</td>
+                <td>{{ audio_coef.local_absolute_jitter }}</td>
+                <td>{{ audio_coef.rap_jitter }}</td>
+                <td>{{ audio_coef.ppq5_jitter }}</td>
+                <td>{{ audio_coef.ddp_jitter }}</td>
+                <td>{{ audio_coef.local_shimmer }}</td>
+                <td>{{ audio_coef.local_db_shimmer }}</td>
+                <td>{{ audio_coef.apq3_shimmer }}</td>
+                <td>{{ audio_coef.aqpq5_shimmer }}</td>
+                <td>{{ audio_coef.apq11_shimmer }}</td>
+                <td>{{ audio_coef.fk_tipo_llenado }}</td>
+              </tr>
+            {% endwith %}
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <nav aria-label="Page navigation">
+      <ul class="pagination">
+          {% if datos_audiocoeficientes.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page_audios=1">&laquo; Primero</a>
+            </li>
+            <li>
+              <a class="page-link" href="?page_audios={{ datos_audiocoeficientes.previous_page_number }}">Anterior</a>
+            </li>
+          {% endif %}
+    
+          <li class="page-item disabled">
+            <span class="page-link">
+              Página {{ datos_audiocoeficientes.number }} de {{ datos_audiocoeficientes.paginator.num_pages }}.
+            </span>
+          </li>
+    
+          {% if datos_audiocoeficientes.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page_audios={{ datos_audiocoeficientes.next_page_number }}">Siguiente</a>
+          </li>
+
+          <li class="page-item">
+            <a class="page-link" href="?page_audios={{ datos_audiocoeficientes.paginator.num_pages }}">Ultimo &raquo;</a>
+          </li>
+          {% endif %}
+      </ul>
+    </nav>
+
+    </br>
+    </br>
+
+
+    </div>
+    <br/>
+    <h1 class="card-title">Conteo de audios</h1>
+                <br/>
+                    <div class="card-text">
+                        <table class="table" id="conteo-audios">
+                            <thead class="thead-dark">
+                              <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Profesional</th>
+                                <th scope="col">Paciente</th>
+                                <th scope="col">N° Audios Intensidad</th>
+                                <th scope="col">N° Audios Vocalización</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                {% for item in conteo_audios %}
+                                <tr>
+                                    <td>{{ item.relacion.id_relacion_pa_pro }}</td>
+                                    <td>{{item.relacion.fk_profesional_salud.id_usuario.id_tp_usuario}}: {{ item.relacion.fk_profesional_salud.id_usuario.primer_nombre}} {{ item.relacion.fk_profesional_salud.id_usuario.ap_paterno}}</td>
+                                    <td>{{ item.relacion.id_paciente }}</td>
+                                    <td>{{ item.origenes_audio.Intensidad|default:"0" }}</td>
+                                    <td>{{ item.origenes_audio.Vocalización|default:"0" }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4">No hay datos disponibles</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+
+                            <tfoot>
+                              <tr class="thead-dark">
+                                  <th colspan="3">Total</th>
+                                  <th>{{ total_intensidad }}</th>
+                                  <th>{{ total_vocalizacion }}</th>
+                              </tr>
+                          </tfoot>
+                          </table> 
+                          
+                          
+                          <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                {% if conteo_audios.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page_conteo=1#conteo-audios">&laquo; Inicio</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page_conteo={{ conteo_audios.previous_page_number }}#conteo-audios">Anterior</a>
+                                    </li>
+                                {% endif %}
+                        
+                                <li class="page-item disabled">
+                                    <span class="page-link">
+                                        Página {{ conteo_audios.number }} de {{ conteo_audios.paginator.num_pages }}.
+                                    </span>
+                                </li>
+                        
+                                {% if conteo_audios.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page_conteo={{ conteo_audios.next_page_number }}#conteo-audios">Siguiente</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page_conteo={{ conteo_audios.paginator.num_pages }}#conteo-audios">Ultimo &raquo;</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+
+  </div>
+
+{% endblock %}
