@@ -3,6 +3,7 @@ from .forms import *
 from django.contrib.auth import authenticate, login, logout
 from .models import *
 from django.http import JsonResponse
+from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
@@ -138,12 +139,12 @@ def index(request):
 
             now = timezone.now()
             pautas_terapeuticas = PautaTerapeutica.objects.filter(
-                fk_informe__fk_relacion_pa_pro__id_paciente=paciente,
+                fk_protocolo__fk_relacion_pa_pro__id_paciente=paciente,
                 fecha_fin__gte=now 
             )
 
             pautas_terapeuticas_expiradas = PautaTerapeutica.objects.filter(
-                fk_informe__fk_relacion_pa_pro__id_paciente=paciente,
+                fk_protocolo__fk_relacion_pa_pro__id_paciente=paciente,
                 fecha_fin__lt=now 
             )
 
@@ -702,7 +703,7 @@ def vocalizacion(request, pauta_id=None, *args, **kwargs):
                 pauta_seleccionada = PautaTerapeutica.objects.get(id_pauta_terapeutica=pauta_id)
                 id_pauta = pauta_seleccionada.id_pauta_terapeutica
                 tipo_pauta = pauta_seleccionada.fk_tp_terapia.tipo_terapia 
-                id_profesional = pauta_seleccionada.fk_informe.fk_relacion_pa_pro.fk_profesional_salud.id_profesional_salud
+                id_profesional = pauta_seleccionada.fk_protocolo.fk_relacion_pa_pro.fk_profesional_salud.id_profesional_salud
                 request.session['id_pauta'] = id_pauta  
                 request.session['tipo_pauta'] = tipo_pauta
                 request.session['id_profesional'] = id_profesional
@@ -835,7 +836,7 @@ def intensidad(request, pauta_id=None, *args, **kwargs):
                 pauta_seleccionada = PautaTerapeutica.objects.get(id_pauta_terapeutica=pauta_id)
                 id_pauta = pauta_seleccionada.id_pauta_terapeutica
                 tipo_pauta = pauta_seleccionada.fk_tp_terapia.tipo_terapia 
-                id_profesional = pauta_seleccionada.fk_informe.fk_relacion_pa_pro.fk_profesional_salud.id_profesional_salud
+                id_profesional = pauta_seleccionada.fk_protocolo.fk_relacion_pa_pro.fk_profesional_salud.id_profesional_salud
                 request.session['id_pauta'] = id_pauta  
                 request.session['tipo_pauta'] = tipo_pauta
                 request.session['id_profesional'] = id_profesional
@@ -866,9 +867,9 @@ def intensidad(request, pauta_id=None, *args, **kwargs):
             ##print("Ruta para la db:", ruta_db)
 
             audio_model = Audio.objects.create(url_audio=ruta_db,
-                                               fecha_audio=fecha,
-                                               fk_origen_audio=origen_audio,
-                                               fk_pauta_terapeutica=fk_pauta)
+                                            fecha_audio=fecha,
+                                            fk_origen_audio=origen_audio,
+                                            fk_pauta_terapeutica=fk_pauta)
             audio_model.save()
 
             id_audio_registrado = audio_model.id_audio
@@ -952,7 +953,7 @@ def escalas_vocales(request, pauta_id=None, *args, **kwargs):
                 print(pauta_seleccionada.escalavocales)
                 id_pauta = pauta_seleccionada.id_pauta_terapeutica
                 tipo_pauta = pauta_seleccionada.fk_tp_terapia.tipo_terapia 
-                id_profesional = pauta_seleccionada.fk_informe.fk_relacion_pa_pro.fk_profesional_salud.id_profesional_salud
+                id_profesional = pauta_seleccionada.fk_protocolo.fk_relacion_pa_pro.fk_profesional_salud.id_profesional_salud
                 request.session['id_pauta'] = id_pauta  
                 request.session['tipo_pauta'] = tipo_pauta
                 request.session['id_profesional'] = id_profesional
@@ -1218,7 +1219,7 @@ def esv(request):
         if request.method == 'POST':
             form = InformeForm(request.POST)
             if form.is_valid():
-                form.instance.tp_informe = TpInforme.objects.get(tipo_informe='ESV')
+                form.instance.tp_protocolo = TpProtocolo.objects.get(tipo_protocolo='ESV')
                 informe = form.save()
                 informe.fecha = timezone.now()
 
@@ -1258,11 +1259,11 @@ def esv(request):
                     puntaje_total = 120
 
                 #Con los valores agregados en cada variable, le asigno que lo almacene en la tabla correspondiente
-                esv_instance = Esv(id_informe=informe, total_esv=puntaje_total, limitacion=puntaje_limitacion,
+                esv_instance = Esv(id_protocolo=informe, total_esv=puntaje_total, limitacion=puntaje_limitacion,
                                     emocional=puntaje_emocional, fisico=puntaje_fisico)
                 esv_instance.save()
 
-                messages.success(request, "Informe ESV ingresado correctamente")  
+                messages.success(request, "Protocolo ESV ingresado correctamente")  
 
                 return redirect('listado_informes')
         else:
@@ -1348,22 +1349,22 @@ def ingresar_informes(request):
 
             if form.is_valid() and grbas_form.is_valid() and rasati_form.is_valid():
                 informe = form.save()
-                tipo_informe = str(form.cleaned_data['tp_informe']).strip()
+                tipo_informe = str(form.cleaned_data['tp_protocolo']).strip()
                 informe.fecha = timezone.now()
-                print(f"Tipo de informe seleccionado: {tipo_informe}")
+                print(f"Tipo de protocolo seleccionado: {tipo_informe}")
 
                 # Filtro segun el tipo de informe seleccionado
                 if tipo_informe == 'GRBAS':
                     
                     grbas = grbas_form.save(commit=False)
-                    grbas.id_informe = informe
+                    grbas.id_protocolo = informe
                     grbas.save()
 
                 elif tipo_informe == 'RASATI':
                     
                     ##print(f"Tipo AAA: {tipo_informe}")    
                     rasati = rasati_form.save(commit=False)
-                    rasati.id_informe = informe
+                    rasati.id_protocolo = informe
                     rasati.save()
                 messages.success(request, "Informe "+ tipo_informe + " ingresado correctamente")  
                 return redirect('listado_informes')
@@ -1372,7 +1373,7 @@ def ingresar_informes(request):
             form.fields['fk_relacion_pa_pro'].queryset = relaciones_pacientes
             grbas_form = GrbasForm()
             rasati_form = RasatiForm()
-            form.fields['tp_informe'].required = True
+            form.fields['tp_protocolo'].required = True
 
         return render(request, 'vista_profe/ingresar_informes.html', {
             'form': form,
@@ -1386,11 +1387,11 @@ def ingresar_informes(request):
 
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Fonoaudiologo'])
-def editar_informe(request, informe_id):
+def editar_informe(request, protocolo_id):
     if request.user.is_authenticated:
         tipo_usuario = request.user.id_tp_usuario.tipo_usuario
 
-        informe = get_object_or_404(Informe, id_informe=informe_id)
+        informe = get_object_or_404(Protocolo, id_protocolo=protocolo_id)
         profesional_salud = request.user.profesionalsalud
         relaciones_pacientes = RelacionPaPro.objects.filter(fk_profesional_salud=profesional_salud)
 
@@ -1431,8 +1432,8 @@ def editar_informe(request, informe_id):
             if grbas_form and grbas_form.is_valid():
                 grbas_form.save()
 
-            messages.success(request, "Informe "+ str(informe_id) + " editado correctamente")  
-            return redirect('detalle_prof_infor', informe_id=informe.id_informe)
+            messages.success(request, "Informe "+ str(protocolo_id) + " editado correctamente")  
+            return redirect('detalle_prof_infor', protocolo_id=informe.id_protocolo)
         else:
             form = InformeForm(instance=informe)
             form.fields['fk_relacion_pa_pro'].queryset = relaciones_pacientes
@@ -1449,17 +1450,17 @@ def editar_informe(request, informe_id):
 @never_cache
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Fonoaudiologo'])
-def detalle_esv(request, informe_id):
+def detalle_esv(request, protocolo_id):
     tipo_usuario = None
 
     if request.user.is_authenticated:
         tipo_usuario = request.user.id_tp_usuario.tipo_usuario
-        informe = get_object_or_404(Informe, pk=informe_id)
+        informe = get_object_or_404(Protocolo, pk=protocolo_id)
         paciente_relacionado = informe.fk_relacion_pa_pro.id_paciente
 
         pautas_terapeuticas = PautaTerapeutica.objects.filter(
-            fk_informe=informe,
-            fk_informe__fk_relacion_pa_pro__id_paciente=paciente_relacionado,
+            fk_protocolo=informe,
+            fk_protocolo__fk_relacion_pa_pro__id_paciente=paciente_relacionado,
             fk_tp_terapia__tipo_terapia='Escala_vocal'
         )
 
@@ -1468,7 +1469,7 @@ def detalle_esv(request, informe_id):
 
         if pauta_terapeutica_form.is_valid():
             pauta_terapeutica = pauta_terapeutica_form.save(commit=False)
-            pauta_terapeutica.fk_informe = informe
+            pauta_terapeutica.fk_protocolo = informe
             pauta_terapeutica.fk_tp_terapia = TpTerapia.objects.get(tipo_terapia='Escala_vocal')
             pauta_terapeutica.save()
 
@@ -1534,7 +1535,7 @@ def detalle_pauta_esv(request, pauta_id):
     pauta = get_object_or_404(PautaTerapeutica, pk=pauta_id)
 
     if pauta.fk_tp_terapia.tipo_terapia == 'Escala_vocal':
-        paciente = pauta.fk_informe.fk_relacion_pa_pro.id_paciente.id_usuario
+        paciente = pauta.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario
         escala_vocales = pauta.escalavocales 
         palabras = escala_vocales.palabras
 
@@ -1555,9 +1556,9 @@ def analisis_profe(request):
         tipo_usuario = request.user.id_tp_usuario.tipo_usuario
 
         datos_audiocoeficientes = Audioscoeficientes.objects.select_related(
-        'id_audio__fk_pauta_terapeutica__fk_informe__fk_relacion_pa_pro__id_paciente__id_usuario'
+        'id_audio__fk_pauta_terapeutica__fk_protocolo__fk_relacion_pa_pro__id_paciente__id_usuario'
         ).filter(
-            id_audio__fk_pauta_terapeutica__fk_informe__fk_relacion_pa_pro__fk_profesional_salud__id_usuario=request.user.id_usuario
+            id_audio__fk_pauta_terapeutica__fk_protocolo__fk_relacion_pa_pro__fk_profesional_salud__id_usuario=request.user.id_usuario
         ).order_by('-fecha_coeficiente')
 
 
@@ -1579,7 +1580,7 @@ def analisis_profe(request):
             for origen_id, origen_nombre in [(1, 'Intensidad'), (2, 'Vocalización')]:
                 audios = Audio.objects.filter(
                     fk_origen_audio=origen_id,
-                    fk_pauta_terapeutica__fk_informe__fk_relacion_pa_pro=relacion
+                    fk_pauta_terapeutica__fk_protocolo__fk_relacion_pa_pro=relacion
                 )
                 relacion_info['origenes_audio'][origen_nombre] = len(audios)
 
@@ -1683,18 +1684,18 @@ def eliminar_pauta_esv(request, pauta_id):
         pauta.delete()
 
     messages.success(request, "Pauta ESV N°" + str(pauta_id) + " eliminada correctamente")
-    return redirect('detalle_esv', informe_id=pauta.fk_informe.id_informe)
+    return redirect('detalle_esv', protocolo_id=pauta.fk_protocolo.id_protocolo)
 
 
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Fonoaudiologo'])
-def editar_esv(request, informe_id):
+def editar_esv(request, protocolo_id):
     tipo_usuario = None
     
     if request.user.is_authenticated:
         tipo_usuario = request.user.id_tp_usuario.tipo_usuario
 
-    informe = get_object_or_404(Informe, pk=informe_id)
+    informe = get_object_or_404(Protocolo, pk=protocolo_id)
 
     if request.method == 'POST':
         informe.titulo = request.POST.get('titulo')
@@ -1703,32 +1704,32 @@ def editar_esv(request, informe_id):
         informe.observacion = request.POST.get('observacion')
         informe.save()
 
-        messages.success(request, "Informe ESV N°" + str(informe_id) + " editado correctamente")
+        messages.success(request, "Informe ESV N°" + str(protocolo_id) + " editado correctamente")
 
-        return redirect('detalle_esv', informe_id)
+        return redirect('detalle_esv', protocolo_id)
     else:
         return render(request, 'vista_profe/editar_esv.html', {'informe': informe, 
                                                                  'tipo_usuario': tipo_usuario})
 
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Fonoaudiologo'])
-def eliminar_informe_esv(request, informe_id):
-    informe = get_object_or_404(Informe, id_informe=informe_id)
-    esv_instance = Esv.objects.filter(id_informe=informe)
+def eliminar_informe_esv(request, protocolo_id):
+    informe = get_object_or_404(Protocolo, id_informe=protocolo_id)
+    esv_instance = Esv.objects.filter(id_protocolo=informe)
 
     if esv_instance.exists():
         esv_instance.delete()
 
     informe.delete()
-    messages.success(request, "Informe ESV eliminado correctamente")
+    messages.success(request, "Protocolo ESV eliminado correctamente")
     return redirect('listado_informes')
 
 
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Fonoaudiologo'])
-def eliminar_informe(request, informe_id):
-    informe = get_object_or_404(Informe, id_informe=informe_id)
-    tipo_informe = informe.tp_informe
+def eliminar_informe(request, protocolo_id):
+    informe = get_object_or_404(Protocolo, id_protocolo=protocolo_id)
+    tipo_informe = informe.tp_protocolo
 
     if tipo_informe == 'GRBAS':
         informe.grbas.delete()
@@ -1737,13 +1738,13 @@ def eliminar_informe(request, informe_id):
 
     informe.delete()
 
-    messages.success(request, "Informe N°"+ str(informe_id)+" fue eliminado correctamente")    
+    messages.success(request, "Protocolo N°"+ str(protocolo_id)+" fue eliminado correctamente")    
 
     return redirect('listado_informes')
 
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Fonoaudiologo'])
-def analisis_estadistico_profe(request, informe_id):
+def analisis_estadistico_profe(request, protocolo_id):
 
     tipo_usuario = None
     plot_div = None
@@ -1751,18 +1752,18 @@ def analisis_estadistico_profe(request, informe_id):
 
     if request.user.is_authenticated:
         tipo_usuario = request.user.id_tp_usuario.tipo_usuario
-        plot_div = generar_grafico(informe_id)
+        plot_div = generar_grafico(protocolo_id)
 
     if hay_pautas_terapeuticas:
         return render(request, 'vista_profe/analisis_estadistico_profe.html', 
                       {'tipo_usuario': tipo_usuario,
-                       'informe_id': informe_id,
+                       'informe_id': protocolo_id,
                        'plot_div': plot_div})
     else:
         mensaje_error = "No hay pautas terapéuticas para analizar. Ingrese una para analizar el tratamiento del paciente."
         return render(request, 'vista_profe/analisis_estadistico_profe.html', 
                       {'tipo_usuario': tipo_usuario,
-                       'informe_id': informe_id,
+                       'informe_id': protocolo_id,
                        'mensaje_error': mensaje_error})
 
 ##Detalles por paciente de los fonoaudiologos
@@ -1773,8 +1774,8 @@ def detalle_prof_paci(request, paciente_id):
     paciente = get_object_or_404(Usuario, id_usuario=paciente_id, id_tp_usuario__tipo_usuario='Paciente')
     traer_paciente = paciente.paciente
 
-    obtener_rasati = Rasati.objects.filter(id_informe__fk_relacion_pa_pro__id_paciente=traer_paciente)
-    obtener_grbas = Grbas.objects.filter(id_informe__fk_relacion_pa_pro__id_paciente=traer_paciente)
+    obtener_rasati = Rasati.objects.filter(id_protocolo__fk_relacion_pa_pro__id_paciente=traer_paciente)
+    obtener_grbas = Grbas.objects.filter(id_protocolo__fk_relacion_pa_pro__id_paciente=traer_paciente)
 
     informes_rasati = obtener_rasati 
     informes_grbas = obtener_grbas    
@@ -1855,11 +1856,11 @@ def detalle_prof_pauta(request, id_pauta_terapeutica_id):
         pauta = get_object_or_404(PautaTerapeutica, id_pauta_terapeutica=id_pauta_terapeutica_id)
 
         if tipo_usuario == 'Admin':
-            url_regreso = reverse('detalle_prof_infor', kwargs={'informe_id': pauta.fk_informe.id_informe})
+            url_regreso = reverse('detalle_prof_infor', kwargs={'protocolo_id': pauta.fk_protocolo.id_protocolo})
         elif tipo_usuario == 'Fonoaudiologo':
-            url_regreso = reverse('detalle_prof_infor', kwargs={'informe_id': pauta.fk_informe.id_informe})
+            url_regreso = reverse('detalle_prof_infor', kwargs={'protocolo_id': pauta.fk_protocolo.id_protocolo})
         else:
-            url_regreso = reverse('detalle_prof_infor', kwargs={'informe_id': pauta.fk_informe.id_informe})
+            url_regreso = reverse('detalle_prof_infor', kwargs={'protocolo_id': pauta.fk_protocolo.id_protocolo})
 
         
 
@@ -1873,7 +1874,7 @@ def detalle_prof_pauta(request, id_pauta_terapeutica_id):
         except Vocalizacion.DoesNotExist:
             vocalizacion = None
 
-    paciente_relacionado = pauta.fk_informe.fk_relacion_pa_pro.id_paciente
+    paciente_relacionado = pauta.fk_protocolo.fk_relacion_pa_pro.id_paciente
 
     return render(request, 'vista_profe/detalle_prof_pauta.html', {
         'tipo_usuario': tipo_usuario,
@@ -1931,12 +1932,12 @@ def detalle_audio_profe(request, audio_id):
             'fecha_audio': audio.fecha_audio,
             'id_pauta': audio.fk_pauta_terapeutica_id,
             'id_origen': audio.fk_origen_audio,
-            'rut_paciente': audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.id_paciente.id_usuario.numero_identificacion,
-            'primer_nombre_paciente': audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre,
-            'ap_paterno_paciente': audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno,
-            'tipo_profesional': audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.id_tp_usuario,
-            'primer_nombre_profesional':audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.primer_nombre,
-            'ap_paterno_profesional':audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.ap_paterno,
+            'rut_paciente': audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.numero_identificacion,
+            'primer_nombre_paciente': audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre,
+            'ap_paterno_paciente': audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno,
+            'tipo_profesional': audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.id_tp_usuario,
+            'primer_nombre_profesional':audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.primer_nombre,
+            'ap_paterno_profesional':audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.ap_paterno,
             #Relacion con
             'nombre_audio': audio_coeficiente_automatico.nombre_archivo if audio_coeficiente_automatico else None
         }
@@ -2186,7 +2187,7 @@ def eliminar_prof_pauta(request, id_pauta_terapeutica_id):
     pauta.delete()
 
     messages.success(request, "Pauta N°" + str(id_pauta_terapeutica_id) + " eliminada correctamente")
-    return redirect('detalle_prof_infor', informe_id=pauta.fk_informe.id_informe)
+    return redirect('detalle_prof_infor', protocolo_id=pauta.fk_protocolo.id_protocolo)
 
 @never_cache
 @tipo_usuario_required(allowed_types=['Fonoaudiologo'])
@@ -2196,7 +2197,7 @@ def listado_informes(request):
     profesional_medico = request.user.profesionalsalud
 
     # Filtro por fonoaudiologo 
-    informes = Informe.objects.filter(fk_relacion_pa_pro__fk_profesional_salud=profesional_medico).annotate(
+    informes = Protocolo.objects.filter(fk_relacion_pa_pro__fk_profesional_salud=profesional_medico).annotate(
     num_pautas_terapeuticas=Count('pautaterapeutica')).order_by('-fecha')
 
     informes_por_pagina = 10
@@ -2259,7 +2260,7 @@ def agregar_paciente(request, paciente_id):
 @user_passes_test(validate)
 @never_cache
 @tipo_usuario_required(allowed_types=['Fonoaudiologo'])
-def detalle_prof_infor(request, informe_id):
+def detalle_prof_infor(request, protocolo_id):
 
     source = request.GET.get('source')
 
@@ -2273,22 +2274,22 @@ def detalle_prof_infor(request, informe_id):
 
     if request.user.is_authenticated:
         tipo_usuario = request.user.id_tp_usuario.tipo_usuario
-    informe = get_object_or_404(Informe, id_informe=informe_id)
+    protocolo = get_object_or_404(Protocolo, id_protocolo=protocolo_id)
 
     try:
-        grbas = Grbas.objects.get(id_informe=informe)
+        grbas = Grbas.objects.get(id_protocolo=protocolo)
     except Grbas.DoesNotExist:
         grbas = None
 
     try:
-        rasati = Rasati.objects.get(id_informe=informe)
+        rasati = Rasati.objects.get(id_protocolo=protocolo)
     except Rasati.DoesNotExist:
         rasati = None
 
-    datos_vocalizacion = Vocalizacion.objects.filter(id_pauta_terapeutica__fk_informe=informe_id,id_pauta_terapeutica__fk_tp_terapia= 1)    
-    datos_intensidad = Intensidad.objects.filter(id_pauta_terapeutica__fk_informe=informe_id,id_pauta_terapeutica__fk_tp_terapia= 2)
+    datos_vocalizacion = Vocalizacion.objects.filter(id_pauta_terapeutica__fk_protocolo=protocolo_id,id_pauta_terapeutica__fk_tp_terapia= 1)    
+    datos_intensidad = Intensidad.objects.filter(id_pauta_terapeutica__fk_protocolo=protocolo_id,id_pauta_terapeutica__fk_tp_terapia= 2)
 
-    paciente_relacionado = informe.fk_relacion_pa_pro.id_paciente
+    paciente_relacionado = protocolo.fk_relacion_pa_pro.id_paciente
 
     tipo_usuario = None
     if request.user.is_authenticated:
@@ -2296,16 +2297,33 @@ def detalle_prof_infor(request, informe_id):
 
         if request.method == 'POST':
 
+            
+
             #guardo la pk del informe del detalle_informe
-            informe = Informe.objects.get(pk=informe_id)
+            protocolo = Protocolo.objects.get(pk=protocolo_id)
             form = PautaTerapeuticaForm(request.POST)
             vocalizacion_form = VocalizacionForm(request.POST)
             intensidad_form = IntensidadForm(request.POST)
 
+
+            # Verifica la validez de los formularios e imprime errores si no son válidos
+            is_valid_form = form.is_valid()
+            is_valid_vocalizacion_form = vocalizacion_form.is_valid()
+            is_valid_intensidad_form = intensidad_form.is_valid()
+
+            if not is_valid_form:
+                print("Errores en PautaTerapeuticaForm:", form.errors)
+            if not is_valid_vocalizacion_form:
+                print("Errores en VocalizacionForm:", vocalizacion_form.errors)
+            if not is_valid_intensidad_form:
+                print("Errores en IntensidadForm:", intensidad_form.errors)
+
             if form.is_valid() and vocalizacion_form.is_valid() and intensidad_form.is_valid():
                 pauta_terapeutica = form.save(commit=False) #guardo el form para agregar el id informe manualmente
-                pauta_terapeutica.fk_informe = informe # le paso la pk del informe
+                pauta_terapeutica.fk_protocolo = protocolo # le paso la pk del informe
                 pauta_terapeutica.save()
+
+                print("FORMULARIO VALIDO")   
 
                 tipo_terapia = str(form.cleaned_data['fk_tp_terapia']).strip()
 
@@ -2336,7 +2354,7 @@ def detalle_prof_infor(request, informe_id):
                 
                 messages.success(request, "Pauta ingresada correctamente")  
 
-                return redirect('detalle_prof_infor', informe_id=informe.id_informe)
+                return redirect('detalle_prof_infor', protocolo_id=protocolo.id_protocolo)
         
 
         else:
@@ -2351,7 +2369,7 @@ def detalle_prof_infor(request, informe_id):
             'vocalizacion_form': vocalizacion_form,
             'intensidad_form': intensidad_form,
             'datos_intensidad': datos_intensidad,
-            'informe': informe,
+            'informe': protocolo,
             'datos_vocalizacion': datos_vocalizacion,
             'grbas': grbas,
             'rasati': rasati,
@@ -2570,9 +2588,9 @@ def detalle_paciente(request, paciente_id):
 
     fonoaudiologos_asociados = ProfesionalSalud.objects.filter(relacionpapro__id_paciente=traer_paciente.id_paciente)
 
-    obtener_rasati = Rasati.objects.filter(id_informe__fk_relacion_pa_pro__id_paciente=traer_paciente)
-    obtener_grbas = Grbas.objects.filter(id_informe__fk_relacion_pa_pro__id_paciente=traer_paciente)
-    obtener_esv = Esv.objects.filter(id_informe__fk_relacion_pa_pro__id_paciente=traer_paciente)
+    obtener_rasati = Rasati.objects.filter(id_protocolo__fk_relacion_pa_pro__id_paciente=traer_paciente)
+    obtener_grbas = Grbas.objects.filter(id_protocolo__fk_relacion_pa_pro__id_paciente=traer_paciente)
+    obtener_esv = Esv.objects.filter(id_protocolo__fk_relacion_pa_pro__id_paciente=traer_paciente)
 
     # Calcular la edad del paciente
     fecha_nacimiento = paciente.fecha_nacimiento
@@ -2739,9 +2757,9 @@ def detalle_familiar_admin(request, familiar_id):
 
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Admin'])
-def eliminar_informe_admin(request, informe_id):
-    informe = get_object_or_404(Informe, id_informe=informe_id)
-    tipo_informe = informe.tp_informe
+def eliminar_informe_admin(request, protocolo_id):
+    informe = get_object_or_404(Protocolo, id_protocolo=protocolo_id)
+    tipo_informe = informe.tp_protocolo
 
     if tipo_informe == 'GRBAS':
         informe.grbas.delete()
@@ -2749,45 +2767,45 @@ def eliminar_informe_admin(request, informe_id):
         informe.rasati.delete()
 
     informe.delete()
-    messages.success(request, "Informe N°" + str(informe_id) + " eliminado correctamente")
+    messages.success(request, "Protocolo N°" + str(protocolo_id) + " eliminado correctamente")
     return redirect('detalle_paciente', paciente_id=informe.fk_relacion_pa_pro.id_paciente.id_usuario.id_usuario)
 
 @never_cache
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Admin'])
-def detalle_informe(request, informe_id):
+def detalle_informe(request, protocolo_id):
 
     if request.user.is_authenticated:
         tipo_usuario = request.user.id_tp_usuario.tipo_usuario
 
-        informe = get_object_or_404(Informe, id_informe=informe_id)
+        informe = get_object_or_404(Protocolo, id_protocolo=protocolo_id)
 
         try:
-            grbas = Grbas.objects.get(id_informe=informe)
+            grbas = Grbas.objects.get(id_protocolo=informe)
         except Grbas.DoesNotExist:
             grbas = None
 
         try:
-            rasati = Rasati.objects.get(id_informe=informe)
+            rasati = Rasati.objects.get(id_protocolo=informe)
         except Rasati.DoesNotExist:
             rasati = None
 
-        datos_vocalizacion = Vocalizacion.objects.filter(id_pauta_terapeutica__fk_informe=informe_id,id_pauta_terapeutica__fk_tp_terapia= 1)    
-        datos_intensidad = Intensidad.objects.filter(id_pauta_terapeutica__fk_informe=informe_id,id_pauta_terapeutica__fk_tp_terapia= 2)
+        datos_vocalizacion = Vocalizacion.objects.filter(id_pauta_terapeutica__fk_protocolo=protocolo_id,id_pauta_terapeutica__fk_tp_terapia= 1)    
+        datos_intensidad = Intensidad.objects.filter(id_pauta_terapeutica__fk_protocolo=protocolo_id,id_pauta_terapeutica__fk_tp_terapia= 2)
 
         paciente_relacionado = informe.fk_relacion_pa_pro.id_paciente
 
         if request.method == 'POST':
 
             #guardo la pk del informe del detalle_informe
-            informe = Informe.objects.get(pk=informe_id)
+            informe = Protocolo.objects.get(pk=protocolo_id)
             form = PautaTerapeuticaForm(request.POST)
             vocalizacion_form = VocalizacionForm(request.POST)
             intensidad_form = IntensidadForm(request.POST)
 
             if form.is_valid() and vocalizacion_form.is_valid() and intensidad_form.is_valid():
                 pauta_terapeutica = form.save(commit=False) #guardo el form para agregar el id informe manualmente
-                pauta_terapeutica.fk_informe = informe # le paso la pk del informe
+                pauta_terapeutica.fk_protocolo = informe # le paso la pk del informe
                 pauta_terapeutica.save()
 
                 tipo_terapia = str(form.cleaned_data['fk_tp_terapia']).strip()
@@ -2817,7 +2835,7 @@ def detalle_informe(request, informe_id):
                     intensidad.save()    
 
                 messages.success(request, "Pauta " + tipo_terapia + " ingresada correctamente")
-                return redirect('detalle_informe', informe_id=informe.id_informe)
+                return redirect('detalle_informe', protocolo_id=informe.id_protocolo)
         
 
         else:
@@ -2843,12 +2861,12 @@ def detalle_informe(request, informe_id):
 @never_cache
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Admin'])
-def editar_informe_admin(request, informe_id):
+def editar_informe_admin(request, protocolo_id):
     if request.user.is_authenticated:
         tipo_usuario = request.user.id_tp_usuario.tipo_usuario
 
         
-        informe = get_object_or_404(Informe, id_informe=informe_id)
+        informe = get_object_or_404(Protocolo, id_protocolo=protocolo_id)
 
         pk_profesional = informe.fk_relacion_pa_pro.fk_profesional_salud
         relaciones_pacientes = RelacionPaPro.objects.filter(fk_profesional_salud=pk_profesional)
@@ -2884,8 +2902,8 @@ def editar_informe_admin(request, informe_id):
             if grbas_form and grbas_form.is_valid():
                 grbas_form.save()
 
-            messages.success(request, "Informe N°" + str(informe_id) + " editado correctamente")
-            return redirect('detalle_informe', informe_id=informe.id_informe)
+            messages.success(request, "Protocolo N°" + str(protocolo_id) + " editado correctamente")
+            return redirect('detalle_informe', protocolo_id=informe.id_protocolo)
         else:
             form = InformeForm(instance=informe)
             form.fields['fk_relacion_pa_pro'].queryset = relaciones_pacientes
@@ -2909,11 +2927,11 @@ def detalle_pauta_admin(request, id_pauta_terapeutica_id):
         pauta = get_object_or_404(PautaTerapeutica, id_pauta_terapeutica=id_pauta_terapeutica_id)
 
         if tipo_usuario == 'Admin':
-            url_regreso = reverse('detalle_informe', kwargs={'informe_id': pauta.fk_informe.id_informe})
+            url_regreso = reverse('detalle_informe', kwargs={'protocolo_id': pauta.fk_protocolo.id_protocolo})
         elif tipo_usuario == 'Fonoaudiologo':
-            url_regreso = reverse('detalle_prof_infor', kwargs={'informe_id': pauta.fk_informe.id_informe})
+            url_regreso = reverse('detalle_prof_infor', kwargs={'protocolo_id': pauta.fk_protocolo.id_protocolo})
         else:
-            url_regreso = reverse('detalle_prof_infor', kwargs={'informe_id': pauta.fk_informe.id_informe})   
+            url_regreso = reverse('detalle_prof_infor', kwargs={'protocolo_id': pauta.fk_protocolo.id_protocolo})   
 
         try:
             intensidad = Intensidad.objects.get(id_pauta_terapeutica=pauta)
@@ -2925,7 +2943,7 @@ def detalle_pauta_admin(request, id_pauta_terapeutica_id):
         except Vocalizacion.DoesNotExist:
             vocalizacion = None
 
-    paciente_relacionado = pauta.fk_informe.fk_relacion_pa_pro.id_paciente
+    paciente_relacionado = pauta.fk_protocolo.fk_relacion_pa_pro.id_paciente
 
     return render(request, 'vista_admin/detalle_pauta_admin.html', {
         'tipo_usuario': tipo_usuario,
@@ -2960,7 +2978,7 @@ def detalle_pauta_esv_admin(request, pauta_id):
     pauta = get_object_or_404(PautaTerapeutica, pk=pauta_id)
 
     if pauta.fk_tp_terapia.tipo_terapia == 'Escala_vocal':
-        paciente = pauta.fk_informe.fk_relacion_pa_pro.id_paciente.id_usuario
+        paciente = pauta.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario
         escala_vocales = pauta.escalavocales 
         palabras = escala_vocales.palabras
 
@@ -3039,7 +3057,7 @@ def eliminar_pauta_esv_admin(request, pauta_id):
         pauta.delete()
 
     messages.success(request, "Pauta ESV N°" + str(pauta_id) + " eliminada correctamente")
-    return redirect('detalle_esv_admin', informe_id=pauta.fk_informe.id_informe)
+    return redirect('detalle_esv_admin', protocolo_id=pauta.fk_protocolo.id_protocolo)
     
 
 
@@ -3144,21 +3162,21 @@ def eliminar_pauta_admin(request, id_pauta_terapeutica_id):
 
     messages.success(request, "Pauta N°" + str(id_pauta_terapeutica_id) + " eliminada correctamente")
 
-    return redirect('detalle_informe', informe_id=pauta.fk_informe.id_informe)
+    return redirect('detalle_informe', protocolo_id=pauta.fk_protocolo.id_protocolo)
 
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Admin'])
-def detalle_esv_admin(request, informe_id):
+def detalle_esv_admin(request, protocolo_id):
     tipo_usuario = None 
 
     if request.user.is_authenticated:
         tipo_usuario = request.user.id_tp_usuario.tipo_usuario
-        informe = get_object_or_404(Informe, pk=informe_id)
+        informe = get_object_or_404(Protocolo, pk=protocolo_id)
         paciente_relacionado = informe.fk_relacion_pa_pro.id_paciente
 
         pautas_terapeuticas = PautaTerapeutica.objects.filter(
-            fk_informe=informe,
-            fk_informe__fk_relacion_pa_pro__id_paciente=paciente_relacionado,
+            fk_protocolo=informe,
+            fk_protocolo__fk_relacion_pa_pro__id_paciente=paciente_relacionado,
             fk_tp_terapia__tipo_terapia='Escala_vocal'
         )
 
@@ -3167,7 +3185,7 @@ def detalle_esv_admin(request, informe_id):
 
             if pauta_terapeutica_form.is_valid():
                 pauta_terapeutica = pauta_terapeutica_form.save(commit=False)
-                pauta_terapeutica.fk_informe = informe
+                pauta_terapeutica.fk_protocolo = informe
                 pauta_terapeutica.fk_tp_terapia = TpTerapia.objects.get(tipo_terapia='Escala_vocal')
                 pauta_terapeutica.save()
 
@@ -3213,14 +3231,14 @@ def detalle_esv_admin(request, informe_id):
     
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Admin'])
-def editar_esv_admin(request, informe_id):
+def editar_esv_admin(request, protocolo_id):
     tipo_usuario = None
 
     if request.user.is_authenticated:
         tipo_usuario = request.user.id_tp_usuario.tipo_usuario
 
         if tipo_usuario == 'Admin':
-            informe = get_object_or_404(Informe, pk=informe_id)
+            informe = get_object_or_404(Protocolo, pk=protocolo_id)
 
             fecha_actual = timezone.now()
 
@@ -3238,8 +3256,8 @@ def editar_esv_admin(request, informe_id):
                 informe.observacion = request.POST.get('observacion')
                 informe.save()
 
-                messages.success(request, "Informe ESV N°" + str(informe_id) + " editado correctamente")
-                return redirect('detalle_esv_admin', informe_id=informe.id_informe)
+                messages.success(request, "Protocolo ESV N°" + str(protocolo_id) + " editado correctamente")
+                return redirect('detalle_esv_admin', protocolo_id=informe.id_protocolo)
 
             return render(request, 'vista_admin/editar_esv_admin.html', {
                 'informe': informe,
@@ -3251,16 +3269,16 @@ def editar_esv_admin(request, informe_id):
     
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Admin'])
-def eliminar_esv_admin(request, informe_id):
+def eliminar_esv_admin(request, protocolo_id):
     if request.user.is_authenticated and request.user.id_tp_usuario.tipo_usuario == 'Admin':
-        informe = get_object_or_404(Informe, id_informe=informe_id)
+        informe = get_object_or_404(Protocolo, id_prtocolo=protocolo_id)
 
-        if informe.tp_informe and informe.tp_informe.tipo_informe == 'ESV':
+        if informe.tp_protocolo and informe.tp_protocolo.tipo_protocolo == 'ESV':
             informe.esv.delete()
 
         informe.delete()
 
-        messages.success(request, "Informe ESV N°" + str(informe_id) + " eliminado correctamente")
+        messages.success(request, "Protocolo ESV N°" + str(protocolo_id) + " eliminado correctamente")
         return redirect('detalle_paciente', paciente_id=informe.fk_relacion_pa_pro.id_paciente.id_usuario.id_usuario)
 
     return redirect('index')
@@ -3275,8 +3293,8 @@ def analisis_admin(request):
         tipo_usuario = request.user.id_tp_usuario.tipo_usuario
 
         datos_audiocoeficientes = Audioscoeficientes.objects.select_related(
-            'id_audio__fk_pauta_terapeutica__fk_informe__fk_relacion_pa_pro__id_paciente__id_usuario',
-            'id_audio__fk_pauta_terapeutica__fk_informe__fk_relacion_pa_pro__fk_profesional_salud'
+            'id_audio__fk_pauta_terapeutica__fk_protocolo__fk_relacion_pa_pro__id_paciente__id_usuario',
+            'id_audio__fk_pauta_terapeutica__fk_protocolo__fk_relacion_pa_pro__fk_profesional_salud'
         ).order_by('-fecha_coeficiente')
 
         relaciones = RelacionPaPro.objects.all()
@@ -3294,7 +3312,7 @@ def analisis_admin(request):
             for origen_id, origen_nombre in [(1, 'Intensidad'), (2, 'Vocalización')]:
                 audios = Audio.objects.filter(
                     fk_origen_audio=origen_id,
-                    fk_pauta_terapeutica__fk_informe__fk_relacion_pa_pro=relacion
+                    fk_pauta_terapeutica__fk_protocolo__fk_relacion_pa_pro=relacion
                 )
                 relacion_info['origenes_audio'][origen_nombre] = len(audios)
 
@@ -3346,12 +3364,12 @@ def detalle_audio_admin(request, audio_id):
             'fecha_audio': audio.fecha_audio,
             'id_pauta': audio.fk_pauta_terapeutica_id,
             'id_origen': audio.fk_origen_audio,
-            'rut_paciente': audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.id_paciente.id_usuario.numero_identificacion,
-            'primer_nombre_paciente': audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre,
-            'ap_paterno_paciente': audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno,
-            'tipo_profesional': audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.id_tp_usuario,
-            'primer_nombre_profesional':audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.primer_nombre,
-            'ap_paterno_profesional':audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.ap_paterno,
+            'rut_paciente': audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.numero_identificacion,
+            'primer_nombre_paciente': audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre,
+            'ap_paterno_paciente': audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno,
+            'tipo_profesional': audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.id_tp_usuario,
+            'primer_nombre_profesional':audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.primer_nombre,
+            'ap_paterno_profesional':audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.ap_paterno,
             #Relacion con
             'nombre_audio': audio_coeficiente_automatico.nombre_archivo if audio_coeficiente_automatico else None
         }

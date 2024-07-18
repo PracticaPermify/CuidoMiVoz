@@ -66,7 +66,7 @@
         </thead>
         <tbody>
           {% for audio_coef in datos_audiocoeficientes %}
-            {% with usuario=audio_coef.id_audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.id_paciente.id_usuario %}
+            {% with usuario=audio_coef.id_audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario %}
 
               <tr>
                 <td>{{ audio_coef.id_audiocoeficientes }}</td>
@@ -82,10 +82,10 @@
                   Pauta {{ audio_coef.id_audio.fk_pauta_terapeutica.id_pauta_terapeutica }}</a>
                 </th>
                 <td>{{ audio_coef.id_audio.fk_origen_audio }}</td>
-                <td>{{ audio_coef.id_audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.id_usuario }}</td>
+                <td>{{ audio_coef.id_audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.id_usuario }}</td>
                 <td>
-                  {{ audio_coef.id_audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.primer_nombre }} 
-                  {{ audio_coef.id_audio.fk_pauta_terapeutica.fk_informe.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.ap_paterno }}
+                  {{ audio_coef.id_audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.primer_nombre }} 
+                  {{ audio_coef.id_audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.ap_paterno }}
                 </td>
                 <td>{{ audio_coef.fecha_coeficiente }}</td>
                 <td>{{ audio_coef.f0 }}</td>

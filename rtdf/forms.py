@@ -261,12 +261,12 @@ class InformeForm(forms.ModelForm):
         label='Observación'
     )
 
-    tp_informe = forms.ModelChoiceField(
-        queryset=TpInforme.objects.filter(tipo_informe__in=['RASATI', 'GRBAS']),
+    tp_protocolo = forms.ModelChoiceField(
+        queryset=TpProtocolo.objects.filter(tipo_protocolo__in=['RASATI', 'GRBAS']),
         required=False,
-        empty_label="Tipo de informe",
-        widget=forms.Select(attrs={'class': 'form-control form-control-sm','id': 'tp_informe'}),
-        label='Tipo de Informe'
+        empty_label="Tipo de Protocolo",
+        widget=forms.Select(attrs={'class': 'form-control form-control-sm','id': 'tp_protocolo'}),
+        label='Tipo de Protocolo'
     )
 
     def __init__(self, *args, **kwargs):
@@ -278,14 +278,14 @@ class InformeForm(forms.ModelForm):
             self.fields['fk_relacion_pa_pro'].required = False
 
     class Meta:
-        model = Informe  
+        model = Protocolo  
         fields = [
             'fk_relacion_pa_pro', 
             'titulo', 
             'descripcion', 
             'fecha', 
             'observacion', 
-            'tp_informe'
+            'tp_protocolo'
         ]
 
         widgets = {
@@ -454,38 +454,7 @@ class VocalizacionForm(PautaTerapeuticaForm):
         label='Tempo'
     )
 
-    def clean_bpm(self):
-        bpm = self.cleaned_data.get('bpm')
-
-        if not bpm.isdigit():
-            raise forms.ValidationError('El BPM ingresado no es valido.')
-
-        bpm = int(bpm)
-
-        if not 20 <= bpm <= 280:
-            raise forms.ValidationError('BPM debe estar en el rango de 20 a 280.')
-
-        return bpm
-
-    def clean_tempo(self):
-        tempo = self.cleaned_data.get('tempo')
-
-        if not tempo.isdigit():
-            raise forms.ValidationError('El tempo del ejercicio no es valido.')
-
-        tempo = int(tempo)
-
-        if not 2 <= tempo <= 12:
-            raise forms.ValidationError('Tempo debe estar en el rango de 2 a 12.')
-
-        return tempo
-    
-    def clean_duracion_seg(self):
-        duracion_seg = self.cleaned_data['duracion_seg']
-        
-        if not duracion_seg.isnumeric():
-            raise ValidationError('La duración del ejercicio no es valido.')
-        return duracion_seg
+####aca van los mensajes validadores que saque
 
 
 
@@ -517,19 +486,19 @@ class IntensidadForm(PautaTerapeuticaForm):
     intensidad = forms.CharField(
         widget=forms.TextInput(attrs={'placeholder': 'Intensidad'}),
         required=False,
-        label='Duración en segundos'
+        label='Intensidad'
     )
 
     min_db = forms.CharField(
         widget=forms.TextInput(attrs={'placeholder': 'dB mínimo'}),
         required=False,
-        label='BPM'
+        label='Min db'
     )
 
     max_db = forms.CharField(
         widget=forms.TextInput(attrs={'placeholder': 'dB máximo'}),
         required=False,
-        label='BPM'
+        label='Max db'
     )
 
     class Meta:

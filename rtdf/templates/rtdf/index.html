@@ -62,8 +62,8 @@
                                                                     <th>ID de pauta</th>
                                                                     <th>Tipo de terapia</th>
                                                                     <th>Descripción</th>
-                                                                    <th>Informe asociado</th>
-                                                                    <th>Tipo de informe</th>
+                                                                    <th>Protocolo asociado</th>
+                                                                    <th>Tipo de protocolo</th>
                                                                     <th>Fecha de Inicio</th>
                                                                     <th>Fecha de Fin</th>
                                                                     <th>Empezar pauta</th>
@@ -75,8 +75,8 @@
                                                                     <td>{{ pauta_terapeutica.id_pauta_terapeutica }}</td>
                                                                     <td>{{ pauta_terapeutica.fk_tp_terapia }}</td>
                                                                     <td>{{ pauta_terapeutica.descripcion|truncatechars:150 }}</td>
-                                                                    <td>{{ pauta_terapeutica.fk_informe }}</td>
-                                                                    <td>{{ pauta_terapeutica.fk_informe.tp_informe }}</td>
+                                                                    <td>{{ pauta_terapeutica.fk_protocolo }}</td>
+                                                                    <td>{{ pauta_terapeutica.fk_protocolo.tp_protocolo }}</td>
                                                                     <td>{{ pauta_terapeutica.fecha_inicio }}</td>
                                                                     <td>{{ pauta_terapeutica.fecha_fin }}</td>
                                                                     <td>
@@ -126,8 +126,8 @@
                                                                     <th>ID de pauta</th>
                                                                     <th>Tipo de terapia</th>
                                                                     <th>Descripción</th>
-                                                                    <th>Informe asociado</th>
-                                                                    <th>Tipo de informe</th>
+                                                                    <th>Protocolo asociado</th>
+                                                                    <th>Tipo de protocolo</th>
                                                                     <th>Fecha de Inicio</th>
                                                                     <th>Fecha de Fin</th>
                                                                     <th>Empezar pauta</th>
@@ -139,8 +139,8 @@
                                                                     <td>{{ pauta_terapeutica.id_pauta_terapeutica }}</td>
                                                                     <td>{{ pauta_terapeutica.fk_tp_terapia }}</td>
                                                                     <td>{{ pauta_terapeutica.descripcion|truncatechars:150 }}</td>
-                                                                    <td>{{ pauta_terapeutica.fk_informe }}</td>
-                                                                    <td>{{ pauta_terapeutica.fk_informe.tp_informe }}</td>
+                                                                    <td>{{ pauta_terapeutica.fk_protocolo }}</td>
+                                                                    <td>{{ pauta_terapeutica.fk_protocolo.tp_protocolo }}</td>
                                                                     <td>{{ pauta_terapeutica.fecha_inicio }}</td>
                                                                     <td>{{ pauta_terapeutica.fecha_fin }}</td>
                                                                     <td>Pauta terminada o expirada</td>

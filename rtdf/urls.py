@@ -34,12 +34,12 @@ urlpatterns = [
     path('obtener_comunas/', views.obtener_comunas, name='obtener_comunas'),
     path('obtener_instituciones/', views.obtener_instituciones, name='obtener_instituciones'),
     path('ingresar_informes/', views.ingresar_informes, name='ingresar_informes'),
-    path('editar_informe/<int:informe_id>/', views.editar_informe, name='editar_informe'),
-    path('eliminar_informe/<int:informe_id>/', views.eliminar_informe, name='eliminar_informe'),
-    path('eliminar_informe_admin/<int:informe_id>/', views.eliminar_informe_admin, name='eliminar_informe_admin'),
-    path('detalle_informe/<int:informe_id>/', views.detalle_informe, name='detalle_informe'),
-    path('detalle_prof_infor/<int:informe_id>/', views.detalle_prof_infor, name='detalle_prof_infor'),
-    path('editar_informe_admin/<int:informe_id>/', views.editar_informe_admin, name='editar_informe_admin'),
+    path('editar_informe/<int:protocolo_id>/', views.editar_informe, name='editar_informe'),
+    path('eliminar_informe/<int:protocolo_id>/', views.eliminar_informe, name='eliminar_informe'),
+    path('eliminar_informe_admin/<int:protocolo_id>/', views.eliminar_informe_admin, name='eliminar_informe_admin'),
+    path('detalle_informe/<int:protocolo_id>/', views.detalle_informe, name='detalle_informe'),
+    path('detalle_prof_infor/<int:protocolo_id>/', views.detalle_prof_infor, name='detalle_prof_infor'),
+    path('editar_informe_admin/<int:protocolo_id>/', views.editar_informe_admin, name='editar_informe_admin'),
     path('pacientes_disponibles/', views.pacientes_disponibles, name='pacientes_disponibles'),
     path('agregar_paciente/<int:paciente_id>/', views.agregar_paciente, name='agregar_paciente'),
     path('desvincular_paciente/<int:paciente_id>/', views.desvincular_paciente, name='desvincular_paciente'),
@@ -58,12 +58,12 @@ urlpatterns = [
     path('editar_pauta_admin/<int:id_pauta_terapeutica_id>/', views.editar_pauta_admin, name='editar_pauta_admin'),
     path('eliminar_pauta_admin/<int:id_pauta_terapeutica_id>/', views.eliminar_pauta_admin, name='eliminar_pauta_admin'),
     path('esv/', views.esv, name='esv'),
-    path('detalle_esv/<int:informe_id>/', views.detalle_esv, name='detalle_esv'),
-    path('editar_esv/<int:informe_id>/', views.editar_esv, name='editar_esv'),
-    path('eliminar_informe_esv/<int:informe_id>/', views.eliminar_informe_esv, name='eliminar_informe_esv'),
-    path('detalle_esv_admin/<int:informe_id>/', views.detalle_esv_admin, name='detalle_esv_admin'),
+    path('detalle_esv/<int:protocolo_id>/', views.detalle_esv, name='detalle_esv'),
+    path('editar_esv/<int:protocolo_id>/', views.editar_esv, name='editar_esv'),
+    path('eliminar_informe_esv/<int:protocolo_id>/', views.eliminar_informe_esv, name='eliminar_informe_esv'),
+    path('detalle_esv_admin/<int:protocolo_id>/', views.detalle_esv_admin, name='detalle_esv_admin'),
 
-    path('eliminar_esv_admin/<int:informe_id>/', views.eliminar_esv_admin, name='eliminar_esv_admin'),
+    path('eliminar_esv_admin/<int:protocolo_id>/', views.eliminar_esv_admin, name='eliminar_esv_admin'),
     
     path('analisis_admin/', views.analisis_admin, name='analisis_admin'),
     path('analisis_profe/', views.analisis_profe, name='analisis_profe'),
@@ -84,7 +84,7 @@ urlpatterns = [
     path('editar_pauta_esv/<int:pauta_id>/', views.editar_pauta_esv, name='editar_pauta_esv'),
     path('eliminar_pauta_esv/<int:pauta_id>/', views.eliminar_pauta_esv, name='eliminar_pauta_esv'),
 
-    path('editar_esv_admin/<int:informe_id>/', views.editar_esv_admin, name='editar_esv_admin'),
+    path('editar_esv_admin/<int:protocolo_id>/', views.editar_esv_admin, name='editar_esv_admin'),
 
     #RECUPERAR CONTRASEÑA
     path('recuperar_pw/', views.CustomPasswordResetView.as_view(), name='custom_password_reset'),
@@ -94,7 +94,7 @@ urlpatterns = [
 
     path('perfil/<int:usuario_id>/', views.perfil, name='perfil'),
     path('editar_perfil/<int:usuario_id>/', views.editar_perfil, name='editar_perfil'),
-    path('analisis_estadistico_profe/<int:informe_id>/', views.analisis_estadistico_profe, name='analisis_estadistico_profe'),
+    path('analisis_estadistico_profe/<int:protocolo_id>/', views.analisis_estadistico_profe, name='analisis_estadistico_profe'),
     
 
 ]

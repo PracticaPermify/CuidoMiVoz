@@ -16,12 +16,12 @@
                 <div class="mb-4 mt-3">
                     <header class="row text-left titulo_header">
                         <div class="col-lg-8">
-                            <a class="btn btn-outline-primary" href="{% url 'detalle_informe' informe.id_informe %}"><i class="fa-solid fa-arrow-left"></i> Volver al detalle del informe</a>
+                            <a class="btn btn-outline-primary" href="{% url 'detalle_informe' informe.id_protocolo %}"><i class="fa-solid fa-arrow-left"></i> Volver al detalle del informe</a>
                         </div>
                     </header>
                 </div>
 
-                <h1 class="card-title text-center">Editar Informe {{ informe.id_informe }} de 
+                <h1 class="card-title text-center">Editar Protocolo N°{{ informe.id_protocolo }} de 
                     {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre }}
                     {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno }}</h1>
 
@@ -80,17 +80,17 @@
         </div>
 
         <div id="div_tp_informe"  class="form-group col-md-4">
-            <label for="tp_informe">Tipo de Informe:</label>
-            <select id="tp_informe" name="{{ form.tp_informe.name }}" class="form-control form-control-sm" readonly>
-                {% for choice in form.tp_informe.field.choices %}
-                    <option value="{{ choice.0 }}" {% if choice.0 == form.tp_informe.value %}selected{% endif %}>
+            <label for="tp_informe">Tipo de Protocolo:</label>
+            <select id="tp_informe" name="{{ form.tp_protocolo.name }}" class="form-control form-control-sm" readonly>
+                {% for choice in form.tp_protocolo.field.choices %}
+                    <option value="{{ choice.0 }}" {% if choice.0 == form.tp_protocolo.value %}selected{% endif %}>
                         {{ choice.1 }}</option>
                 {% endfor %}
             </select>
         </div>
 
         <!-- Verificar si tiene un tipo de informe asociado -->
-        {% if informe.tp_informe.tipo_informe == 'GRBAS' %}
+        {% if informe.tp_protocolo.tipo_protocolo == 'GRBAS' %}
         <div class="titulo-tp">
             <h3 class="hh3"> CAMPOS GRBAS</h3>
         </div>
@@ -129,7 +129,7 @@
         {% endif %}
 
         <!-- Campos para RASATI si es un informe de tipo RASATI -->
-        {% if informe.tp_informe.tipo_informe == 'RASATI' %}
+        {% if informe.tp_protocolo.tipo_protocolo == 'RASATI' %}
         <div class="titulo-tp">
             <h3 class="hh3"> CAMPOS RASATI</h3>
         </div>

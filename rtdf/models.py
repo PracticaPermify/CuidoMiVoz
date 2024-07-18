@@ -99,7 +99,7 @@ class EscalaVocales(models.Model):
 
 
 class Esv(models.Model):
-    id_informe = models.OneToOneField('Informe', on_delete=models.CASCADE, db_column='id_informe', primary_key=True)
+    id_protocolo = models.OneToOneField('Protocolo', on_delete=models.CASCADE, db_column='id_protocolo', primary_key=True)
     total_esv = models.IntegerField()
     limitacion = models.IntegerField()
     emocional = models.IntegerField()
@@ -128,7 +128,7 @@ class FamiliarPaciente(models.Model):
         return f'{self.fk_tipo_familiar}: {self.id_usuario.primer_nombre} {self.id_usuario.ap_paterno}'
 
 class Grbas(models.Model):
-    id_informe = models.OneToOneField('Informe', on_delete=models.CASCADE, db_column='id_informe', primary_key=True)
+    id_protocolo = models.OneToOneField('Protocolo', on_delete=models.CASCADE, db_column='id_protocolo', primary_key=True)
     g_grado_disfonia = models.CharField(max_length=30)
     r_aspereza = models.CharField(max_length=30)
     b_soplo = models.CharField(max_length=30)
@@ -142,22 +142,22 @@ class Grbas(models.Model):
     # def __str__(self):
     #     return self.id_informe    
 
-class Informe(models.Model):
-    id_informe = models.AutoField(primary_key=True)
+class Protocolo(models.Model):
+    id_protocolo = models.AutoField(primary_key=True)
     titulo = models.CharField(max_length=100)
     descripcion = models.CharField(max_length=200)
     fecha = models.DateTimeField()
     observacion = models.TextField()
     fk_relacion_pa_pro = models.ForeignKey('RelacionPaPro', on_delete=models.PROTECT, db_column='fk_relacion_pa_pro')
     id_audio = models.ForeignKey(Audio, on_delete=models.PROTECT, db_column='id_audio', blank=True, null=True)
-    tp_informe = models.ForeignKey('TpInforme', on_delete=models.PROTECT)
+    tp_protocolo = models.ForeignKey('TpProtocolo', on_delete=models.PROTECT)
 
     class Meta:
-        db_table = 'informe'
-        verbose_name_plural = "informe"
+        db_table = 'protocolo'
+        verbose_name_plural = "protocolos"
     
     def __str__(self):
-        return f'Informe: {self.id_informe}' 
+        return f'Protocolo: {self.id_protocolo}' 
 
 
 class Institucion(models.Model):
@@ -249,14 +249,14 @@ class PautaTerapeutica(models.Model):
     comentario = models.CharField(max_length=200)
     fk_tp_terapia = models.ForeignKey('TpTerapia',on_delete= models.PROTECT, db_column='fk_tp_terapia')
     # fk_relacion_pa_pro = models.ForeignKey('RelacionPaPro', models.DO_NOTHING, db_column='fk_relacion_pa_pro')
-    fk_informe = models.ForeignKey('Informe', on_delete=models.CASCADE, db_column='fk_informe',default=1)
+    fk_protocolo = models.ForeignKey('Protocolo', on_delete=models.CASCADE, db_column='fk_protocolo',default=1)
 
     class Meta:
         db_table = 'pauta_terapeutica'
         verbose_name_plural = "Pauta terapéutica"
 
     def __str__(self):
-        return f'Pauta: {self.id_pauta_terapeutica} | Paciente: {self.fk_informe.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre} {self.fk_informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno}'
+        return f'Pauta: {self.id_pauta_terapeutica} | Paciente: {self.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre} {self.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno}'
 
 
 
@@ -312,7 +312,7 @@ class Provincia(models.Model):
 
 
 class Rasati(models.Model): 
-    id_informe = models.OneToOneField(Informe, on_delete=models.CASCADE, db_column='id_informe', primary_key=True)
+    id_protocolo = models.OneToOneField(Protocolo, on_delete=models.CASCADE, db_column='id_protocolo', primary_key=True)
     r_ronquedad = models.CharField(max_length=10)
     a_aspereza = models.CharField(max_length=10)
     s_soplo = models.CharField(max_length=10)
@@ -410,16 +410,16 @@ class TipoHipertension(models.Model):
         return self.tipo_hipertension
 
 
-class TpInforme(models.Model):
-    tp_informe_id = models.AutoField(primary_key=True)
-    tipo_informe = models.CharField(max_length=30)
+class TpProtocolo(models.Model):
+    tp_protocolo_id = models.AutoField(primary_key=True)
+    tipo_protocolo = models.CharField(max_length=30)
 
     class Meta:
-        db_table = 'tp_informe'
-        verbose_name_plural = 'tipo informe'
+        db_table = 'tp_protocolo'
+        verbose_name_plural = 'tipo protocolos'
 
     def __str__(self):
-        return self.tipo_informe
+        return self.tipo_protocolo
     
 class TpLlenado(models.Model):
     id_tipo_llenado = models.AutoField(primary_key=True)

@@ -14,10 +14,10 @@
             <div class="card-body">
                     
                 <div class="mb-4 mt-3">
-                    <a class="btn btn-outline-primary" href="{% url 'detalle_prof_infor' informe.id_informe %}"><i class="fa-solid fa-arrow-left"></i> Volver al detalle del informe</a>
+                    <a class="btn btn-outline-primary" href="{% url 'detalle_prof_infor' informe.id_protocolo %}"><i class="fa-solid fa-arrow-left"></i> Volver al detalle del protocolo</a>
                 </div>
 
-                <h1 class="card-title text-center">Editar Informe {{ informe.id_informe }} de 
+                <h1 class="card-title text-center">Editar Protocolo N°{{ informe.id_protocolo }} de 
                     {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre }}
                     {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno }}</h1>
                 <div class="card-text">
@@ -72,10 +72,10 @@
         </div>
 
         <div id="div_tp_informe" class="form-group col-md-4">
-            <label for="tp_informe">Tipo de Informe:</label>
-            <select id="tp_informe" name="{{ form.tp_informe.name }}" class="form-control form-control-sm" readonly>
-                {% for choice in form.tp_informe.field.choices %}
-                    <option value="{{ choice.0 }}" {% if choice.0 == form.tp_informe.value %}selected{% endif %}>
+            <label for="tp_informe">Tipo de protocolo:</label>
+            <select id="tp_informe" name="{{ form.tp_protocolo.name }}" class="form-control form-control-sm" readonly>
+                {% for choice in form.tp_protocolo.field.choices %}
+                    <option value="{{ choice.0 }}" {% if choice.0 == form.tp_protocolo.value %}selected{% endif %}>
                         {{ choice.1 }}</option>
                 {% endfor %}
             </select>

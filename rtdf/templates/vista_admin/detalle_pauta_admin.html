@@ -14,7 +14,7 @@
     <div>
         <header class="row text-left titulo_header">
             <div class="col-lg-8">
-                <a class="btn btn-outline-primary" href="{{ url_regreso }}"> <i class="fa-solid fa-arrow-left"></i> Volver al detalle informe</a>
+                <a class="btn btn-outline-primary" href="{{ url_regreso }}"> <i class="fa-solid fa-arrow-left"></i> Volver al detalle protocolo</a>
             </div>
         </header>
     </div>
@@ -48,8 +48,8 @@
               </tr>
               {% endif %}
               <tr>
-                <th>Tipo de informe</th>
-                <td>{{ pauta.fk_informe.tp_informe}}</td>
+                <th>Tipo de protocolo</th>
+                <td>{{ pauta.fk_protocolo.tp_protocolo}}</td>
               </tr>   
               <tr>
                 <th>Cantidad de veces al día</th>
@@ -103,8 +103,8 @@
               {% endif %}
 
             <tr>
-            <th>Tipo de informe</th>
-            <td>{{ pauta.fk_informe.tp_informe}}</td>
+            <th>Tipo de protocolo</th>
+            <td>{{ pauta.fk_protocolo.tp_protocolo}}</td>
             </tr>     
             <tr>
             <th>Cantidad de veces al día</th>

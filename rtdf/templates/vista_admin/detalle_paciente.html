@@ -116,9 +116,9 @@
 
   
   </br>
-  <h2><strong>Informes GRBAS</strong></h2>
+  <h2><strong>Protocolos GRBAS</strong></h2>
 
-  <p class="texto_pauta">Aquí se enumeran todos los informes GRBAS del paciente. Para obtener más información, haz clic en el id en azul del informe GRBAS:</p>
+  <p class="texto_pauta">Aquí se enumeran todos los protocolos GRBAS del paciente. Para obtener más información, haz clic en el id en azul del protocolo GRBAS:</p>
   </br>
 
   <section id="tabla_fonos">
@@ -126,8 +126,8 @@
       <table class="table">
           <thead class="thead-dark">
             <tr>
-              <th scope="col">ID informe</th>
-              <th scope="col">Fecha del informe</th>
+              <th scope="col">ID protocolo</th>
+              <th scope="col">Fecha del protocolo</th>
               <th scope="col">Grado disfonia</th>
               <th scope="col">Rugosidad de voz</th>
               <th scope="col">B (Respiracion dificultosa)</th>
@@ -138,8 +138,8 @@
           <tbody>
             {% for informe in informes_grbas %}
             <tr>
-              <th><a href="{% url 'detalle_informe' informe.id_informe.id_informe %}">Informe {{ informe.id_informe.id_informe}}</a></td>
-              <td>{{ informe.id_informe.fecha }}</th>
+              <th><a href="{% url 'detalle_informe' informe.id_protocolo.id_protocolo %}">Protocolo {{ informe.id_protocolo.id_protocolo}}</a></td>
+              <td>{{ informe.id_protocolo.fecha }}</th>
               <td class="valor-traducir">{{ informe.g_grado_disfonia }}</td>
               <td class="valor-traducir" >{{ informe.r_aspereza }}</td>
               <td class="valor-traducir" >{{ informe.b_soplo }}</td>
@@ -148,7 +148,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="8">Este paciente aún no cuenta con informes GRBAS adjuntos.</td>
+                <td colspan="8">Este paciente aún no cuenta con protocolos GRBAS adjuntos.</td>
             </tr>
             {% endfor %}   
           </tbody>
@@ -156,9 +156,9 @@
       </div>
     </section>    
 
-  <h2><strong>Informes RASATI</strong></h2>
+  <h2><strong>Protocolos RASATI</strong></h2>
 
-  <p class="texto_pauta">Aquí se enumeran todos los informes RASATI del paciente. Para obtener más información, haz clic en el id en azul del informe RASATI:</p>
+  <p class="texto_pauta">Aquí se enumeran todos los protocolos RASATI del paciente. Para obtener más información, haz clic en el id en azul del protocolo RASATI:</p>
 
   </br>
 
@@ -167,8 +167,8 @@
       <table class="table">
           <thead class="thead-dark">
             <tr>
-              <th scope="col">ID informe</th>
-              <th scope="col">Fecha del informe</th>
+              <th scope="col">ID protocolo</th>
+              <th scope="col">Fecha del protocolo</th>
               <th scope="col">Ronquera</th>
               <th scope="col">Aspereza</th>
               <th scope="col">Soplosidad</th>
@@ -180,9 +180,9 @@
           <tbody>
             {% for informe in informes_rasati %}
             <tr>
-              <th><a href="{% url 'detalle_informe' informe.id_informe.id_informe %}">
-                Informe {{ informe.id_informe.id_informe}}</a></th>
-              <td>{{ informe.id_informe.fecha }}</td>
+              <th><a href="{% url 'detalle_informe' informe.id_protocolo.id_protocolo %}">
+                Protocolo {{ informe.id_protocolo.id_protocolo}}</a></th>
+              <td>{{ informe.id_protocolo.fecha }}</td>
               <td class="valor-traducir">{{ informe.r_ronquedad }}</td>
               <td class="valor-traducir">{{ informe.a_aspereza }}</td>
               <td class="valor-traducir">{{ informe.s_soplo }}</td>
@@ -192,7 +192,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="8">Este paciente aún no cuenta con informes RASATI adjuntos.</td>
+                <td colspan="8">Este paciente aún no cuenta con protocolos RASATI adjuntos.</td>
             </tr>
             {% endfor %}   
           </tbody>
@@ -200,9 +200,9 @@
       </div>
   </section>
 
-  <h2><strong>Informes ESV</strong></h2>
+  <h2><strong>Protocolos ESV</strong></h2>
 
-  <p class="texto_pauta">Aquí se enumeran todos los informes ESV del paciente. Para obtener más información, haz clic en el id en azul del informe ESV:</p>
+  <p class="texto_pauta">Aquí se enumeran todos los protocolos ESV del paciente. Para obtener más información, haz clic en el id en azul del protocolo ESV:</p>
 
   </br>
 
@@ -211,8 +211,8 @@
       <table class="table">
           <thead class="thead-dark">
             <tr>
-              <th scope="col">ID informe</th>
-              <th scope="col">Fecha del informe</th>
+              <th scope="col">ID protocolo</th>
+              <th scope="col">Fecha del protocolo</th>
               <th scope="col">Total ESV</th>
               <th scope="col">Limitacion ESV</th>
               <th scope="col">Emocional ESV</th>
@@ -222,9 +222,9 @@
           <tbody>
             {% for informe in informes_esv %}
             <tr>
-              <th><a href="{% url 'detalle_esv_admin' informe.id_informe.id_informe %}">
-                Informe {{ informe.id_informe.id_informe}}</th>
-              <td>{{ informe.id_informe.fecha }}</td>
+              <th><a href="{% url 'detalle_esv_admin' informe.id_protocolo.id_protocolo %}">
+                Protocolo {{ informe.id_protocolo.id_protocolo}}</th>
+              <td>{{ informe.id_protocolo.fecha }}</td>
               <td>{{ informe.total_esv }}</td>
               <td>{{ informe.limitacion }}</td>
               <td>{{ informe.emocional }}</td>
@@ -232,7 +232,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="8">Este paciente aún no cuenta con informes ESV adjuntos.</td>
+                <td colspan="8">Este paciente aún no cuenta con protocolos ESV adjuntos.</td>
             </tr>
             {% endfor %}   
           </tbody>

@@ -39,7 +39,7 @@ entorno = 'local_felipe'
 if entorno == "local_felipe":
 
     host= '127.0.0.1'
-    db_name= 'rtdf_beta'
+    db_name= 'rtdf_beta2'
     db_user= 'root'
     db_pw= 'root'
     db_host= 'localhost'
@@ -76,6 +76,16 @@ elif entorno == 'capstone':
     db_user= 'RTDFCapstone'
     db_pw= 'rtdfdev2023'
     db_host= 'RTDFCapstone.mysql.pythonanywhere-services.com'
+
+
+elif entorno == 'mivoz':
+
+    host= 'cuidomivozchile.pythonanywhere.com'
+    db_name= 'cuidomivozchile$RTDF_PA'
+    db_user= 'cuidomivozchile'
+    db_pw= 'root1234'
+    db_host= 'cuidomivozchile.mysql.pythonanywhere-services.com'
+
 
 else:
 

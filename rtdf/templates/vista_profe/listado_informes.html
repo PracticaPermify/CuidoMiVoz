@@ -30,8 +30,8 @@
         <section id="tabla_fonos">
 
             <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
-                <h1 class=" display-5 fw-bolder sub_titulo">Listado de  <span class="span_title"> informes </span></h1>
-                <p class="texto_pauta">Aquí se enumeran todos los informes RASATI y GRBAS completados para sus pacientes. Para obtener más información, haz clic en el nombre en azul del informe:</p>
+                <h1 class=" display-5 fw-bolder sub_titulo">Listado de  <span class="span_title"> protocolos </span></h1>
+                <p class="texto_pauta">Aquí se enumeran todos los protocolos RASATI y GRBAS completados para sus pacientes. Para obtener más información, haz clic en el nombre en azul del informe:</p>
             </div>
 
             <div class="col-lg-12 col-xl-12 col-xxl-12">
@@ -42,9 +42,9 @@
                 <table class="table">
                     <thead class="thead-dark">
                         <tr>
-                            <th>ID informe</th>
+                            <th>ID protocolo</th>
                             <th>Paciente</th>
-                            <th>Tipo de informe</th>
+                            <th>Tipo de protocolo</th>
                             <th>Título</th>
                             <th>Descripción</th>
                             <th>Fecha</th>
@@ -53,13 +53,13 @@
                     </thead>
                     <tbody>
                         {% for informe in page %}
-                            {% if informe.tp_informe.tipo_informe == "GRBAS" or informe.tp_informe.tipo_informe == "RASATI" %}
+                            {% if informe.tp_protocolo.tipo_protocolo == "GRBAS" or informe.tp_protocolo.tipo_protocolo == "RASATI" %}
                                 <tr>
-                                    <th><a href="{% url 'detalle_prof_infor' informe.id_informe %}">
-                                        Informe {{ informe.id_informe }}</a></th>
+                                    <th><a href="{% url 'detalle_prof_infor' informe.id_protocolo %}">
+                                        Protocolo {{ informe.id_protocolo }}</a></th>
                                     <td>{{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre }} 
                                         {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno }}</td>
-                                    <td>{{ informe.tp_informe.tipo_informe }}</td>
+                                    <td>{{ informe.tp_protocolo.tipo_protocolo }}</td>
                                     <td>{{ informe.titulo }}</td>
                                     <td>{{ informe.descripcion }}</td>
                                     <td>{{ informe.fecha }}</td>
@@ -124,8 +124,8 @@
         <section id="tabla_fonos">
 
             <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
-                <h1 class=" display-5 fw-bolder sub_titulo">Listado de  <span class="span_title"> informe ESV </span></h1>
-                <p class="texto_pauta">Aquí se enumeran todos los informes de escala de síntomas vocales completados para sus pacientes. Para obtener más información, haz clic en el nombre en azul del informe:</p>
+                <h1 class=" display-5 fw-bolder sub_titulo">Listado de  <span class="span_title"> protocolos ESV </span></h1>
+                <p class="texto_pauta">Aquí se enumeran todos los protocolos de escala de síntomas vocales completados para sus pacientes. Para obtener más información, haz clic en el nombre en azul del informe:</p>
             </div>
 
             <div class="col-lg-12 col-xl-12 col-xxl-12">
@@ -133,7 +133,7 @@
                     <table class="table">
                         <thead class="thead-dark">
                             <tr>
-                                <th>ID informe ESV</th>
+                                <th>ID protocolo ESV</th>
                                 <th>Paciente ESV</th>
                                 <th>Fecha ESV</th>
                                 <th>Puntaje Total ESV</th>
@@ -144,10 +144,10 @@
                         </thead>
                         <tbody>
                             {% for informe in page %}
-                                {% if informe.tp_informe.tipo_informe == "ESV" %}
+                                {% if informe.tp_protocolo.tipo_protocolo == "ESV" %}
                                     <tr>
-                                        <th><a href="{% url 'detalle_esv' informe.id_informe %}">
-                                            ESV {{ informe.id_informe }}</a></th>
+                                        <th><a href="{% url 'detalle_esv' informe.id_protocolo %}">
+                                            ESV {{ informe.id_protocolo }}</a></th>
                                         <td>{{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre }} 
                                             {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno }}</td>
                                         <td>{{ informe.fecha }}</td>

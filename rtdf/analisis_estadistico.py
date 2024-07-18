@@ -5,10 +5,10 @@ from .models import *
 from django.db.models import Count
 from plotly.subplots import make_subplots
 
-def generar_grafico(informe_id):
+def generar_grafico(protocolo_id):
     fig = go.Figure()
 
-    pautas = PautaTerapeutica.objects.filter(fk_informe=informe_id)
+    pautas = PautaTerapeutica.objects.filter(fk_protocolo=protocolo_id)
 
     for pauta in pautas:
         audios_por_dia = Audio.objects.filter(fk_pauta_terapeutica=pauta) \

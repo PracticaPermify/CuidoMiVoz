@@ -81,8 +81,8 @@
       <section id="tabla_fonos">
 
         <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
-            <h1 class=" display-5 fw-bolder sub_titulo">Listado de informes <span class="span_title"> GRBAS </span></h1>
-            <p class="texto_pauta">Aquí se enumeran todos los informes GRBAS relacionados al pacientes. Para obtener más información, haz clic en el id en azul del informe:</p>
+            <h1 class=" display-5 fw-bolder sub_titulo">Listado de protocolos <span class="span_title"> GRBAS </span></h1>
+            <p class="texto_pauta">Aquí se enumeran todos los protocolos GRBAS relacionados al pacientes. Para obtener más información, haz clic en el id en azul del informe:</p>
         </div>
 
         <div class="col-lg-12 col-xl-12 col-xxl-12">
@@ -90,8 +90,8 @@
             <table class="table">
                 <thead class="thead-dark">
                   <tr>
-                    <th scope="col">ID informe</th>
-                    <th scope="col">Fecha del informe</th>
+                    <th scope="col">ID protocolo</th>
+                    <th scope="col">Fecha</th>
                     <th scope="col">Grado disfonia</th>
                     <th scope="col">Rugosidad de voz</th>
                     <th scope="col">B (Respiracion dificultosa)</th>
@@ -102,9 +102,9 @@
                 <tbody>
                   {% for informe in informes_grbas %}
                   <tr>
-                    <td><a href="{% url 'detalle_prof_infor' informe.id_informe.id_informe %}">
-                      Informe {{ informe.id_informe.id_informe}}</a></td>
-                    <td>{{ informe.id_informe.fecha }}</td>
+                    <td><a href="{% url 'detalle_prof_infor' informe.id_protocolo.id_protocolo %}">
+                      Protocolo {{ informe.id_protocolo.id_protocolo}}</a></td>
+                    <td>{{ informe.id_protocolo.fecha }}</td>
                     <td class="valor-traducir">{{ informe.g_grado_disfonia }}</td>
                     <td class="valor-traducir">{{ informe.r_aspereza }}</td>
                     <td class="valor-traducir">{{ informe.b_soplo }}</td>
@@ -126,8 +126,8 @@
     <section id="tabla_fonos">
 
       <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
-          <h1 class=" display-5 fw-bolder sub_titulo">Listado de informes <span class="span_title"> RASATI </span></h1>
-          <p class="texto_pauta">Aquí se enumeran todos los informes RASATI relacionados al pacientes. Para obtener más información, haz clic en el id en azul del informe:</p>
+          <h1 class=" display-5 fw-bolder sub_titulo">Listado de protocolos <span class="span_title"> RASATI </span></h1>
+          <p class="texto_pauta">Aquí se enumeran todos los protocolos RASATI relacionados al pacientes. Para obtener más información, haz clic en el id en azul del informe:</p>
       </div>
 
       <div class="col-lg-12 col-xl-12 col-xxl-12">
@@ -135,8 +135,8 @@
           <table class="table">
               <thead class="thead-dark">
                 <tr>
-                  <th scope="col">ID informe</th>
-                  <th scope="col">Fecha del informe</th>
+                  <th scope="col">ID protocolo</th>
+                  <th scope="col">Fecha</th>
                   <th scope="col">Ronquera</th>
                   <th scope="col">Aspereza</th>
                   <th scope="col">Soplosidad</th>
@@ -148,9 +148,9 @@
               <tbody>
                 {% for informe in informes_rasati %}
                 <tr>
-                  <td><a href="{% url 'detalle_prof_infor' informe.id_informe.id_informe %}">
-                    Informe {{ informe.id_informe.id_informe}}</a></td>
-                  <td>{{ informe.id_informe.fecha }}</td>
+                  <td><a href="{% url 'detalle_prof_infor' informe.id_protocolo.id_protocolo %}">
+                    Protocolo {{ informe.id_protocolo.id_protocolo}}</a></td>
+                  <td>{{ informe.id_protocolo.fecha }}</td>
                   <td class="valor-traducir">{{ informe.r_ronquedad }}</td>
                   <td class="valor-traducir">{{ informe.a_aspereza }}</td>
                   <td class="valor-traducir">{{ informe.s_soplo }}</td>

@@ -34,13 +34,13 @@
 							<a href="{% url 'listado_pacientes' %}">Listado de pacientes</a>
 						</li>
 						<li {% if request.path == '/listado_informes/' %}class="current"{% endif %}>
-							<a href="{% url 'listado_informes' %}">Listado de informes</a>
+							<a href="{% url 'listado_informes' %}">Listado de protocolos</a>
 						</li>
 						<li {% if request.path == '/ingresar_informes/' %}class="current"{% endif %}>
-							<a href="{% url 'ingresar_informes' %}">Ingresar informe</a>
+							<a href="{% url 'ingresar_informes' %}">Ingresar protocolo</a>
 						</li>
 						<li {% if request.path == '/esv/' %}class="current"{% endif %}>
-							<a href="{% url 'esv' %}">Escala de síntomas vocales (ESV)</a>
+							<a href="{% url 'esv' %}">Ingresar ESV</a>
 						</li>
 						<li {% if request.path == '/pacientes_disponibles/' %}class="current"{% endif %}><a href="{% url 'pacientes_disponibles' %}">Pacientes disponibles</a></li>
 						<li {% if request.path == '/analisis_profe/' %}class="current"{% endif %}>

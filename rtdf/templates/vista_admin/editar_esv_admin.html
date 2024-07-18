@@ -6,30 +6,31 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'app/css/css_admin/editar_esv_admin.css' %}"/>
 
+
 <body class="is-preload">
-    <div class="global-container">
-        <div class="card general-form">
-            <div class="card-body">
+  <div class="global-container">
+      <div class="card general-form">
+          <div class="card-body">
 
-                <div class="mb-4 mt-3">
-                  <a href="{% url 'detalle_esv_admin' informe.id_informe %}">Volver al detalle del informe ESV</a>
-                </div>
+              <div class="mb-4 mt-3">
+                <a class="btn btn-outline-primary" href="{% url 'detalle_esv_admin' informe.id_protocolo %}"><i class="fa-solid fa-arrow-left"></i> Volver al detalle del informe</a>
+              </div>
 
-                <h1 class="card-title text-center">Editar ESV {{ informe.id_informe }} de {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre }}
-                  {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno }}
-                  {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_materno }}</h1>
-                    
-                <div class="card-text">
+              <h1 class="card-title text-center">Editar ESV N°{{ informe.id_protocolo }} de {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre }}
+                {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno }}
+                {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_materno }}</h1>
+                  
+              <div class="card-text">
 
-                    {% if error_message %}
-                    <div class="alert alert-danger" role="alert">
-                        {{ error_message }}
-                    </div>
-                    {% endif %}
+                  {% if error_message %}
+                  <div class="alert alert-danger" role="alert">
+                      {{ error_message }}
+                  </div>
+                  {% endif %}
 
-                    <p class="required-message">
-                        <span class="asterisk">* </span> Campos requeridos
-                    </p>
+                  <p class="required-message">
+                      <span class="asterisk">* </span> Campos requeridos
+                  </p>
 <form method="post">
   {% csrf_token %}
 

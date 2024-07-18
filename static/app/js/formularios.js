@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-  let tipoUsuarioSelect = document.getElementById('tp_informe');
+  let tipoUsuarioSelect = document.getElementById('tp_protocolo');
   
   if (tipoUsuarioSelect) {
       tipoUsuarioSelect.addEventListener('change', function () {
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-  let tpInformeSelect = document.getElementById('tp_informe');
+  let tpInformeSelect = document.getElementById('tp_protocolo');
   let camposGrbas = document.querySelectorAll('.campos-grbas'); 
   let camposRasati = document.querySelectorAll('.campos-rasati'); 
 

@@ -23,20 +23,20 @@ class ComunaAdmin(admin.ModelAdmin):
     search_fields = ['id_comuna','comuna','id_provincia']
 
 class EsvAdmin(admin.ModelAdmin):
-    list_display = ['id_informe','total_esv','limitacion','emocional','fisico']
-    search_fields = ['id_informe','total_esv','limitacion','emocional','fisico']
+    list_display = ['id_protocolo','total_esv','limitacion','emocional','fisico']
+    search_fields = ['id_protocolo','total_esv','limitacion','emocional','fisico']
 
 class FamiliarPacienteAdmin(admin.ModelAdmin):
     list_display = ['id_familiar_paciente','fk_tipo_familiar']
     search_fields = ['id_familiar_paciente','fk_tipo_familiar']
 
 class GrbasAdmin(admin.ModelAdmin):
-    list_display = ['id_informe','g_grado_disfonia','r_aspereza', 'b_soplo', 'a_debilidad', 's_tension']
-    search_fields = ['id_informe','g_grado_disfonia','r_aspereza', 'b_soplo', 'a_debilidad', 's_tension']
+    list_display = ['id_protocolo','g_grado_disfonia','r_aspereza', 'b_soplo', 'a_debilidad', 's_tension']
+    search_fields = ['id_protocolo','g_grado_disfonia','r_aspereza', 'b_soplo', 'a_debilidad', 's_tension']
 
-class InformeAdmin(admin.ModelAdmin):
-    list_display = ['id_informe','titulo','descripcion', 'fecha', 'observacion']
-    search_fields = ['id_informe','titulo','descripcion', 'fecha', 'observacion']
+class ProtocoloAdmin(admin.ModelAdmin):
+    list_display = ['id_protocolo','titulo','descripcion', 'fecha', 'observacion']
+    search_fields = ['id_protocolo','titulo','descripcion', 'fecha', 'observacion']
 
 class InstitucionAdmin(admin.ModelAdmin):
     list_display = ['id_institucion','nombre_institucion','id_comuna']
@@ -75,8 +75,8 @@ class ProvinciaAdmin(admin.ModelAdmin):
     search_fields = ['id_provincia','provincia']
 
 class RasatiAdmin(admin.ModelAdmin):
-    list_display = ['id_informe','r_ronquedad','a_aspereza','s_soplo','a_astenia','t_tension','i_inestabilidad']
-    search_fields = ['id_informe','r_ronquedad','a_aspereza','s_soplo','a_astenia','t_tension','i_inestabilidad']
+    list_display = ['id_protocolo','r_ronquedad','a_aspereza','s_soplo','a_astenia','t_tension','i_inestabilidad']
+    search_fields = ['id_protocolo','r_ronquedad','a_aspereza','s_soplo','a_astenia','t_tension','i_inestabilidad']
 
 class RegionAdmin(admin.ModelAdmin):
     list_display = ['id_region','region','id_pais']
@@ -106,9 +106,9 @@ class TipoHipertensionAdmin(admin.ModelAdmin):
     list_display = ['id_tipo_hipertension','tipo_hipertension']
     search_fields = ['id_tipo_hipertension','tipo_hipertension']
 
-class TpInformeAdmin(admin.ModelAdmin):
-    list_display = ['tp_informe_id','tipo_informe']
-    search_fields = ['tp_informe_id','tipo_informe']
+class TpProtocoloAdmin(admin.ModelAdmin):
+    list_display = ['tp_protocolo_id','tipo_protocolo']
+    search_fields = ['tp_protocolo_id','tipo_protocolo']
 
 class TpLlenadoAdmin(admin.ModelAdmin):
     list_display = ['id_tipo_llenado','llenado']
@@ -146,7 +146,7 @@ admin.site.register(Comuna,ComunaAdmin)
 admin.site.register(Esv, EsvAdmin)
 admin.site.register(FamiliarPaciente,FamiliarPacienteAdmin)
 admin.site.register(Grbas, GrbasAdmin)
-admin.site.register(Informe, InformeAdmin)
+admin.site.register(Protocolo, ProtocoloAdmin)
 admin.site.register(Institucion, InstitucionAdmin)
 admin.site.register(OrigenAudio, OrigenAudioAdmin)
 admin.site.register(Paciente, PacienteAdmin)
@@ -162,7 +162,7 @@ admin.site.register(RelacionFp, RelacionFpAdmin)
 admin.site.register(RelacionPaPro, RelacionPaProAdmin)
 admin.site.register(TipoDiabetes, TipoDiabetesAdmin)
 admin.site.register(TipoHipertension, TipoHipertensionAdmin)
-admin.site.register(TpInforme, TpInformeAdmin)
+admin.site.register(TpProtocolo, TpProtocoloAdmin)
 admin.site.register(TpLlenado, TpLlenadoAdmin)
 admin.site.register(TpTerapia, TpTerapiaAdmin)
 admin.site.register(Validacion, ValidacionAdmin)

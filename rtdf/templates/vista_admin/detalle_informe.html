@@ -23,16 +23,16 @@
 
 <div class="container">
 
-    <h1>Detalles del informe {{ informe.id_informe }}</h1>
+    <h1>Detalles del protocolo N°{{ informe.id_protocolo }}</h1>
 
     </br>
 
 
-    <a href="#" onclick="eliminarInforme({{ informe.id_informe }})" class="btn btn-danger btn-derecha">
+    <a href="#" onclick="eliminarInforme({{ informe.id_protocolo }})" class="btn btn-danger btn-derecha">
         Eliminar <i class="fas fa-trash-alt" style="margin-left: 5px;"></i>
     </a>
 
-    <a href="{% url 'editar_informe_admin' informe.id_informe %}" class="btn btn-primary btn-derecha">
+    <a href="{% url 'editar_informe_admin' informe.id_protocolo %}" class="btn btn-primary btn-derecha">
         Editar <i class="fas fa-pencil-alt" style="margin-left: 5px;"></i>
     </a>
     
@@ -71,7 +71,7 @@
                 </tr>
 
                 <tr>
-                    <th>Tipo de informe</th>
+                    <th>Tipo de protocolo</th>
                     <td>GRBAS</td>
                 </tr>
                 <tr>
@@ -107,7 +107,7 @@
                 </tr>
                 {% endif %}
                 <tr>
-                    <th>Tipo de informe</th>
+                    <th>Tipo de protocolo</th>
                     <td>RASATI</td>
                 </tr>
                 <tr>

@@ -14,7 +14,7 @@
     <header class="row text-left titulo_header">
         <div class="col-lg-8">
 
-            <a class="btn btn-outline-primary" href="{{ url_regreso }}"><i class="fa-solid fa-arrow-left"></i> Volver a listado de informes</a>
+            <a class="btn btn-outline-primary" href="{{ url_regreso }}"><i class="fa-solid fa-arrow-left"></i> Volver a listado de protocolos</a>
 
         </div>
     </header>
@@ -24,12 +24,12 @@
     <section id="tabla_fonos">
 
         <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
-            <h1 class=" display-5 fw-bolder sub_titulo">Detalles del <span class="span_title"> Informe N°{{ informe.id_informe }} </span></h1>
+            <h1 class=" display-5 fw-bolder sub_titulo">Detalles del <span class="span_title"> Protocolo N°{{ informe.id_protocolo }} </span></h1>
         </div>
-            <a href="#" onclick="eliminarInforme({{ informe.id_informe }})" class="btn btn-danger btn-derecha">
+            <a href="#" onclick="eliminarInforme({{ informe.id_protocolo }})" class="btn btn-danger btn-derecha">
                 Eliminar <i class="fas fa-trash-alt" style="margin-left: 5px;"></i>
             </a>
-            <a href="{% url 'editar_informe' informe.id_informe %}" class="btn btn-primary btn-derecha">
+            <a href="{% url 'editar_informe' informe.id_protocolo %}" class="btn btn-primary btn-derecha">
                 Editar <i class="fas fa-pencil-alt" style="margin-left: 5px;"></i>
             </a>
         </br>
@@ -67,7 +67,7 @@
                             <td>{{ informe.fecha }}</td>
                         </tr>
                         <tr>
-                            <th>Tipo de informe:</th>
+                            <th>Tipo de protocolo:</th>
                             <td>GRBAS</td>
                         </tr>
                         <tr>
@@ -103,7 +103,7 @@
                         </tr>
                         {% endif %}
                         <tr>
-                            <th>Tipo de informe:</th>
+                            <th>Tipo de protocolo:</th>
                             <td>RASATI</td>
                         </tr>
                         <tr>
@@ -298,7 +298,7 @@
         
                 <div class="form-group col-md-4 col-sm-4">
         
-                    <a href="{% url 'analisis_estadistico_profe' informe.id_informe %}" class="btn btn-primary btn-derecha" style="margin-top: 5px;">
+                    <a href="{% url 'analisis_estadistico_profe' informe.id_protocolo %}" class="btn btn-primary btn-derecha" style="margin-top: 5px;">
                         Análisis estadístico <i class="fa-solid fa-chart-simple" style="margin-left: 5px;"></i>
                     </a>
                 </div>

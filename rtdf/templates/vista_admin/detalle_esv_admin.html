@@ -4,67 +4,74 @@
 
 {% load static %}
 
+<link rel="stylesheet" href="{% static 'app/css/tablas_titulo.css' %}"/>
 <link rel="stylesheet" href="{% static 'app/css/css_profesionales/detalle_prof_infor.css' %}"/>
 
 <div>
-  <a href="{% url 'detalle_paciente' paciente_relacionado.id_usuario.id_usuario %}">Volver a la información del paciente</a>
+  <header class="row text-left titulo_header">
+      <div class="col-lg-8">
+      <a class="btn btn-outline-primary" href="{% url 'detalle_paciente' paciente_relacionado.id_usuario.id_usuario %}"><i class="fa-solid fa-arrow-left"></i> Volver a la información del paciente</a>
+      </div>
+  </header>
 </div>
 
-</br>
-
-<h1>Detalle del Informe ESV</h1>
-
-</br>
-
-<a href="#" onclick="eliminarInformeEsv({{ informe.id_informe }})" class="btn btn-danger btn-derecha">
-  Eliminar<i class="fas fa-trash-alt" style="margin-left: 5px;"></i>
-</a>
-
-<a href="#" onclick="EditarInformeEsv({{ informe.id_informe }})" class="btn btn-primary btn-derecha">
-  Editar<i class="fas fa-pencil-alt" style="margin-left: 5px;"></i>
-</a>
-
-</br>
-
-<table>
-  <tr>
-    <th>ID del informe:</th>
-    <td>{{ informe.id_informe }}</td>
-  </tr>
-
-  <tr>
-    <th>Rut del paciente:</th>
-    <td>{{ paciente_relacionado.id_usuario.numero_identificacion }}</td>
-  </tr>
-
-  <tr>
-    <th>Paciente:</th>
-    <td>{{ paciente_relacionado.id_usuario.primer_nombre }} {{ paciente_relacionado.id_usuario.ap_paterno }}
-      {{ paciente_relacionado.id_usuario.ap_materno }}
-    </td>
-  </tr>
-
-  <tr>
-      <th>Fecha:</th>
-      <td>{{ informe.fecha }}</td>
-  </tr>
-  <tr>
-      <th>Título:</th>
-      <td>{{ informe.titulo }}</td>
-  </tr>
-  <tr>
-      <th>Descripción:</th>
-      <td>{{ informe.descripcion }}</td>
-  </tr>
-</table>
 
 
-</br>
+<section id="tabla_fonos">
 
+  <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+      <h1 class=" display-5 fw-bolder sub_titulo">Detalles del protocolo<span class="span_title"> ESV N°{{ informe.id_protocolo }} </span></h1>
+  </div>
 
-<button type="button" class="btn btn-primary btn-block" id="mostrar-formulario-btn">Agregar nueva pauta terapéutica</button>
+  <div class="col-lg-12 col-xl-12 col-xxl-12">
+      <div>
+          <a href="#" onclick="eliminarInformeEsv({{ informe.id_protocolo }})" class="btn btn-danger btn-derecha mb-3">
+              Eliminar<i class="fas fa-trash-alt" style="margin-left: 5px;"></i>
+          </a>
+          
+          
+          <a href="#" onclick="EditarInformeEsv({{ informe.id_protocolo }})" class="btn btn-primary btn-derecha">
+              Editar<i class="fas fa-pencil-alt" style="margin-left: 5px;"></i>
+          </a>
+      </div>
+      <div class="table-responsive">
+          <table class="table">
+              <tbody>
+              <tr>
+                  <th>ID del protocolo:</th>
+                  <td>{{ informe.id_protocolo }}</td>
+              </tr>
+          
+              <tr>
+                  <th>Rut del paciente:</th>
+                  <td>{{ paciente_relacionado.id_usuario.numero_identificacion }}</td>
+              </tr>
+          
+              <tr>
+                  <th>Paciente:</th>
+                  <td>{{ paciente_relacionado.id_usuario.primer_nombre }} {{ paciente_relacionado.id_usuario.ap_paterno }}
+                      {{ paciente_relacionado.id_usuario.ap_materno }}
+                  </td>
+              </tr>
+          
+              <tr>
+                  <th>Fecha:</th>
+                  <td>{{ informe.fecha }}</td>
+              </tr>
+              <tr>
+                  <th>Título:</th>
+                  <td>{{ informe.titulo }}</td>
+              </tr>
+              <tr>
+                  <th>Descripción:</th>
+                  <td>{{ informe.descripcion }}</td>
+              </tr>
+          </tbody>
+          </table>
+      </div>
 
-</br>
+      <button type="button" class="btn btn-primary btn-block" id="mostrar-formulario-btn">Agregar nueva pauta terapéutica</button>
+  </div>
 
 <div class="container">
     <div id="formulario-pauta" class="general-form" style="display: none;">
@@ -153,69 +160,81 @@
 </div>
 
 
-</br>
-
-  <h2>Puntaje del paciente ESV</h2>
-
-</br>
-
-<table class="table">
-  <thead class="thead-dark">
-    <tr>
-      <th>Total ESV</th>
-      <th>Limitacion ESV</th>
-      <th>Emocional ESV</th>
-      <th>Fisico ESV</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row">{{ informe.esv.total_esv }}</th>
-      <td>{{ informe.esv.limitacion }}</td>
-      <td>{{ informe.esv.emocional }}</td>
-      <td>{{ informe.esv.fisico }}</td>
-    </tr>
-  </tbody>
-</table>
 
 
-</br>
+<section id="tabla_fonos">
 
-<h2>Pauta terapeutica: Escala vocal</h2>
+  <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+      <h1 class=" display-5 fw-bolder sub_titulo">Puntajes del<span class="span_title"> Paciente ESV </span></h1>
+      <p class="texto_pauta">Puntajes obtenidos por el pacientes asociados a sus respuestas en el informe de Escala de Síntomas Vocales.</p>
+  </div>
 
-<table class="table">
-  <thead class="thead-dark">
-    <tr>
-      <th scope="col">
-        Pauta {{ pauta.id_pauta_terapeutica.id }}
-    </th>
-      <th scope="col">N° veces al día</th>
-      <th scope="col">Fecha de inicio</th>
-      <th scope="col">Fecha de fin</th>
-      <th scope="col">Descripción</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for pauta in pautas_terapeuticas %}
-      <tr>
-        <th scope="row">
-            <a href="{% url 'detalle_pauta_esv_admin' pauta.id_pauta_terapeutica %}">
-            Pauta {{ pauta.id_pauta_terapeutica }}
-            </a>
-          </a>
-        </th>
-        <td>{{ pauta.cant_veces_dia }}</td>
-        <td>{{ pauta.fecha_inicio }}</td>
-        <td>{{ pauta.fecha_fin }}</td>
-        <td>{{ pauta.descripcion }}</td>
-      </tr>
-      {% empty %}
-      <tr>
-          <td colspan="8">Este informe aún no cuenta con pautas terapéuticas de vocalización adjuntas.</td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
+  <div class="col-lg-12 col-xl-12 col-xxl-12">
+      <div class="table-responsive">
+      <table class="table">
+          <thead class="thead-dark">
+              <tr>
+                  <th scope="col">Total ESV</th>
+                  <th scope="col">Limitación ESV</th>
+                  <th scope="col">Emocional ESV</th>
+                  <th scope="col">Físico ESV</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <th>{{ informe.esv.total_esv }}</th>
+                  <th>{{ informe.esv.limitacion }}</th>
+                  <th>{{ informe.esv.emocional }}</th>
+                  <th>{{ informe.esv.fisico }}</th>
+              </tr>
+          </tbody>
+      </table>
+  </div>
+  </div>
+
+</section>
+
+<section id="tabla_fonos">
+
+<div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+  <h1 class=" display-5 fw-bolder sub_titulo">Pauta terapéutica <span class="span_title"> Escala Vocal </span></h1>
+  <p class="texto_pauta">Aquí se enumeran todos las pautas terapéuticas de escala vocal adjuntas al informe. Para obtener más información, haz clic en el id en azul de la pauta:</p>
+</div>
+
+<div class="col-lg-12 col-xl-12 col-xxl-12">
+  <div class="table-responsive">
+  <table class="table">
+      <thead class="thead-dark">
+          <tr>
+              <th scope="col">ID de la pauta</th>
+              <th scope="col">N° veces al día</th>
+              <th scope="col">Fecha de inicio</th>
+              <th scope="col">Fecha de fin</th>
+              <th scope="col">Descripción</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for pauta in pautas_terapeuticas %}
+          <tr>
+              <th scope="row">
+                  <a href="{% url 'detalle_pauta_esv_admin' pauta.id_pauta_terapeutica %}">Pauta {{ pauta.id_pauta_terapeutica }}</a>
+              </th>
+              <td>{{ pauta.cant_veces_dia }}</td>
+              <td>{{ pauta.fecha_inicio }}</td>
+              <td>{{ pauta.fecha_fin }}</td>
+              <td>{{ pauta.descripcion }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+              <td colspan="8">Este protocolo aún no cuenta con pautas terapéuticas de vocalización adjuntas.</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+</div>
+</div>
+
+</section>
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

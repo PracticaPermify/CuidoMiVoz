@@ -11,10 +11,10 @@
             <div class="card-body">
 
                 <div class="mb-4 mt-3">
-                  <a class="btn btn-outline-primary" href="{% url 'detalle_esv' informe.id_informe %}"><i class="fa-solid fa-arrow-left"></i> Volver al detalle del informe</a>
+                  <a class="btn btn-outline-primary" href="{% url 'detalle_esv' informe.id_protocolo %}"><i class="fa-solid fa-arrow-left"></i> Volver al detalle del informe</a>
                 </div>
 
-                <h1 class="card-title text-center">Editar ESV {{ informe.id_informe }} de {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre }}
+                <h1 class="card-title text-center">Editar ESV N°{{ informe.id_protocolo }} de {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre }}
                   {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno }}
                   {{ informe.fk_relacion_pa_pro.id_paciente.id_usuario.ap_materno }}</h1>
                     

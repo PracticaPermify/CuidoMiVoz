@@ -10,7 +10,7 @@
     <div class="global-container">
         <div class="card general-form">
             <div class="card-body">
-                <h3 class="card-title text-center">Ingresar informe</h3>
+                <h3 class="card-title text-center">Ingresar Protocolo</h3>
                 <div class="card-text">
 
                     {% if error_message %}
@@ -27,8 +27,8 @@
                         <br>
                         <div class="form-row">  
                             <div class="form-group col-md-6 col-sm-6">
-                                <label for="tp_informe"><i class="fa-solid fa-file-medical"></i>Tipo de Informe <span class="required">*</span></label>
-                                {{ form.tp_informe }}
+                                <label for="tp_informe"><i class="fa-solid fa-file-medical"></i>Tipo de Protocolo <span class="required">*</span></label>
+                                {{ form.tp_protocolo }}
                             </div>
                         
                             <div class="form-group col-md-6 col-sm-6">
@@ -173,7 +173,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('form').addEventListener('submit', function(event) {
-            var tipoInforme = document.querySelector('select[name="tp_informe"]').value;
+            var tipoInforme = document.querySelector('select[name="tp_protocolo"]').value;
             if (!tipoInforme) {
                 alert('El campo Tipo de Informe es requerido.');
                 event.preventDefault();
