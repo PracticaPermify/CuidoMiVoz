@@ -39,7 +39,53 @@ class Audio(models.Model):
         verbose_name_plural = "audio"
 
     def __str__(self):
-        return self.url_audio    
+        return self.url_audio
+
+
+class AudioIndepe(models.Model):
+    id_audio = models.AutoField(primary_key=True)
+    url_audio = models.CharField(max_length=200)
+    fecha_audio = models.DateTimeField()
+    id_form_audio = models.ForeignKey('FormularioAudio', on_delete=models.CASCADE, db_column='id_form_audio')
+
+    class Meta:
+        db_table = 'audio_independiente'
+        verbose_name_plural = "audios independientes"
+
+    def __str__(self):
+        return self.url_audio        
+
+
+class AudioscoefIndepe(models.Model):
+    id_audiocoeficientes = models.AutoField(primary_key=True)
+    nombre_archivo = models.CharField(max_length=100)
+    fecha_coeficiente = models.DateTimeField()
+    f0 = models.CharField(max_length=100)
+    f1 = models.CharField(max_length=100)
+    f2 = models.CharField(max_length=100)
+    f3 = models.CharField(max_length=100)
+    f4 = models.CharField(max_length=100)
+    intensidad = models.CharField(max_length=100)
+    hnr = models.CharField(max_length=100)
+    local_jitter = models.CharField(max_length=100)
+    local_absolute_jitter = models.CharField(max_length=100)
+    rap_jitter = models.CharField(max_length=100)
+    ppq5_jitter = models.CharField(max_length=100)
+    ddp_jitter = models.CharField(max_length=100)
+    local_shimmer = models.CharField(max_length=100)
+    local_db_shimmer = models.CharField(max_length=100)
+    apq3_shimmer = models.CharField(max_length=100)
+    aqpq5_shimmer = models.CharField(max_length=100)
+    apq11_shimmer = models.CharField(max_length=100)
+    # fk_tipo_llenado = models.ForeignKey('TpLlenado', on_delete=models.PROTECT, db_column='fk_tipo_llenado')
+    id_audio = models.ForeignKey(AudioIndepe, on_delete=models.CASCADE, db_column='id_audio')
+
+    class Meta:
+        db_table = 'audioscoeficientes_indepe'
+        verbose_name_plural = "audiocoeficiente independientes"
+
+    def __str__(self):
+        return self.nombre_archivo    
 
 
 class Audioscoeficientes(models.Model):
@@ -126,6 +172,40 @@ class FamiliarPaciente(models.Model):
 
     def __str__(self):
         return f'{self.fk_tipo_familiar}: {self.id_usuario.primer_nombre} {self.id_usuario.ap_paterno}'
+
+
+class FormularioAudio(models.Model):
+    id_form_audio = models.AutoField(primary_key=True)
+    primer_nombre = models.CharField(max_length=30)
+    segundo_nombre = models.CharField(max_length=30, blank=True, null=True)
+    ap_paterno = models.CharField(max_length=30)
+    ap_materno = models.CharField(max_length=30, blank=True, null=True)
+    fecha_nacimiento = models.DateField()
+    timestamp = models.DateField()
+    id_genero = models.ForeignKey('Genero', on_delete=models.PROTECT, db_column='id_genero')
+    id_tp_diagnostico = models.ForeignKey('TpDiagnosticoFono', on_delete=models.PROTECT, db_column='id_tp_diagnostico')
+    fk_tipo_hipertension = models.ForeignKey('TipoHipertension', on_delete=models.PROTECT, db_column='fk_tipo_hipertension')
+    fk_tipo_diabetes = models.ForeignKey('TipoDiabetes', on_delete=models.PROTECT, db_column='fk_tipo_diabetes')
+    fk_tipo_parkinson = models.ForeignKey('TipoParkinson', on_delete=models.PROTECT, db_column='fk_tipo_parkinson')
+    fk_tipo_acv = models.ForeignKey('TipoACV', on_delete=models.PROTECT, db_column='fk_tipo_acv')
+    fk_profesional_salud = models.ForeignKey('ProfesionalSalud', on_delete=models.CASCADE, db_column='fk_profesional_salud')
+
+    class Meta:
+        db_table = 'formulario_audio'
+        verbose_name_plural = "Formulario audios"
+
+    def __str__(self):
+        return f'Formulario: {self.id_form_audio}'
+
+class Genero(models.Model):
+    id_genero = models.AutoField(primary_key=True)
+    genero = models.CharField(max_length=50)
+    
+    class Meta:
+        db_table = 'genero'
+        verbose_name_plural = 'géneros'
+
+
 
 class Grbas(models.Model):
     id_protocolo = models.OneToOneField('Protocolo', on_delete=models.CASCADE, db_column='id_protocolo', primary_key=True)
@@ -378,7 +458,7 @@ class RelacionPaPro(models.Model):
     
 class TipoDiabetes(models.Model):
     id_tipo_diabetes = models.AutoField(primary_key=True)
-    tipo_diabetes = models.CharField(max_length=10)
+    tipo_diabetes = models.CharField(max_length=50)
 
     class Meta:
         db_table = 'tipo_diabetes'
@@ -386,6 +466,41 @@ class TipoDiabetes(models.Model):
 
     def __str__(self):
         return self.tipo_diabetes
+    
+
+class TipoParkinson(models.Model):
+    id_parkinson = models.AutoField(primary_key=True)
+    tipo_parkinson = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'tipo_parkinson'
+        verbose_name_plural = 'tipo parkinson'
+
+    def __str__(self):
+        return self.tipo_parkinson
+    
+class TipoACV(models.Model):
+    id_acv = models.AutoField(primary_key=True)
+    tipo_acv = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'tipo_acv'
+        verbose_name_plural = 'tipo accidente cerebrovascular'
+
+    def __str__(self):
+        return self.tipo_acv
+    
+
+class TpDiagnosticoFono(models.Model):
+    id_tp_diagnostico = models.AutoField(primary_key=True)
+    tp_diagnostico = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'tipo_diagnostico_fono'
+        verbose_name_plural = 'tipo diagnostico fono'
+
+    def __str__(self):
+        return self.tp_diagnostico
     
 class TpFamiliar(models.Model):
     id_tipo_familiar = models.AutoField(primary_key=True)
@@ -400,7 +515,7 @@ class TpFamiliar(models.Model):
 
 class TipoHipertension(models.Model):
     id_tipo_hipertension = models.AutoField(primary_key=True)
-    tipo_hipertension = models.CharField(max_length=10)
+    tipo_hipertension = models.CharField(max_length=50)
 
     class Meta:
         db_table = 'tipo_hipertension'
@@ -453,6 +568,10 @@ class TpUsuario(models.Model):
 
     def __str__(self):
         return self.tipo_usuario
+    
+
+    def __str__(self):
+        return self.tipo_usuario
 
 class UsuarioManager(BaseUserManager):
     def create_user(self, numero_identificacion, email, password=None, **extra_fields):
@@ -487,6 +606,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     ap_materno = models.CharField(max_length=30, blank=True, null=True)
     fecha_nacimiento = models.DateField()
     email = models.CharField(unique=True, max_length=100)
+    id_genero = models.ForeignKey(Genero, on_delete=models.PROTECT, null=True, db_column='id_genero')
     #password = models.CharField(max_length=20) #Generado Automaticamente por Django
     numero_telefonico = models.CharField(max_length=20, blank=True, null=True)
     id_tp_usuario = models.ForeignKey(TpUsuario, on_delete=models.PROTECT, db_column='id_tp_usuario',default=1)
@@ -548,3 +668,6 @@ class Vocalizacion(models.Model):
 
     # def __str__(self):
     #     return self.id_pauta_terapeutica
+
+
+
