@@ -34,6 +34,7 @@ urlpatterns = [
     path('obtener_comunas/', views.obtener_comunas, name='obtener_comunas'),
     path('obtener_instituciones/', views.obtener_instituciones, name='obtener_instituciones'),
     path('ingresar_informes/', views.ingresar_informes, name='ingresar_informes'),
+    path('ingresar_audios/', views.ingresar_audios, name='ingresar_audios'),
     path('editar_informe/<int:protocolo_id>/', views.editar_informe, name='editar_informe'),
     path('eliminar_informe/<int:protocolo_id>/', views.eliminar_informe, name='eliminar_informe'),
     path('eliminar_informe_admin/<int:protocolo_id>/', views.eliminar_informe_admin, name='eliminar_informe_admin'),

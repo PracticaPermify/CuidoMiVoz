@@ -205,6 +205,9 @@ class Genero(models.Model):
         db_table = 'genero'
         verbose_name_plural = 'géneros'
 
+    def __str__(self):
+            return self.genero
+
 
 
 class Grbas(models.Model):

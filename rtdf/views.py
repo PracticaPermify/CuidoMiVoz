@@ -33,6 +33,7 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from django.shortcuts import render
 from django.template.loader import render_to_string
+from django.utils.text import slugify 
 
 from plotly.offline import plot
 import plotly.graph_objs as go
@@ -1171,6 +1172,83 @@ def detalle_familiar(request, paciente_id):
 
 
 # VISTAS DE PROFESIONALES ------------------------------------------------------------------------------->
+
+
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Fonoaudiologo'])
+def ingresar_audios(request):
+    tipo_usuario = None
+
+    if request.user.is_authenticated:
+        tipo_usuario = request.user.id_tp_usuario.tipo_usuario
+        profesional_salud = request.user.profesionalsalud
+        id_fono = profesional_salud.id_profesional_salud
+        nom_fono = profesional_salud.id_usuario.primer_nombre
+        ap_fono = profesional_salud.id_usuario.ap_paterno
+        relaciones_pacientes = RelacionPaPro.objects.filter(fk_profesional_salud=profesional_salud)
+
+        if request.method == 'POST':
+            formulario_audio_form = FormularioAudioForm(request.POST)
+            upload_file_form = UploadFileForm(request.POST, request.FILES)
+
+            if formulario_audio_form.is_valid() and upload_file_form.is_valid():
+                formulario_audio = formulario_audio_form.save(commit=False)
+                formulario_audio.fk_profesional_salud = ProfesionalSalud.objects.get(id_profesional_salud=profesional_salud.id_profesional_salud)
+                formulario_audio.timestamp = timezone.now()
+                formulario_audio.save()
+
+                # Creación de la carpeta audios_form y subcarpeta con el nombre del fonoaudiólogo
+                audios_form_path = os.path.join(settings.MEDIA_ROOT, 'audios_form')
+                if not os.path.exists(audios_form_path):
+                    os.makedirs(audios_form_path)
+
+                fono_nombre = slugify(f"{id_fono}_{nom_fono}_{ap_fono}")
+                fonoaudiologo_path = os.path.join(audios_form_path, fono_nombre)
+                if not os.path.exists(fonoaudiologo_path):
+                    os.makedirs(fonoaudiologo_path)
+
+                # Obtener el primer nombre y apellido paterno del paciente
+                nom = formulario_audio.primer_nombre 
+                app = formulario_audio.ap_paterno  
+                paciente_nombre = slugify(f"{nom}_{app}")
+
+                for index, audio_file in enumerate(request.FILES.getlist('file')):
+                    # Construir el nuevo nombre del archivo
+                    fecha = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    extension = os.path.splitext(audio_file.name)[1]
+                    new_file_name = f"{index+1}_{paciente_nombre}_{fecha}_{fono_nombre}{extension}"
+                    file_path = os.path.join(fonoaudiologo_path, new_file_name)
+
+                    # Guardar el archivo con el nuevo nombre
+                    with open(file_path, 'wb+') as destination:
+                        for chunk in audio_file.chunks():
+                            destination.write(chunk)
+                    
+                    # Guardar en la base de datos
+                    AudioIndepe.objects.create(
+                        url_audio=os.path.join('audios_form', fono_nombre, new_file_name).replace("\\", "/"),
+                        fecha_audio=timezone.now(),
+                        id_form_audio=formulario_audio
+                    )
+
+                messages.success(request, "Formulario Audio guardado correctamente")  
+                return HttpResponseRedirect(request.path_info)
+            else:
+                messages.error(request, "Hay errores en el formulario. Por favor, corrígelos e intenta nuevamente.")
+        else:
+            formulario_audio_form = FormularioAudioForm()
+            upload_file_form = UploadFileForm()
+
+        return render(request, 'vista_profe/ingresar_audios.html', {
+            'formulario_audio_form': formulario_audio_form,
+            'upload_file_form': upload_file_form,
+            'tipo_usuario': tipo_usuario,
+        })
+    else:
+        return redirect('vista_profe/index.html')
+
+
+
 
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Fonoaudiologo'])

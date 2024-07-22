@@ -1,0 +1,29 @@
+.btn-agregar {
+    border: none !important;
+    background: none !important;
+    color: rgb(146, 223, 45) !important;
+    font-size: 35px !important;
+    cursor: pointer !important;
+    width: 20px !important;
+}
+
+
+.btn-eliminar{
+    border: none !important;
+    background: none !important;
+    color: rgb(207, 0, 0) !important;
+    font-size: 25px !important ;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    width: 20px !important;
+    height: 20px !important;
+}
+
+
+.agregar{
+    color: black;
+    font-size: 15px !important;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+

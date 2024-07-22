@@ -1,0 +1,157 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/ingresar_informe.css' %}" />
+<link rel="stylesheet" href="{% static 'app/css/registro.css' %}" />
+<link rel="stylesheet" href="{% static 'app/css/css_profesionales/ingresar_audio.css' %}" />
+
+<body class="is-preload">
+    <div class="global-container">
+        <div class="card general-form">
+            <div class="card-body">
+                <h3 class="card-title text-center">Ingreso Audios Fonoaudiologicos</h3>
+                <div class="card-text">
+
+                    {% if error_message %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error_message }}
+                    </div>
+                    {% endif %}
+
+                    <p class="required-message">
+                        <span class="asterisk">* </span> Campos requeridos
+                    </p>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        
+                        
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="id_primer_nombre"><i class="fas fa-user"></i>Primer nombre <span class="required">*</span></label>
+                                {{ formulario_audio_form.primer_nombre }}
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="id_segundo_nombre"><i class="fas fa-user"></i>Segundo nombre</label>
+                                {{ formulario_audio_form.segundo_nombre }}
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="id_ap_paterno"><i class="fas fa-user"></i>Apellido paterno <span class="required">*</span></label>
+                                {{ formulario_audio_form.ap_paterno }}
+                            </div>
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="{{ registro_form.ap_materno.id_for_label }}"><i class="fas fa-user"></i>Apellido materno</label>
+                                {{ formulario_audio_form.ap_materno }}
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="id_fecha_nacimiento"><i class="fas fa-calendar"></i>Fecha de nacimiento <span class="required">*</span></label></br>
+                                {{ formulario_audio_form.fecha_nacimiento }}
+                                <span class="text-danger">{{ formulario_audio_form.fecha_nacimiento.errors }}</span>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="tipo_usuario"><i class="fas fa-user"></i>Genero <span class="required">*</span></label>
+                                {{ formulario_audio_form.id_genero }}
+                                <span class="text-danger">{{ formulario_audio_form.id_genero.errors }}</span>
+                            </div>
+
+                        </div>  
+
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label for="tipo_usuario"><i class="fa-solid fa-file-medical"></i>Diagnostico <span class="required">*</span></label>
+                                {{ formulario_audio_form.id_tp_diagnostico }}
+                                <span class="text-danger">{{ formulario_audio_form.id_tp_diagnostico.errors }}</span>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="tipo_usuario"><i class="fa-solid fa-file-medical"></i>Tipo de Hipertensión <span class="required">*</span></label>
+                                {{ formulario_audio_form.fk_tipo_hipertension }}
+                                <span class="text-danger">{{ formulario_audio_form.fk_tipo_hipertension.errors }}</span>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="tipo_usuario"><i class="fa-solid fa-file-medical"></i>Tipo de Diabetes <span class="required">*</span></label>
+                                {{ formulario_audio_form.fk_tipo_diabetes }}
+                                <span class="text-danger">{{ formulario_audio_form.fk_tipo_diabetes.errors }}</span>
+                            </div>
+                        </div>  
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="tipo_usuario"><i class="fa-solid fa-file-medical"></i>Tipo de Parkinson <span class="required">*</span></label>
+                                {{ formulario_audio_form.fk_tipo_parkinson }}
+                                <span class="text-danger">{{ formulario_audio_form.fk_tipo_diabetes.errors }}</span>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="tipo_usuario"><i class="fa-solid fa-file-medical"></i>Tipo de ACV <span class="required">*</span></label>
+                                {{ formulario_audio_form.fk_tipo_acv }}
+                                <span class="text-danger">{{ formulario_audio_form.fk_tipo_acv.errors }}</span>
+                            </div>
+                        </div>  
+
+                        <!-- Campo para cargar archivos de audio -->
+                        <div id="audio-fields">
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for="id_url_audio"><i class="fa-solid fa-file-audio"></i>Subir archivo de audio</label>
+                                    <p class=text>Por favor, suba al menos un archivo de audio válido (MP3, WAV, OGG, FLAC, AAC, Audio Whatsapp). Peso máximo de archivo 5MB. </p>
+                                    <input type="file" name="file" class="form-control-file">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-agregar" onclick="addAudioField()"><i class="fa-solid fa-plus icono-x"> <span class="agregar">Agregar audio</span></i></button>
+
+                        <button type="submit" class="btn mx-auto">Guardar</button>
+                    </form>
+
+                    <!-- {% if messages %}
+                        <ul>
+                            {% for message in messages %}
+                                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %} -->
+            </div>
+        </div>
+    </div>
+</body>
+
+
+<script>
+    function addAudioField() {
+        const audioFields = document.getElementById('audio-fields');
+        const newField = document.createElement('div');
+        newField.classList.add('form-row');
+        newField.innerHTML = `
+            <div class="form-group col-md-4 col-sm-4">
+                <label for="id_url_audio"><i class="fa-solid fa-file-audio"></i>Subir archivo de audio</label>
+            </div>
+            
+            <div class="form-group col-md-4 col-sm-4">
+                <button type="button" onclick="removeAudioField(this)" class="btn-eliminar" style="margin-top: 5px;">X</button>
+            </div>
+            <div class="form-group col-md-8 col-sm-8"> 
+                <input type="file" name="file" class="form-control-file">
+            </div> 
+        `;
+        audioFields.appendChild(newField);
+    }
+
+    function removeAudioField(button) {
+        button.parentElement.parentElement.remove();
+    }
+</script>
+
+
+{% endblock %}

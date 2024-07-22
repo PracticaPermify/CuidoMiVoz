@@ -857,3 +857,112 @@ class EditarPerfilForm(forms.Form):
     #     widgets = {
     #         'fecha': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
     #     }
+
+
+
+class FormularioAudioForm(forms.ModelForm):
+
+
+    fecha_nacimiento = forms.DateField(
+        widget=forms.DateInput(format='%d-%m-%Y', attrs={'type': 'date' , 'class': 'campo_fecha'}),
+        required=True,
+        validators=[validate_fecha_nacimiento]
+        
+    )
+
+    id_genero = forms.ModelChoiceField(
+        queryset=Genero.objects,
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control form-control-sm', 'id': 'genero'}),
+        label='Tipo de usuario',
+        empty_label= "Seleccione su genero",
+        error_messages={
+            'required': 'Debe seleccionar'
+        }
+    )
+
+    id_tp_diagnostico = forms.ModelChoiceField(
+        queryset=TpDiagnosticoFono.objects,
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control form-control-sm', 'id': 'tp_diagnostico'}),
+        label='Tipo de diagnostico',
+        empty_label= "Seleccione el diagnostico fonoaudiologico",
+        error_messages={
+            'required': 'Debe seleccionar el tipo de diagnostico'
+        }
+    )
+
+    fk_tipo_hipertension = forms.ModelChoiceField(
+        queryset=TipoHipertension.objects,
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control form-control-sm', 'id': 'tipo_hipertension'}),
+        empty_label= "Seleccione el tipo de hipertensión",
+        error_messages={
+            'required': 'Debe seleccionar el tipo de hipertension, en caso contrario selecciona Ninguna'
+        }
+    )
+
+    fk_tipo_diabetes = forms.ModelChoiceField(
+        queryset=TipoDiabetes.objects,
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control form-control-sm', 'id': 'tipo_diabetes'}),
+        empty_label= "Seleccione el tipo de diabetes",
+        error_messages={
+            'required': 'Debe seleccionar el tipo de diabetes, en caso contrario selecciona Ninguna'
+        }
+    )
+
+    fk_tipo_acv = forms.ModelChoiceField(
+        queryset=TipoACV.objects,
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control form-control-sm', 'id': 'tipo_acv'}),
+        empty_label= "Seleccione el tipo de ACV",
+        error_messages={
+            'required': 'Debe seleccionar el tipo de acv, en caso contrario selecciona Ninguna'
+        }
+    )
+
+    fk_tipo_parkinson = forms.ModelChoiceField(
+        queryset=TipoParkinson.objects,
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control form-control-sm', 'id': 'tipo_parkinson'}),
+        empty_label= "Seleccione el tipo de Parkinson",
+        error_messages={
+            'required': 'Debe seleccionar el tipo de parkinson, en caso contrario selecciona Ninguna'
+        }
+    )
+
+    class Meta:
+        model = FormularioAudio
+        fields = [
+            'primer_nombre',
+            'segundo_nombre',
+            'ap_paterno',
+            'ap_materno',
+            'fecha_nacimiento',
+            'id_genero',
+            'id_tp_diagnostico',
+            'fk_tipo_hipertension',
+            'fk_tipo_diabetes',
+            'fk_tipo_parkinson',
+            'fk_tipo_acv',
+        ]
+
+class UploadFileForm(forms.Form):
+    file = forms.FileField(label='Seleccione un archivo', widget=forms.ClearableFileInput(attrs={'multiple': True}))
+
+    def clean_file(self):
+        files = self.files.getlist('file')
+        valid_mime_types = ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/flac', 'audio/aac']
+        max_file_size = 5 * 1024 * 1024  # 5MB
+
+        for file in files:
+            # Validar tipo de archivo
+            if file.content_type not in valid_mime_types:
+                raise forms.ValidationError(f'El archivo {file.name} no es un tipo de audio permitido.')
+
+            # Validar tamaño del archivo
+            if file.size > max_file_size:
+                raise forms.ValidationError(f'El archivo {file.name} supera los 5MB.')
+
+        return files

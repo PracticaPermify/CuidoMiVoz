@@ -42,6 +42,9 @@
 						<li {% if request.path == '/esv/' %}class="current"{% endif %}>
 							<a href="{% url 'esv' %}">Ingresar ESV</a>
 						</li>
+						<li {% if request.path == '/ingresar_audios/' %}class="current"{% endif %}>
+							<a href="{% url 'ingresar_audios' %}">Ingresar audios</a>
+						</li>
 						<li {% if request.path == '/pacientes_disponibles/' %}class="current"{% endif %}><a href="{% url 'pacientes_disponibles' %}">Pacientes disponibles</a></li>
 						<li {% if request.path == '/analisis_profe/' %}class="current"{% endif %}>
 							<a href="{% url 'analisis_profe' %}">Análisis de audios</a>
@@ -173,16 +176,16 @@
 		
 
 		{% if messages %}
-			{% for m in messages %}
-				<script>
-					Swal.fire({
-						"title": "Correcto",
-						"text": "{{m}}",
-						"icon": "success"
-					})
-				</script>
-			{% endfor %}
-		{% endif %}
+        {% for message in messages %}
+            <script>
+                Swal.fire({
+                    title: "{% if message.tags %}{{ message.tags|capfirst }}{% else %}Mensaje{% endif %}",
+                    text: "{{ message }}",
+                    icon: "{% if 'error' in message.tags %}error{% elif 'success' in message.tags %}success{% else %}info{% endif %}",
+                });
+            </script>
+        {% endfor %}
+    {% endif %}
 
 		{% endblock %}
 </body>

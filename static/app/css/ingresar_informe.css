@@ -114,3 +114,12 @@
   }
   
 }
+
+
+.btn-derecha {
+  border: none;
+  background: none;
+  color: red;
+  font-size: 16px;
+  cursor: pointer;
+}
