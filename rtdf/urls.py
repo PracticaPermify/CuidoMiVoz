@@ -48,6 +48,9 @@ urlpatterns = [
     path('editar_prof_pauta/<int:id_pauta_terapeutica_id>/', views.editar_prof_pauta, name='editar_prof_pauta'),
     path('eliminar_prof_pauta/<int:id_pauta_terapeutica_id>/', views.eliminar_prof_pauta, name='eliminar_prof_pauta'),
     
+    path('listado_audios/', views.listado_audios, name='listado_audios'),
+    path('detalle_prof_formulario/<int:form_audio_id>/', views.detalle_prof_formulario, name='detalle_prof_formulario'),
+    
     path('detalle_pauta_admin/<int:id_pauta_terapeutica_id>/', views.detalle_pauta_admin, name='detalle_pauta_admin'),
     path('detalle_pauta_esv_admin/<int:pauta_id>/', views.detalle_pauta_esv_admin, name='detalle_pauta_esv_admin'),
 

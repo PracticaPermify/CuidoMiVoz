@@ -1,0 +1,172 @@
+{% extends 'rtdf/base.html' %}
+
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/css_profesionales/detalle_prof_pauta.css' %}"/>
+<link rel="stylesheet" href="{% static 'app/css/tablas_titulo.css' %}"/>
+
+
+<body class="fondo-negro">
+    <header class="row text-left titulo_header">
+        <div class="col-lg-8">
+            <a class="btn btn-outline-primary" href="{% url 'listado_audios' %}"><i class="fa-solid fa-arrow-left"></i>  Volver al listado audios</a>
+        </div>
+    </header>
+
+
+
+    <section id="tabla_fonos">
+
+        <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+            <h1 class=" display-5 fw-bolder sub_titulo">Detalles del <span class="span_title"> Formulario N°{{ formulario.id_form_audio }} </span></h1>
+
+        </div>
+
+        <div class="col-lg-12 col-xl-12 col-xxl-12">
+            <a href="#" onclick="eliminarProfPauta({{ pauta.id_pauta_terapeutica }})" class="btn btn-danger btn-derecha">
+                Eliminar<i class="fas fa-trash-alt" style="margin-left: 5px;"></i>
+            </a>
+        
+            <a href="" class="btn btn-primary btn-derecha">
+                Editar <i class="fas fa-pencil-alt" style="margin-left: 5px;"></i>
+            </a>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <tbody>
+                    </p>
+                        <tr>
+                            <th>Nombre paciente:</th>
+                            <td>{{ formulario.primer_nombre}} {{ formulario.ap_paterno }}</td>
+                        </tr>
+                      
+                        <tr>
+                          <th>Fecha de nacimiento:</th>
+                          <td>{{ formulario.fecha_nacimiento}}</td>
+                        </tr>   
+                        <tr>
+                          <th>Genero:</th>
+                          <td>{{ formulario.id_genero.genero }}</td>
+                        </tr>              
+                        <tr>
+                            <th>Tipo de diagnostico:</th>
+                            <td>{{ formulario.id_tp_diagnostico.tp_diagnostico }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tipo de ACV:</th>
+                            <td>{{ formulario.fk_tipo_acv }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tipo Hipertensión: </th>
+                            <td>{{ formulario.fk_tipo_hipertension }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tipo Diabetes:</th>
+                            <td> {{ formulario.fk_tipo_diabetes }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Tipo Parkinson:</th>
+                            <td> {{ formulario.fk_tipo_parkinson }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Ingresado por:</th>
+                            <td> Dr/a. {{ nombre_fono }} el {{formulario.timestamp}}</td>
+                        </tr>
+          
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </section>
+
+
+    <section id="tabla_fonos">
+
+        <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+            <div class="form-row">
+                <div class="form-group col-md-8 col-sm-8">
+                    <h1 class=" display-5 fw-bolder sub_titulo">Lista de <span class="span_title"> Audios </span></h1>
+                </div>
+        
+
+                <p class="texto_pauta">Aquí se enumeran todos los audios asociados al actual formulario. Para obtener más información, haz clic en el id en azul del audio:</p>
+                
+            </div> 
+        </div>
+
+        <div class="col-lg-12 col-xl-12 col-xxl-12">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th  class="w-15">ID</th>
+                            <th class="w-50">Url</th>
+                            <th  class="w-35">Fecha</th>
+        
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for audio in audios %}
+                        <tr>
+                            <td>{{ audio.id_audio }}</td>
+                            <th><a href="">
+                                {{ audio.url_audio}}</a></th>
+                            <td>{{ audio.fecha_audio}}</td>
+                            
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8">Este formulario aún no cuenta con audios adjuntos.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </section>
+
+
+</div>
+
+</body>
+
+
+
+
+
+
+<script>
+
+function eliminarProfPauta(id_pauta_terapeutica_id) {
+        Swal.fire({
+            "title":"¿Estas seguro?",
+            "text": "esta acción no se puede deshacer.",
+            "icon":"error",
+            "showCancelButton": true,
+            "cancelButtonText": "No, Cancelar",
+            "cancelButtonColor": "#3085d6",
+            "confirmButtonText": "Si, Eliminar",
+            "reverseButtons":true,
+            "confirmButtonColor":"#d33"
+        })
+            .then(function(result){
+                if(result.isConfirmed){
+                    window.location.href = "/eliminar_prof_pauta/"+id_pauta_terapeutica_id+"/"
+                }
+            })
+
+    }
+
+
+
+</script>
+
+{% endblock %}

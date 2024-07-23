@@ -1671,7 +1671,106 @@ def detalle_pauta_esv(request, pauta_id):
                                                                       'tipo_usuario': tipo_usuario})
     else:
         return render(request, 'vista_profe/error.html', {'message': 'La pauta no es del tipo "Escala Vocal."'})
-    
+
+
+@never_cache
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Fonoaudiologo'])
+def detalle_prof_formulario(request, form_audio_id):
+
+    if request.user.is_authenticated:
+        tipo_usuario = request.user.id_tp_usuario.tipo_usuario
+
+        
+
+        #print(tipo_usuario)
+
+        formulario = get_object_or_404(FormularioAudio, id_form_audio=form_audio_id)
+
+        nombre_fono = f"{formulario.fk_profesional_salud.id_usuario.primer_nombre} {formulario.fk_profesional_salud.id_usuario.ap_paterno}"
+
+        try:
+            audios = AudioIndepe.objects.filter(id_form_audio=formulario)
+        except AudioIndepe.DoesNotExist:
+            audios = None
+
+    return render(request, 'vista_profe/detalle_prof_formulario.html', {
+        'tipo_usuario': tipo_usuario,
+        'formulario' : formulario, 
+        'nombre_fono': nombre_fono,
+        'audios' : audios, 
+
+    })
+
+
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Fonoaudiologo'])
+def listado_audios(request):
+    tipo_usuario = None
+
+    if request.user.is_authenticated:
+        tipo_usuario = request.user.id_tp_usuario.tipo_usuario
+
+        datos_audiocoeficientes = AudioscoefIndepe.objects.select_related(
+            'id_audio__id_form_audio__fk_profesional_salud__id_usuario'
+        ).filter(
+            id_audio__id_form_audio__fk_profesional_salud__id_usuario=request.user.id_usuario
+        ).order_by('-fecha_coeficiente')
+
+
+        relaciones = RelacionPaPro.objects.filter(
+            fk_profesional_salud__id_usuario=request.user.id_usuario
+        )
+
+        conteo_audios = []
+
+        total_intensidad = 0
+        total_vocalizacion = 0
+
+        for relacion in relaciones:
+            relacion_info = {
+                'relacion': relacion,
+                'origenes_audio': {}
+            }
+
+            for origen_id, origen_nombre in [(1, 'Intensidad'), (2, 'Vocalización')]:
+                audios = Audio.objects.filter(
+                    fk_origen_audio=origen_id,
+                    fk_pauta_terapeutica__fk_protocolo__fk_relacion_pa_pro=relacion
+                )
+                relacion_info['origenes_audio'][origen_nombre] = len(audios)
+
+                if origen_id == 1:
+                    total_intensidad += len(audios)
+                else:
+                    total_vocalizacion += len(audios)
+
+            conteo_audios.append(relacion_info)
+
+        items_por_pagina = 10
+
+        paginator = Paginator(datos_audiocoeficientes, items_por_pagina)
+
+        page = request.GET.get('page', 1)
+
+        try:
+            audios_pagina = paginator.page(page)
+        except PageNotAnInteger:
+            audios_pagina = paginator.page(1)
+        except EmptyPage:
+            audios_pagina = paginator.page(paginator.num_pages)
+
+    return render(request, 'vista_profe/listado_audios.html', {
+        'tipo_usuario': tipo_usuario,
+        'datos_audiocoeficientes': audios_pagina,
+        'datos_audio_relacion': conteo_audios,
+        'total_intensidad': total_intensidad,
+        'total_vocalizacion': total_vocalizacion,
+        'paginator': paginator,
+    })
+
+
+
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Fonoaudiologo'])
 def analisis_profe(request):
