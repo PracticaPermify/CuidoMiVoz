@@ -77,7 +77,7 @@ class AudioscoefIndepe(models.Model):
     apq3_shimmer = models.CharField(max_length=100)
     aqpq5_shimmer = models.CharField(max_length=100)
     apq11_shimmer = models.CharField(max_length=100)
-    # fk_tipo_llenado = models.ForeignKey('TpLlenado', on_delete=models.PROTECT, db_column='fk_tipo_llenado')
+    fk_tipo_llenado = models.ForeignKey('TpLlenado', on_delete=models.PROTECT, null=True, db_column='fk_tipo_llenado')
     id_audio = models.ForeignKey(AudioIndepe, on_delete=models.CASCADE, db_column='id_audio')
 
     class Meta:

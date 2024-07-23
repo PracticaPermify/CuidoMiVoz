@@ -15,7 +15,7 @@ from django.http import JsonResponse, HttpResponse
 import os
 from functools import wraps
 from django.conf import settings
-from rtdf.audio_coef import audio_analysis
+from rtdf.audio_coef import audio_analysis , formulario_audio_analysis
 from rtdf.analisis_estadistico import *
 from rtdf.ciencia_datos import *
 from django.http import FileResponse
@@ -1214,6 +1214,7 @@ def ingresar_audios(request):
 
                 for index, audio_file in enumerate(request.FILES.getlist('file')):
                     # Construir el nuevo nombre del archivo
+                    fecha_data = timezone.now()
                     fecha = datetime.now().strftime("%Y%m%d_%H%M%S")
                     extension = os.path.splitext(audio_file.name)[1]
                     new_file_name = f"{index+1}_{paciente_nombre}_{fecha}_{fono_nombre}{extension}"
@@ -1223,13 +1224,59 @@ def ingresar_audios(request):
                     with open(file_path, 'wb+') as destination:
                         for chunk in audio_file.chunks():
                             destination.write(chunk)
+
+                    ruta_db = f"{fono_nombre}/{new_file_name}"
                     
                     # Guardar en la base de datos
-                    AudioIndepe.objects.create(
-                        url_audio=os.path.join('audios_form', fono_nombre, new_file_name).replace("\\", "/"),
-                        fecha_audio=timezone.now(),
-                        id_form_audio=formulario_audio
-                    )
+                    audio_model = AudioIndepe.objects.create(
+                                    url_audio=ruta_db,
+                                    fecha_audio=timezone.now(),
+                                    id_form_audio=formulario_audio
+                                )
+                    
+                    audio_model.save()
+
+                    id_audio_registrado = audio_model.id_audio
+
+                    #USO DEL CALCULO DE COEF
+
+
+                    #obtencion del tipo de llenado automatico
+                    tipo_llenado = TpLlenado.objects.get(id_tipo_llenado=1)
+
+                    #obtencion del id del audio
+                    id_audio = AudioIndepe.objects.get(id_audio=id_audio_registrado)
+
+                    res = formulario_audio_analysis(ruta_db, new_file_name, fecha_data)
+                    is_coefs=AudioscoefIndepe.objects.all().filter(nombre_archivo=new_file_name)
+                    # id_user=int(username.split(' ')[0])
+                    if not is_coefs.exists():
+                        print('analizando')
+                        coefs=AudioscoefIndepe.objects.create(
+                            nombre_archivo = new_file_name,
+                            fecha_coeficiente = res['date'],               
+                            f0  = res['f0'],
+                            f1  = res['f1'],
+                            f2  = res['f2'],
+                            f3  = res['f3'],
+                            f4  = res['f4'],
+                            intensidad  = res['Intensity'],
+                            hnr  = res['HNR'],
+                            local_jitter  = res['localJitter'],
+                            local_absolute_jitter  = res['localabsoluteJitter'],
+                            rap_jitter  = res['rapJitter'],
+                            ppq5_jitter  = res['ppq5Jitter'],
+                            ddp_jitter = res['ddpJitter'],
+                            local_shimmer = res['localShimmer'],
+                            local_db_shimmer = res['localdbShimmer'],
+                            apq3_shimmer = res['apq3Shimmer'],
+                            aqpq5_shimmer = res['aqpq5Shimmer'],
+                            apq11_shimmer = res['apq11Shimmer'],
+                            id_audio = id_audio,
+                            fk_tipo_llenado = tipo_llenado
+                        )
+                        coefs.save()
+                        print('analizado')
 
                 messages.success(request, "Formulario Audio guardado correctamente")  
                 return HttpResponseRedirect(request.path_info)
