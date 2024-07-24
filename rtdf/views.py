@@ -9,7 +9,8 @@ from django.views.decorators.cache import never_cache
 from django.utils import timezone
 from django.urls import reverse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db.models import Count
+from django.db.models import Count,Avg, Sum, F
+from django.db.models.functions import Coalesce
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 import os
@@ -2110,6 +2111,85 @@ def detalle_prof_pauta(request, id_pauta_terapeutica_id):
 
     })
 
+
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Fonoaudiologo'])
+def detalle_audio_indep(request, form_audio_id, audio_id):
+    tipo_usuario = None
+    graph_html =None
+    graph_frecuencias = None
+    graph_intensidad = None
+    graph_jitter = None
+    graph_shimmer = None
+    
+    if request.user.is_authenticated:
+        tipo_usuario = request.user.id_tp_usuario.tipo_usuario
+
+
+        audio = AudioIndepe.objects.get(id_audio=audio_id)
+        audio_coeficiente_automatico = AudioscoefIndepe.objects.filter(id_audio=audio_id,fk_tipo_llenado='1').first()
+        audio_coeficiente_manual = AudioscoefIndepe.objects.filter(id_audio=audio_id,fk_tipo_llenado='2').first()
+
+
+        print(audio_coeficiente_manual)
+
+
+        
+        x = ['f0', 'f1', 'f2', 'f3', 'f4', 'intensidad', 'hnr', 'local_jitter', 'local_absolute_jitter',
+            'rap_jitter', 'ppq5_jitter', 'ddp_jitter', 'local_shimmer', 'local_db_shimmer', 'apq3_shimmer',
+            'aqpq5_shimmer', 'apq11_shimmer']
+
+
+        y_auto = convertir_a_numeros(audio_coeficiente_automatico)
+
+        if audio_coeficiente_manual:
+            y_manual = convertir_a_numeros(audio_coeficiente_manual)
+
+            
+            #graph_html = generar_grafico_audio(x, y_auto, y_manual) 
+
+            graph_frecuencias = grafico_frecuencias(x, y_auto, y_manual) 
+            graph_intensidad = grafico_intensidad(x, y_auto, y_manual)
+            graph_jitter = grafico_jitter(x, y_auto, y_manual)
+            graph_shimmer = grafico_shimmer(x, y_auto, y_manual)
+
+        audio_dicc = {
+            'id_audio': audio.id_audio,
+            'fecha_audio': audio.fecha_audio,
+            'primer_nombre_paciente': audio.id_form_audio.primer_nombre,
+            'ap_paterno_paciente': audio.id_form_audio.ap_paterno,
+            'tipo_profesional': audio.id_form_audio.fk_profesional_salud.id_usuario.id_tp_usuario,
+            'primer_nombre_profesional':audio.id_form_audio.fk_profesional_salud.id_usuario.primer_nombre,
+            'ap_paterno_profesional':audio.id_form_audio.fk_profesional_salud.id_usuario.ap_paterno,
+            #Relacion con
+            'nombre_audio': audio_coeficiente_automatico.nombre_archivo if audio_coeficiente_automatico else None
+        }
+        
+
+
+    return render(request, 'vista_profe/detalle_audio_indep.html', {
+        'tipo_usuario': tipo_usuario,
+        'detalle_audio': audio_dicc,
+        'coef_auto': audio_coeficiente_automatico,
+        'coef_manual': audio_coeficiente_manual,
+        'graph_html': graph_html,
+        'graph_frecuencias': graph_frecuencias,
+        'graph_intensidad': graph_intensidad,
+        'graph_jitter': graph_jitter,
+        'graph_shimmer': graph_shimmer,
+        'form_audio_id': form_audio_id,
+    })
+
+
+def reproducir_audio_indep(request, audio_id):
+
+    audio = AudioIndepe.objects.get(id_audio=audio_id)
+    # Ruta del audio
+    audio_path = os.path.join(settings.MEDIA_ROOT, 'audios_form' , audio.url_audio)
+    #Despliegue del audio
+    return FileResponse(open(audio_path, 'rb'), content_type='audio/wav')
+
+
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Fonoaudiologo'])
 def detalle_audio_profe(request, audio_id):
@@ -3562,6 +3642,65 @@ def analisis_admin(request):
         'conteo_audios': conteo_pagina,
         'total_intensidad': total_intensidad,
         'total_vocalizacion': total_vocalizacion,
+    })
+
+
+
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Admin'])
+def listado_audios_admin(request):
+    tipo_usuario = None
+
+    if request.user.is_authenticated:
+        tipo_usuario = request.user.id_tp_usuario.tipo_usuario
+
+        datos_audiocoeficientes = AudioscoefIndepe.objects.select_related(
+            'id_audio__id_form_audio__fk_profesional_salud__id_usuario'
+        ).filter(
+            id_audio__id_form_audio__fk_profesional_salud__id_usuario=request.user.id_usuario
+        ).order_by('-fecha_coeficiente')
+
+
+        datos_audiocoeficientes = AudioscoefIndepe.objects.select_related(
+            'id_audio__id_form_audio__fk_profesional_salud__id_usuario',
+            'id_audio__id_form_audio__fk_profesional_salud'
+        ).order_by('-fecha_coeficiente')
+
+
+
+
+
+        conteo_audios = (AudioIndepe.objects
+                        .values('id_form_audio__fk_profesional_salud__id_profesional_salud',
+                                'id_form_audio__fk_profesional_salud__id_usuario__primer_nombre',
+                                'id_form_audio__fk_profesional_salud__id_usuario__ap_paterno')
+                        .annotate(total_audios=Count('id_audio'))
+                        .order_by('-total_audios'))
+
+        total_audios = sum(item['total_audios'] for item in conteo_audios)
+
+
+
+        items_por_pagina = 10
+
+        paginator = Paginator(datos_audiocoeficientes, items_por_pagina)
+
+        page = request.GET.get('page', 1)
+
+        try:
+            audios_pagina = paginator.page(page)
+        except PageNotAnInteger:
+            audios_pagina = paginator.page(1)
+        except EmptyPage:
+            audios_pagina = paginator.page(paginator.num_pages)
+
+    return render(request, 'vista_admin/listado_audios_admin.html', {
+        'tipo_usuario': tipo_usuario,
+        'datos_audiocoeficientes': audios_pagina,
+        'datos_audio_relacion': conteo_audios,
+        'paginator': paginator,
+        'conteo_audios': conteo_audios,
+        'total_audios': total_audios,
     })
 
 @user_passes_test(validate)

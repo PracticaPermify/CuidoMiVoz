@@ -115,7 +115,7 @@
                         {% for audio in audios %}
                         <tr>
                             <td>{{ audio.id_audio }}</td>
-                            <th><a href="">
+                            <th><a href="{% url 'detalle_audio_indep' formulario.id_form_audio audio.id_audio%}">
                                 {{ audio.url_audio}}</a></th>
                             <td>{{ audio.fecha_audio}}</td>
                             

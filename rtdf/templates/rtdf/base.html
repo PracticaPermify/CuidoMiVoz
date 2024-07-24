@@ -68,6 +68,7 @@
 						<li {% if request.path == '/list_paci_admin/' %}class="current"{% endif %}><a href="{% url 'list_paci_admin' %}">Pacientes</a></li>
 						<li {% if request.path == '/list_fami_admin/' %}class="current"{% endif %}><a href="{% url 'list_fami_admin' %}">Familiares</a></li>
 						<li {% if request.path == '/analisis_admin/' %}class="current"{% endif %}><a href="{% url 'analisis_admin' %}">Análisis</a></li>
+						<li {% if request.path == '/listado_audios/' %}class="current"{% endif %}><a href="{% url 'listado_audios_admin' %}">Listado Audios</a></li>
 						<li {% if request.path == '/listado_preregistros/' %}class="current"{% endif %}><a href="{% url 'listado_preregistros' %}">Pre-registros</a></li>
 						<li {% if '/perfil/' in request.path %}class="current"{% endif %}><a href="{% url 'perfil' request.user.id_usuario %}">Mi perfil</a></li>
 					{% endif %}

@@ -1,0 +1,204 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/main.css' %}" />
+
+<style>
+
+.thead-dark th {
+    background-color: #c94663 !important;
+    border: none; 
+    color: white;
+  }
+
+  .table tbody tr {
+    background-color: #e9d7da; 
+    border: 1px solid #dee2e6;
+  }
+
+  .span_title{
+    color:#c94663 ;
+  }
+
+  .sub_titulo{
+    font-size: 35px;
+  }
+
+  .sub_titulo2{
+    font-size: 30px;
+  }
+
+  .texto_pauta{
+    font-size: 20px !important;
+    color: #252525 !important;
+  }
+</style>
+
+
+
+<div class="container">
+
+    <div>
+        <a class="btn btn-outline-primary" href="{% url 'detalle_prof_formulario' form_audio_id %}"> <i class="fa-solid fa-arrow-left"></i> Volver al formulario N°{{form_audio_id}}</a>
+    </div>
+
+    </br>
+</br>
+    
+    
+        <h1 class=" display-5 fw-bolder sub_titulo">Detalles del análisis del <span class="span_title"> Audio N°{{ detalle_audio.id_audio }}</span></h1>
+        </br>
+
+        <a href="#" onclick="eliminarAudio({{ detalle_audio.id_audio }})" class="btn btn-danger btn-derecha mb-3">
+            Eliminar audio<i class="fas fa-trash-alt" style="margin-left: 5px;"></i>
+        </a>
+
+        <div class="table-responsive">
+            <table class="table">
+                <tbody>
+                  <tr>
+                    <th>Nombre paciente:</th>
+                    <td scope="row">{{ detalle_audio.primer_nombre_paciente }} {{detalle_audio.ap_paterno_paciente}}</td>
+                  </tr>
+                  <tr>
+                    <th>Nombre {{detalle_audio.tipo_profesional}}:</th>
+                    <td scope="row">{{ detalle_audio.primer_nombre_profesional }} {{detalle_audio.ap_paterno_profesional}}</td>
+                  </tr>
+                  <!-- Datos AUDIOS -->
+                  <tr>
+                    <th style="vertical-align: middle;">Audio:</th>
+                    <td scope="row">
+                        <audio controls>
+                            <source src="{% url 'reproducir_audio_indep' detalle_audio.id_audio %}" type="audio/wav">
+                            Tu navegador no soporta la reproducción de audio.
+                        </audio>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Nombre audio:</th>
+                    <td scope="row">{{ detalle_audio.nombre_audio }}</td>
+                  </tr>
+                  <tr>
+                    <th>Fecha audio:</th>
+                    <td scope="row">{{ detalle_audio.fecha_audio }}</td>
+                  </tr>
+
+              </tbody>
+            </table>
+        </div>
+
+
+        <br/>
+        <br/>
+        <h1 class=" display-5 fw-bolder sub_titulo2">Resultado del  <span class="span_title"> cálculo automático </span> de coeficientes</h1>
+
+        <br/>
+        <div class="table-responsive">
+            <table class="table" id="coef-auto-audios">
+                <thead class="thead-dark">
+                    <tr>
+                        <th >ID</th>
+                        <th >Fecha coeficiente</th>
+                        <th >F0</th>
+                        <th >F1</th>
+                        <th >F2</th>
+                        <th >F3</th>
+                        <th >F4</th>
+                        <th >Intensidad</th>
+                        <th >HNR</th>
+                        <th >Local Jitter</th>
+                        <th >Local Absolute Jitter</th>
+                        <th >RAP Jitter</th>
+                        <th >PPQ5 Jitter</th>
+                        <th >DDP Jitter</th>
+                        <th >Local Shimmer</th>
+                        <th >Local dB Shimmer</th>
+                        <th >APQ3 Shimmer</th>
+                        <th >APQ5 Shimmer</th>
+                        <th >APQ11 Shimmer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if coef_auto %}
+                    <tr>
+                        <td>{{ coef_auto.id_audiocoeficientes }}</td>
+                        <td>{{ coef_auto.fecha_coeficiente }}</td>
+                        <td>{{ coef_auto.f0 }}</td>
+                        <td>{{ coef_auto.f1 }}</td>
+                        <td>{{ coef_auto.f2 }}</td>
+                        <td>{{ coef_auto.f3 }}</td>
+                        <td>{{ coef_auto.f4 }}</td>
+                        <td>{{ coef_auto.intensidad }}</td>
+                        <td>{{ coef_auto.hnr }}</td>
+                        <td>{{ coef_auto.local_jitter }}</td>
+                        <td>{{ coef_auto.local_absolute_jitter }}</td>
+                        <td>{{ coef_auto.rap_jitter }}</td>
+                        <td>{{ coef_auto.ppq5_jitter }}</td>
+                        <td>{{ coef_auto.ddp_jitter }}</td>
+                        <td>{{ coef_auto.local_shimmer }}</td>
+                        <td>{{ coef_auto.local_db_shimmer }}</td>
+                        <td>{{ coef_auto.apq3_shimmer }}</td>
+                        <td>{{ coef_auto.aqpq5_shimmer }}</td>
+                        <td>{{ coef_auto.apq11_shimmer }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">No hay datos disponibles</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+                </table>
+            </div>
+
+
+
+</div>
+
+
+<script>
+    function eliminarCoefManual(audiocoeficientes_id) {
+        Swal.fire({
+            "title":"¿Estas seguro?",
+            "text": "esta acción no se puede deshacer.",
+            "icon":"error",
+            "showCancelButton": true,
+            "cancelButtonText": "No, Cancelar",
+            "cancelButtonColor": "#3085d6",
+            "confirmButtonText": "Si, Eliminar",
+            "reverseButtons":true,
+            "confirmButtonColor":"#d33"
+        })
+            .then(function(result){
+                if(result.isConfirmed){
+                    window.location.href = "/eliminar_coef_manual/"+audiocoeficientes_id+"/"
+                }
+            })
+
+    }
+
+
+    function eliminarAudio(audio_id) {
+        Swal.fire({
+            "title":"¿Estas seguro?",
+            "text": "esta acción no se puede deshacer.",
+            "icon":"error",
+            "showCancelButton": true,
+            "cancelButtonText": "No, Cancelar",
+            "cancelButtonColor": "#3085d6",
+            "confirmButtonText": "Si, Eliminar",
+            "reverseButtons":true,
+            "confirmButtonColor":"#d33"
+        })
+            .then(function(result){
+                if(result.isConfirmed){
+                    window.location.href = "/eliminar_audio_prof/"+audio_id+"/"
+                }
+            })
+
+    }
+
+    
+</script>
+
+{% endblock %}
