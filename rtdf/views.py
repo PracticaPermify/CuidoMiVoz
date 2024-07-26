@@ -1770,7 +1770,23 @@ def listado_audios(request):
         'paginator': paginator,
     })
 
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Fonoaudiologo'])
+def eliminar_formulario_fono(request, form_id):
 
+    formulario = get_object_or_404(FormularioAudio, id_form_audio=form_id)
+    audios = AudioIndepe.objects.filter(id_form_audio=form_id).values('url_audio')
+
+    for audio in audios:
+        audio_path = audio['url_audio']
+        full_audio_path = os.path.join(settings.MEDIA_ROOT, 'audios_form', audio_path)
+        os.remove(full_audio_path)
+
+    formulario.delete()
+
+    # audio_registro.delete()
+    messages.success(request, "Formulario N°" + str(form_id) + " eliminado correctamente")
+    return redirect('listado_audios')
 
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Fonoaudiologo'])
@@ -2180,6 +2196,23 @@ def detalle_audio_indep(request, form_audio_id, audio_id):
         'form_audio_id': form_audio_id,
     })
 
+
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Fonoaudiologo'])
+def eliminar_audioindep_prof(request, audio_id):
+
+    audio_registro = get_object_or_404(AudioIndepe, id_audio=audio_id)
+
+    ruta = audio_registro.url_audio
+
+    formulario_id  = audio_registro.id_form_audio
+
+    os.remove(os.path.join(settings.MEDIA_ROOT, 'audios_form', ruta))
+
+    audio_registro.delete()
+
+    messages.success(request, "Audio N°" + str(audio_id) + " eliminado correctamente")
+    return redirect('detalle_prof_formulario', form_audio_id= audio_registro.id_form_audio_id )
 
 def reproducir_audio_indep(request, audio_id):
 
@@ -3761,4 +3794,24 @@ def eliminar_audio_admin(request, audio_id):
     audio_registro.delete()
 
     return redirect('analisis_admin')
+
+
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Admin'])
+def eliminar_formulario_admin(request, form_id):
+
+    formulario = get_object_or_404(FormularioAudio, id_form_audio=form_id)
+    audios = AudioIndepe.objects.filter(id_form_audio=form_id).values('url_audio')
+
+    for audio in audios:
+        audio_path = audio['url_audio']
+        full_audio_path = os.path.join(settings.MEDIA_ROOT, 'audios_form', audio_path)
+        os.remove(full_audio_path)
+
+    formulario.delete()
+
+    # audio_registro.delete()
+    messages.success(request, "Formulario N°" + str(form_id) + " eliminado correctamente")
+    return redirect('listado_audios_admin')
+
 # FIN DE VISTAS DE ADMINISTRADOR ------------------------------------------------------------------------------->

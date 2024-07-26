@@ -25,13 +25,13 @@
         </div>
 
         <div class="col-lg-12 col-xl-12 col-xxl-12">
-            <a href="#" onclick="eliminarProfPauta({{ pauta.id_pauta_terapeutica }})" class="btn btn-danger btn-derecha">
+            <a href="#" onclick="eliminarFormulario({{ formulario.id_form_audio }})" class="btn btn-danger btn-derecha">
                 Eliminar<i class="fas fa-trash-alt" style="margin-left: 5px;"></i>
             </a>
         
-            <a href="" class="btn btn-primary btn-derecha">
+            <!-- <a href="" class="btn btn-primary btn-derecha">
                 Editar <i class="fas fa-pencil-alt" style="margin-left: 5px;"></i>
-            </a>
+            </a> -->
 
             <div class="table-responsive">
                 <table class="table">
@@ -145,10 +145,10 @@
 
 <script>
 
-function eliminarProfPauta(id_pauta_terapeutica_id) {
+function eliminarFormulario(form_id) {
         Swal.fire({
             "title":"¿Estas seguro?",
-            "text": "esta acción no se puede deshacer.",
+            "text": "También eliminaras todos los audios asociados al formulario. Esta acción no se puede deshacer.",
             "icon":"error",
             "showCancelButton": true,
             "cancelButtonText": "No, Cancelar",
@@ -159,7 +159,7 @@ function eliminarProfPauta(id_pauta_terapeutica_id) {
         })
             .then(function(result){
                 if(result.isConfirmed){
-                    window.location.href = "/eliminar_prof_pauta/"+id_pauta_terapeutica_id+"/"
+                    window.location.href = "/eliminar_formulario_fono/"+form_id+"/"
                 }
             })
 

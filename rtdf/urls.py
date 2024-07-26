@@ -53,6 +53,9 @@ urlpatterns = [
     path('detalle_prof_formulario/<int:form_audio_id>/', views.detalle_prof_formulario, name='detalle_prof_formulario'),
     path('detalle_prof_formulario/<int:form_audio_id>/audio/<int:audio_id>/', views.detalle_audio_indep, name='detalle_audio_indep'),
     path('reproducir_audio/<int:audio_id>/', views.reproducir_audio_indep, name='reproducir_audio_indep'),
+    path('eliminar_formulario_admin/<int:form_id>/', views.eliminar_formulario_admin, name='eliminar_formulario_admin'),
+    path('eliminar_formulario_fono/<int:form_id>/', views.eliminar_formulario_fono, name='eliminar_formulario_fono'),
+    path('eliminar_audioindep_prof/<int:audio_id>/', views.eliminar_audioindep_prof, name='eliminar_audioindep_prof'),
 
 
     path('detalle_pauta_admin/<int:id_pauta_terapeutica_id>/', views.detalle_pauta_admin, name='detalle_pauta_admin'),

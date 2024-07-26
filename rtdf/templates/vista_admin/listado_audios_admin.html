@@ -37,7 +37,9 @@
             <th>Profesional</th>
             <th>Paciente</th>
             <th>ID formulario</th>
+            <th>Eliminar Formulario</th>
             <th>ID audio</th>
+            
             <th>Audio</th>
             <th>Fecha coeficiente</th>
             <th>F0</th>
@@ -68,6 +70,9 @@
                 <td>{{ usuario.fk_profesional_salud.id_usuario.primer_nombre }} {{ usuario.fk_profesional_salud.id_usuario.ap_paterno }}</a></td>
                 <td>{{ usuario.primer_nombre }} {{ usuario.ap_paterno }}</a></td>
                 <th><a href="">Formulario: N°{{ audio_coef.id_audio.id_form_audio_id }}</a></th>
+                <td> <a href="#" onclick="eliminarFormulario({{ audio_coef.id_audio.id_form_audio_id }})" class="btn btn-danger mx-auto">
+                Eliminar <i class="fas fa-trash-alt"></i>
+              </a></td>
                 <td>{{ audio_coef.id_audio_id }}</td>
                 <th><a href="">{{ audio_coef.nombre_archivo }}</a></th>
                 <td>{{ audio_coef.fecha_coeficiente|date:"d-m-Y H:i:s" }}</td>
@@ -196,5 +201,30 @@
       <p>No hay audios registrados de sus pacientes.</p>
       {% endif %}
     </div>
+
+    <script>
+  
+      function eliminarFormulario(form_id) {
+          Swal.fire({
+              "title":"¿Estas seguro?",
+              "text": "También eliminaras todos los audios asociados al formulario. Esta acción no se puede deshacer.",
+              "icon":"error",
+              "showCancelButton": true,
+              "cancelButtonText": "No, Cancelar",
+              "cancelButtonColor": "#3085d6",
+              "confirmButtonText": "Si, Eliminar",
+              "reverseButtons":true,
+              "confirmButtonColor":"#d33"
+          })
+              .then(function(result){
+                  if(result.isConfirmed){
+                      window.location.href = "/eliminar_formulario_admin/"+form_id+"/"
+                  }
+              })
+  
+      }
+  
+  </script>
+
 
 {% endblock %}
