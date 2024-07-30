@@ -173,3 +173,29 @@ cython_debug/
 
 # End of https://www.toptal.com/developers/gitignore/api/django
 static/app/recursos/csv/bdd_pacientes.csv
+
+
+
+# Ignora todo el contenido de graficos y sus subcarpetas
+rtdf/deepnote/graficos/**/*
+rtdf/deepnote/graficos/deepnote/**/*
+rtdf/deepnote/graficos/deepnote_analisis/**/*
+
+# Exceptúa los archivos .gitkeep en las carpetas especificadas
+!rtdf/deepnote/graficos/.gitkeep
+!rtdf/deepnote/graficos/deepnote/.gitkeep
+!rtdf/deepnote/graficos/deepnote_analisis/.gitkeep
+
+!rtdf/deepnote/graficos/deepnote/general/.gitkeep
+!rtdf/deepnote/graficos/deepnote/hombres/.gitkeep
+!rtdf/deepnote/graficos/deepnote/mujeres/.gitkeep
+
+!rtdf/deepnote/graficos/deepnote_analisis/dispersion_hvm/.gitkeep
+!rtdf/deepnote/graficos/deepnote_analisis/dispersion_hvm_edad/.gitkeep
+!rtdf/deepnote/graficos/deepnote_analisis/dispersion_hvm_generos/.gitkeep
+!rtdf/deepnote/graficos/deepnote_analisis/dispersion_hvm_hr_grabacion/.gitkeep
+!rtdf/deepnote/graficos/deepnote_analisis/dispersion_hvm_hr_paciente/.gitkeep
+!rtdf/deepnote/graficos/deepnote_analisis/dispersion_hvm_m_hora/.gitkeep
+
+
+
