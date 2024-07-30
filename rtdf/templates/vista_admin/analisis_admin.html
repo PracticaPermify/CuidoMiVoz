@@ -77,10 +77,18 @@
                 <th><a href="{% url 'detalle_audio_admin' audio_coef.id_audio_id %}">
                   {{ audio_coef.nombre_archivo }}
               </a></th>
-                <th>
-                  <a href="{% url 'detalle_pauta_admin' audio_coef.id_audio.fk_pauta_terapeutica.id_pauta_terapeutica  %}">
-                  Pauta {{ audio_coef.id_audio.fk_pauta_terapeutica.id_pauta_terapeutica }}</a>
+
+                {% if audio_coef.id_audio.fk_origen_audio.origen_audio == "Escala_vocal" %}
+                <th><a href="{% url 'detalle_pauta_esv_admin' audio_coef.id_audio.fk_pauta_terapeutica.id_pauta_terapeutica %}">
+                  Pauta {{ audio_coef.id_audio.fk_pauta_terapeutica.id_pauta_terapeutica }}
                 </th>
+                {% else %}
+                <th><a href="{% url 'detalle_pauta_admin' audio_coef.id_audio.fk_pauta_terapeutica.id_pauta_terapeutica %}">
+                  Pauta {{ audio_coef.id_audio.fk_pauta_terapeutica.id_pauta_terapeutica }}
+                </th>
+                {% endif %}
+                
+
                 <td>{{ audio_coef.id_audio.fk_origen_audio }}</td>
                 <td>{{ audio_coef.id_audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.id_usuario }}</td>
                 <td>

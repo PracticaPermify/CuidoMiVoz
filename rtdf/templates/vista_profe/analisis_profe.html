@@ -70,9 +70,18 @@
                 <td>{{ usuario.numero_identificacion }}</td>
                 <th><a href="{% url 'detalle_prof_paci' usuario.id_usuario %}">Paciente {{ usuario.id_usuario }}</a></th>
                 <td>{{ usuario.primer_nombre }} {{ usuario.ap_paterno }} {{ usuario.ap_materno }}</a></td>
+                
+                {% if audio_coef.id_audio.fk_origen_audio.origen_audio == "Escala_vocal" %}
+                <th><a href="{% url 'detalle_pauta_esv' audio_coef.id_audio.fk_pauta_terapeutica.id_pauta_terapeutica %}">
+                  Pauta {{ audio_coef.id_audio.fk_pauta_terapeutica.id_pauta_terapeutica }}
+                </th>
+                {% else %}
                 <th><a href="{% url 'detalle_prof_pauta' audio_coef.id_audio.fk_pauta_terapeutica.id_pauta_terapeutica %}">
                   Pauta {{ audio_coef.id_audio.fk_pauta_terapeutica.id_pauta_terapeutica }}
                 </th>
+                {% endif %}
+                
+
                 <td>{{ audio_coef.id_audio.fk_origen_audio }}</td>
                 <td>{{ audio_coef.id_audio_id }}</td>
                 <th><a href="{% url 'detalle_audio_profe' audio_coef.id_audio_id %}">{{ audio_coef.nombre_archivo }}</a></th>
