@@ -106,8 +106,10 @@ urlpatterns = [
     path('perfil/<int:usuario_id>/', views.perfil, name='perfil'),
     path('editar_perfil/<int:usuario_id>/', views.editar_perfil, name='editar_perfil'),
     path('analisis_estadistico_profe/<int:protocolo_id>/', views.analisis_estadistico_profe, name='analisis_estadistico_profe'),
-    
+    path('analisis_estadistico/', views.analisis_estadistico, name='analisis_estadistico'),
+    path('deepnote_ejecutar/', views.deepnote_ejecutar, name='deepnote_ejecutar'),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+#urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-##urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

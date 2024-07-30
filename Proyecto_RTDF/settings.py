@@ -131,6 +131,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -207,6 +208,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATICFILES_DIRS = [
     BASE_DIR / "static",
     BASE_DIR / "media",
+    BASE_DIR / "media" / "graficos" / "deepnote" / "general",
+    BASE_DIR / "media" / "graficos" / "deepnote" / "hombres",
+    BASE_DIR / "media" / "graficos" / "deepnote" / "mujeres",
+]   
+
+#Notebook Ruta
+
+NOTE_ROOT = os.path.join(BASE_DIR, 'rtdf', 'deepnote')
+
+NOTEBOOK_ARGUMENTS = [
+    '--notebook-dir={NOTE_ROOT}',
 ]
 
 # Default primary key field type

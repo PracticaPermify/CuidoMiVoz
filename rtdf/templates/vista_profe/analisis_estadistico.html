@@ -1,0 +1,101 @@
+{% extends 'rtdf/base.html' %}
+
+
+{% block content %}
+
+{% load static%}
+<link rel="stylesheet" href="{% static 'app/css/css_profesionales/analisis_estadistico_profe.css' %}" />
+<link rel="stylesheet" href="{% static 'app/css/tablas_titulo.css' %}"/>
+
+<style>
+    .imagenes img {
+        width: 650px;
+        height: 600px;
+        margin: 10px;
+    }
+</style>
+
+<body class="fondo-negro">
+    <header class="row text-left titulo_header">
+
+    </header>
+
+
+
+    <section id="tabla_fonos">
+
+        <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+            <h1 class=" display-5 fw-bolder sub_titulo">Análisis estadístico <span class="span_title"> Deepnote </span></h1>
+            <p class="texto_pauta">Imágenes generadas por deepnote.</p>
+        </div>
+
+        <div class="col-lg-12 col-xl-12 col-xxl-12">
+            <!-- Segmentación Simple-->
+            <form method="post" action="{% url 'deepnote_ejecutar' %}">
+                {% csrf_token %}
+                <button id="boton-ejecutar" onclick="showWaitMessage()" type="submit" >Ejecutar Deepnote</button>
+            </form>
+
+            <!-- Mensaje de espera -->
+            <div id="mensaje-espera" style="display: none;">
+                <p>Por favor, espera mientras se ejecuta el Deepnote<span class="loading-dots"></span></p>
+            </div>
+            <!-- Mensaje de espera -->
+
+            <p></p>
+
+            <h1 class=" display-5 fw-bolder sub_titulo mt-5">Filtro actual: <span class="span_title">  {{ categoria|title }} </span></h1>
+            <p class="texto_pauta">Seleccione uno de los siguientes filtros.</p>
+            <button onclick="cargarImagenes('general')">General</button>
+            <button onclick="cargarImagenes('hombres')">Hombres</button>
+            <button onclick="cargarImagenes('mujeres')">Mujeres</button>
+            
+            <h1 class=" display-5 fw-bolder sub_titulo  mt-5">Graficos:<span class="span_title">  </span></h1>
+            <div class="imagenes ">
+                {% for imagen in imagenes %}
+                    <div>
+                        <p>Ruta: {{ imagen }}</p>
+                        <img src="{{ MEDIA_URL }}{{ imagen }}" alt="Imagen">
+                        
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </section>
+
+
+
+
+</div>
+</body>
+
+
+
+
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+    function cargarImagenes(categoria) {
+        window.location.href = `?categoria=${categoria}`;
+    }
+
+    function showWaitMessage() {
+            document.getElementById('mensaje-espera').style.display = 'block';
+            document.getElementById('boton-ejecutar').style.display = 'none';
+            
+            animateLoadingDots();
+        }
+
+    function animateLoadingDots() {
+        var dots = document.getElementsByClassName('loading-dots')[0];
+        var counter = 1;
+        setInterval(function() {
+            dots.innerHTML = '.'.repeat(counter);
+            counter = (counter % 3) + 1;
+        }, 500);
+    }
+
+</script>
+
+{% endblock %}

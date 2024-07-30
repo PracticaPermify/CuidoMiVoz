@@ -2006,6 +2006,74 @@ def analisis_estadistico_profe(request, protocolo_id):
                       {'tipo_usuario': tipo_usuario,
                        'informe_id': protocolo_id,
                        'mensaje_error': mensaje_error})
+    
+
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Fonoaudiologo'])
+def analisis_estadistico(request):
+    tipo_usuario = None
+    imagenes = []
+
+    if request.user.is_authenticated:
+        tipo_usuario = request.user.id_tp_usuario.tipo_usuario
+
+        categoria = request.GET.get('categoria', 'general')
+        categorias_validas = ['general', 'hombres', 'mujeres']
+
+        if categoria not in categorias_validas:
+            categoria = 'general'
+        
+        ruta_carpeta = os.path.join(settings.MEDIA_ROOT, 'graficos', 'deepnote', categoria)
+
+
+        if os.path.exists(ruta_carpeta):
+            imagenes = [f'graficos/deepnote/{categoria}/{img}' for img in os.listdir(ruta_carpeta) if img.endswith('.png') or img.endswith('.jpg')]
+ 
+
+    return render(request, 'vista_profe/analisis_estadistico.html', { 
+        'tipo_usuario': tipo_usuario,
+        'imagenes': imagenes,
+        'categoria': categoria
+    })
+
+
+import subprocess
+import nbformat
+from nbconvert.preprocessors import ExecutePreprocessor
+
+def deepnote_ejecutar(request):
+    if request.method == 'POST':
+        # Carga el cuaderno en memoria
+        ruta_notebook = os.path.join(settings.NOTE_ROOT, 'deepnote.ipynb')
+
+        # Creación de la carpeta audios_form y subcarpeta con el nombre del fonoaudiólogo
+        general_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote','general')
+        hombres_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote','hombres')
+        mujeres_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote','mujeres')
+        if not os.path.exists(general_graf_path):
+            os.makedirs(general_graf_path)
+        if not os.path.exists(hombres_graf_path):
+            os.makedirs(hombres_graf_path)
+        if not os.path.exists(mujeres_graf_path):
+            os.makedirs(mujeres_graf_path)
+
+        with open(ruta_notebook, 'r', encoding='utf-8') as f:
+            nb = nbformat.read(f, as_version=4)
+
+        # Se crea un preprocesador de ejecución Local
+        ep = ExecutePreprocessor(timeout=600, kernel_name='myenv')
+
+        # Se ejecuta el cuaderno
+        try:
+            ep.preprocess(nb, {'metadata': {'path': settings.NOTE_ROOT}})
+            messages.success(request, "Notebook ejecutado con éxito")
+            return redirect('analisis_estadistico')         
+        except Exception as e:
+            # Maneja cualquier excepción que ocurra durante la ejecución
+            messages.error(request, f"Error durante la ejecución del notebook: {e}")
+            return redirect('analisis_estadistico')  
+    else:
+        return render(request, 'analisis_estadistico.html')
 
 ##Detalles por paciente de los fonoaudiologos
 @user_passes_test(validate)

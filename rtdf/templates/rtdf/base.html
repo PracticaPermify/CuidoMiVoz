@@ -49,6 +49,9 @@
 						<li {% if request.path == '/analisis_profe/' %}class="current"{% endif %}>
 							<a href="{% url 'analisis_profe' %}">Análisis de audios</a>
 						</li>
+						<li {% if request.path == '/analisis_estadistico/' %}class="current"{% endif %}>
+							<a href="{% url 'analisis_estadistico' %}">Deepnote</a>
+						</li>
 						<li {% if '/perfil/' in request.path %}class="current"{% endif %}>
 							<a href="{% url 'perfil' request.user.id_usuario %}">Mi perfil</a>
 						</li>
