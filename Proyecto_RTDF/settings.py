@@ -43,6 +43,7 @@ if entorno == "local_felipe":
     db_user= 'root'
     db_pw= 'root'
     db_host= 'localhost'
+    ENTORNO = 'myenv'
 
 
 elif entorno == "local_francisco":
@@ -85,6 +86,7 @@ elif entorno == 'mivoz':
     db_user= 'cuidomivozchile'
     db_pw= 'root1234'
     db_host= 'cuidomivozchile.mysql.pythonanywhere-services.com'
+    ENTORNO = 'python3.10'
 
 
 else:

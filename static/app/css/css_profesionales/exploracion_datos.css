@@ -1,0 +1,57 @@
+.imagenes img {
+    width: 800px;
+    height: auto;
+    margin: 10px;
+}
+
+.imagenes img.custom-size-dispersion-hvm-hr-paciente {
+    max-width: 800px; /* Personaliza este valor */
+    height:auto; /* Personaliza este valor */
+}
+
+.imagenes img.custom-size-variacion-m-hora {
+    max-width: 800px; /* Personaliza este valor */
+    height: auto !important; /* Personaliza este valor */
+}
+
+
+@media screen and (max-width: 992px) {
+
+    .imagenes img {
+        width: 600px;
+        height: auto;
+        margin: 10px;
+    }
+    
+    .imagenes img.custom-size-dispersion-hvm-hr-paciente {
+        max-width: 600px; /* Personaliza este valor */
+        height:auto; /* Personaliza este valor */
+    }
+    
+    .imagenes img.custom-size-variacion-m-hora {
+        max-width: 600px; /* Personaliza este valor */
+        height: auto !important; /* Personaliza este valor */
+    }
+
+    }
+
+@media screen and (max-width: 768px) {
+    .imagenes img {
+        width: 350px;
+        height: auto;
+        margin: 10px;
+    }
+    
+    .imagenes img.custom-size-dispersion-hvm-hr-paciente {
+        max-width: 350px; /* Personaliza este valor */
+        height:auto; /* Personaliza este valor */
+    }
+    
+    .imagenes img.custom-size-variacion-m-hora {
+        max-width: 350px; /* Personaliza este valor */
+        height: auto !important; /* Personaliza este valor */
+    }
+
+}
+
+

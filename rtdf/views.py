@@ -2057,11 +2057,12 @@ def deepnote_ejecutar(request):
         if not os.path.exists(mujeres_graf_path):
             os.makedirs(mujeres_graf_path)
 
+        entorno = settings.ENTORNO
         with open(ruta_notebook, 'r', encoding='utf-8') as f:
             nb = nbformat.read(f, as_version=4)
 
         # Se crea un preprocesador de ejecución Local
-        ep = ExecutePreprocessor(timeout=600, kernel_name='myenv')
+        ep = ExecutePreprocessor(timeout=600, kernel_name=entorno)
 
         # Se ejecuta el cuaderno
         try:
@@ -2074,6 +2075,82 @@ def deepnote_ejecutar(request):
             return redirect('analisis_estadistico')  
     else:
         return render(request, 'analisis_estadistico.html')
+    
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Fonoaudiologo'])
+def exploracion_datos(request):
+    tipo_usuario = None
+    imagenes = []
+
+    if request.user.is_authenticated:
+        tipo_usuario = request.user.id_tp_usuario.tipo_usuario
+
+        categoria = request.GET.get('categoria', 'general')
+        categorias_validas = ['dispersion_hvm', 'dispersion_hvm_edad', 'dispersion_hvm_generos'
+                              ,'dispersion_hvm_hr_grabacion','dispersion_hvm_hr_paciente','variacion_m_hora']
+
+        if categoria not in categorias_validas:
+            categoria = 'dispersion_hvm'
+        
+        ruta_carpeta = os.path.join(settings.MEDIA_ROOT, 'graficos', 'deepnote_analisis', categoria)
+
+
+        if os.path.exists(ruta_carpeta):
+            imagenes = [f'graficos/deepnote_analisis/{categoria}/{img}' for img in os.listdir(ruta_carpeta) if img.endswith('.png') or img.endswith('.jpg')]
+ 
+
+    return render(request, 'vista_profe/exploracion_datos.html', { 
+        'tipo_usuario': tipo_usuario,
+        'imagenes': imagenes,
+        'categoria': categoria
+    })
+
+def deepnote_analisis_ejecutar(request):
+    if request.method == 'POST':
+        # Carga el cuaderno en memoria
+        ruta_notebook = os.path.join(settings.NOTE_ROOT, 'deepnote_analisis.ipynb')
+
+        # Creación de la carpeta audios_form y subcarpeta con el nombre del fonoaudiólogo
+        hvm_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote_analisis','dispersion_hvm')
+        edad_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote_analisis','dispersion_hvm_edad')
+        generos_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote_analisis','dispersion_hvm_generos')
+        grabacion_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote_analisis','dispersion_hvm_hr_grabacion')
+        paciente_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote_analisis','dispersion_hvm_hr_paciente')
+        hora_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote_analisis','variacion_m_hora')
+        
+        if not os.path.exists(hvm_graf_path):
+            os.makedirs(hvm_graf_path)
+        if not os.path.exists(edad_graf_path):
+            os.makedirs(edad_graf_path)
+        if not os.path.exists(generos_graf_path):
+            os.makedirs(generos_graf_path)
+        if not os.path.exists(grabacion_graf_path):
+            os.makedirs(grabacion_graf_path)
+        if not os.path.exists(paciente_graf_path):
+            os.makedirs(paciente_graf_path)
+        if not os.path.exists(hora_graf_path):
+            os.makedirs(hora_graf_path)    
+
+
+        entorno = settings.ENTORNO
+
+        with open(ruta_notebook, 'r', encoding='utf-8') as f:
+            nb = nbformat.read(f, as_version=4)
+
+        # Se crea un preprocesador de ejecución Local
+        ep = ExecutePreprocessor(timeout=600, kernel_name=entorno)
+
+        # Se ejecuta el cuaderno
+        try:
+            ep.preprocess(nb, {'metadata': {'path': settings.NOTE_ROOT}})
+            messages.success(request, "Notebook ejecutado con éxito")
+            return redirect('exploracion_datos')         
+        except Exception as e:
+            # Maneja cualquier excepción que ocurra durante la ejecución
+            messages.error(request, f"Error durante la ejecución del notebook: {e}")
+            return redirect('exploracion_datos')  
+    else:
+        return render(request, 'exploracion_datos.html')
 
 ##Detalles por paciente de los fonoaudiologos
 @user_passes_test(validate)

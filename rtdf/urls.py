@@ -108,6 +108,8 @@ urlpatterns = [
     path('analisis_estadistico_profe/<int:protocolo_id>/', views.analisis_estadistico_profe, name='analisis_estadistico_profe'),
     path('analisis_estadistico/', views.analisis_estadistico, name='analisis_estadistico'),
     path('deepnote_ejecutar/', views.deepnote_ejecutar, name='deepnote_ejecutar'),
+    path('exploracion_datos/', views.exploracion_datos, name='exploracion_datos'),
+    path('deepnote_analisis_ejecutar/', views.deepnote_analisis_ejecutar, name='deepnote_analisis_ejecutar'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 #urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
