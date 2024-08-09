@@ -148,6 +148,17 @@ class RegistroForm(forms.ModelForm):
         }
     )
 
+    genero = forms.ModelChoiceField(
+        queryset=Genero.objects.all(),
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control form-control-sm'}),
+        label='Genero',
+        empty_label= "Seleccione genero",
+        error_messages={
+            'required': 'Debe seleccionar un genero para registrarse.'
+        }
+    )
+
     id_comuna = forms.ModelChoiceField(
         queryset=Comuna.objects.all(),
         required=True,
@@ -216,6 +227,7 @@ class RegistroForm(forms.ModelForm):
                   'ap_paterno', 
                   'ap_materno', 
                   'fecha_nacimiento', 
+                  'genero',
                   'email', 
                   'numero_telefonico', 
                   'id_comuna',
@@ -966,3 +978,82 @@ class UploadFileForm(forms.Form):
                 raise forms.ValidationError(f'El archivo {file.name} supera los 5MB.')
 
         return files
+    
+
+class RecetaForm(forms.ModelForm):
+    fk_relacion_pa_pro = forms.ModelChoiceField(
+        queryset=RelacionPaPro.objects.all(),
+        required=True,
+        empty_label="Seleccione su paciente",
+        widget=forms.Select(attrs={'class': 'form-control form-control-sm'}),
+        label='Relación con Paciente y Profesional de Salud'
+    )
+
+    fk_medicamento = forms.ModelChoiceField(
+        queryset=Medicamento.objects.all(),
+        required=True,
+        empty_label="Seleccione el medicamento",
+        widget=forms.Select(attrs={'class': 'form-control form-control-sm','id': 'tp_protocolo'}),
+        label='Medicamento'
+    )
+
+    indicacion_ingesta = forms.CharField(
+        required=True,
+        widget=forms.Textarea(attrs={'placeholder': 'Ejemplo: Tomar cada 8 horas' , 'class': 'campo_descripcion'}),
+        label='Descripción'
+    )
+
+    total_dosis = forms.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Ingrese la dosis en mg',
+            'step': '0.01',  # Permitir incrementar en centavos
+            'min': '0.01',  # Valor mínimo permitido
+        }),
+        min_value=0.01,  # Validación de valor mínimo
+    )
+
+
+    class Meta:
+        model = PacienteReceta  
+        fields = [
+            'fk_relacion_pa_pro', 
+            'fk_medicamento',
+            'indicacion_ingesta', 
+            'total_dosis', 
+        ]
+
+
+# class PacienteIngestaForm(forms.ModelForm):
+
+#     ingesta = forms.DecimalField(
+#         max_digits=5,
+#         decimal_places=2,
+#         widget=forms.NumberInput(attrs={
+#             'class': 'form-control',
+#             'placeholder': 'Ingrese la dosis en mg',
+#             'step': '0.01',  # Permitir incrementar en centavos
+#             'min': '0.01',  # Valor mínimo permitido
+#         }),
+#         min_value=0.01,  # Validación de valor mínimo
+#     )
+
+
+#     class Meta:
+#         model = PacienteIngesta  
+#         fields = [
+#             'ingesta', 
+#             'hora_ingesta',
+
+#         ]
+
+# PacienteIngestaFormSet  = forms.modelformset_factory(
+#     PacienteIngesta,
+#     form=PacienteIngestaForm,
+#     extra=1,
+#     can_delete=True
+#   )
+
+

@@ -29,7 +29,7 @@ urlpatterns = [
     path('lista_familiar/', views.lista_familiar, name='lista_familiar'),
     path('detalle_prof_paci/<int:paciente_id>/', views.detalle_prof_paci, name='detalle_prof_paci'),
     path('detalle_familiar/<int:paciente_id>/', views.detalle_familiar, name='detalle_familiar'),
-    path('mi_fonoaudiologo/',views.mi_fonoaudiologo,name='mi_fonoaudiologo'),
+    
     path('obtener_provincias/', views.obtener_provincias, name='obtener_provincias'),
     path('obtener_comunas/', views.obtener_comunas, name='obtener_comunas'),
     path('obtener_instituciones/', views.obtener_instituciones, name='obtener_instituciones'),
@@ -52,10 +52,24 @@ urlpatterns = [
     path('listado_audios_admin/', views.listado_audios_admin, name='listado_audios_admin'),
     path('detalle_prof_formulario/<int:form_audio_id>/', views.detalle_prof_formulario, name='detalle_prof_formulario'),
     path('detalle_prof_formulario/<int:form_audio_id>/audio/<int:audio_id>/', views.detalle_audio_indep, name='detalle_audio_indep'),
-    path('reproducir_audio/<int:audio_id>/', views.reproducir_audio_indep, name='reproducir_audio_indep'),
+    path('reproducir_audio_indep/<int:audio_id>/', views.reproducir_audio_indep, name='reproducir_audio_indep'),
     path('eliminar_formulario_admin/<int:form_id>/', views.eliminar_formulario_admin, name='eliminar_formulario_admin'),
     path('eliminar_formulario_fono/<int:form_id>/', views.eliminar_formulario_fono, name='eliminar_formulario_fono'),
     path('eliminar_audioindep_prof/<int:audio_id>/', views.eliminar_audioindep_prof, name='eliminar_audioindep_prof'),
+
+
+    ##*PACIENTE
+    path('mi_fonoaudiologo/',views.mi_fonoaudiologo,name='mi_fonoaudiologo'),
+    path('mis_recetas/',views.mis_recetas,name='mis_recetas'),
+    path('mis_recetas/ingresar_seguimiento/<int:receta_id>',views.ingresar_seguimiento,name='ingresar_seguimiento'),
+    ##*PACIENTE
+
+
+    ##*NEURÓLOGO
+    path('ingresar_receta/', views.ingresar_receta, name='ingresar_receta'),
+    path('detalle_prof_paci/<int:paciente_id>/detalle_receta/<int:receta_id>/', views.detalle_receta, name='detalle_receta'),
+    path('ruta-a-vista-ingestas/<int:seguimiento_id>/', views.obtener_ingestas, name='obtener_ingestas'),
+    ##*NEURÓLOGO
 
 
     path('detalle_pauta_admin/<int:id_pauta_terapeutica_id>/', views.detalle_pauta_admin, name='detalle_pauta_admin'),
@@ -105,11 +119,18 @@ urlpatterns = [
 
     path('perfil/<int:usuario_id>/', views.perfil, name='perfil'),
     path('editar_perfil/<int:usuario_id>/', views.editar_perfil, name='editar_perfil'),
+    
     path('analisis_estadistico_profe/<int:protocolo_id>/', views.analisis_estadistico_profe, name='analisis_estadistico_profe'),
+    
     path('analisis_estadistico/', views.analisis_estadistico, name='analisis_estadistico'),
     path('deepnote_ejecutar/', views.deepnote_ejecutar, name='deepnote_ejecutar'),
+    
     path('exploracion_datos/', views.exploracion_datos, name='exploracion_datos'),
     path('deepnote_analisis_ejecutar/', views.deepnote_analisis_ejecutar, name='deepnote_analisis_ejecutar'),
+
+    path('exploracion_datos_prueba/', views.exploracion_datos_prueba, name='exploracion_datos_prueba'),
+    path('deepnote_analisis_prueba_ejecutar/', views.deepnote_analisis_prueba_ejecutar, name='deepnote_analisis_prueba_ejecutar'),
+    path('exportar_a_xlsx/', views.exportar_a_xlsx, name='exportar_a_xlsx'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 #urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

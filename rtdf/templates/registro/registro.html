@@ -66,6 +66,11 @@
                 {{ registro_form.fecha_nacimiento }}
                 <span class="text-danger">{{ registro_form.fecha_nacimiento.errors }}</span>
             </div>
+            <div class="form-group col-md-6">
+                <label for="genero"><i class="fas fa-user"></i>Genero <span class="required">*</span></label>
+                {{ registro_form.genero }}
+                <span class="text-danger">{{ registro_form.genero.errors }}</span>
+            </div>
         </div>        
 
         <div class="form-row">

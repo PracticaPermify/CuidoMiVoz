@@ -1,0 +1,5 @@
+@media (max-width: 768px) {
+    .swal2-mobile-padding {
+        padding: 0px !important;
+    }
+}

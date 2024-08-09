@@ -144,6 +144,18 @@ class EscalaVocales(models.Model):
         return self.palabras
 
 
+class EstadoSeguimiento(models.Model):
+    id_estado_seguimiento = models.AutoField(primary_key=True)
+    estado_seguimiento = models.CharField(max_length=45)
+
+    class Meta:
+        db_table = 'estado_seguimiento'
+        verbose_name_plural = 'estados seguimientos'
+
+    def __str__(self):
+        return self.estado_seguimiento
+
+
 class Esv(models.Model):
     id_protocolo = models.OneToOneField('Protocolo', on_delete=models.CASCADE, db_column='id_protocolo', primary_key=True)
     total_esv = models.IntegerField()
@@ -271,6 +283,33 @@ class Intensidad(models.Model):
     # def __str__(self):
     #     return self.id_pauta_terapeutica
 
+class Medicamento(models.Model):
+    id_medicamento = models.AutoField(primary_key=True)
+    principio_activo = models.CharField(max_length=120)
+    marca = models.CharField(max_length=45, blank=True, null=True)
+    accion_terapeutica = models.CharField(max_length=45, blank=True, null=True)
+    laboratorio = models.CharField(max_length=45, blank=True, null=True)
+    presentacion = models.CharField(max_length=120)
+    total_mg = models.DecimalField(max_digits=5, decimal_places=2)
+    indicacion = models.CharField(max_length=120, blank=True, null=True)
+    cant_caja = models.CharField(max_length=45, blank=True, null=True)
+    ges = models.CharField(max_length=1, blank=True, null=True)
+    cmax = models.CharField(max_length=45, blank=True, null=True)
+    vida_media = models.CharField(max_length=120, blank=True, null=True)
+    interacciones = models.TextField(blank=True, null=True)
+    dosificacion = models.TextField(blank=True, null=True)
+    OBS = models.TextField(blank=True, null=True)
+    valor_ref_oferta = models.IntegerField(null=True, blank=True)  
+    valor_ref_normal = models.IntegerField(null=True, blank=True)  
+
+    class Meta:
+        db_table = 'medicamento'
+        verbose_name_plural = "medicamentos"
+
+    def __str__(self):
+        return self.presentacion
+
+
 class OrigenAudio(models.Model):
     id_origen_audio = models.AutoField(primary_key=True)
     origen_audio = models.CharField(max_length=100)
@@ -297,6 +336,54 @@ class Paciente(models.Model):
 
     def __str__(self):
         return f'{self.id_usuario.primer_nombre} {self.id_usuario.ap_paterno}'
+    
+class PacienteIngesta(models.Model):
+    id_paciente_ingesta = models.AutoField(primary_key=True)
+    ingesta = models.DecimalField(max_digits=3, decimal_places=2)
+    hora_ingesta = models.TimeField()
+    fk_paciente_segui = models.ForeignKey('PacienteSeguimiento', on_delete=models.PROTECT, db_column='fk_paciente_segui')
+
+    class Meta:
+        db_table = 'paciente_ingesta'
+        verbose_name_plural = "paciente ingestas"
+
+    def __str__(self):
+        return f'{self.id_paciente_ingesta}'
+    
+
+class PacienteReceta(models.Model):
+    id_paciente_receta = models.AutoField(primary_key=True)
+    indicacion_ingesta = models.CharField(max_length=100)
+    total_dosis = models.DecimalField(max_digits=5, decimal_places=2)
+    timestamp = models.DateTimeField()
+    fk_medicamento = models.ForeignKey('Medicamento', on_delete=models.PROTECT, db_column='fk_medicamento')
+    fk_relacion_pa_pro = models.ForeignKey('RelacionPaPro', on_delete=models.PROTECT, db_column='fk_relacion_pa_pro')
+    
+
+    class Meta:
+        db_table = 'paciente_receta'
+        verbose_name_plural = "paciente recetas"
+
+    def __str__(self):
+        return f'Receta N°{self.id_paciente_receta}' 
+    
+
+class PacienteSeguimiento(models.Model):
+    id_paciente_segui = models.AutoField(primary_key=True)
+    paciente_seguimiento = models.TextField()
+    total_ingesta = models.DecimalField(max_digits=5, decimal_places=2)
+    timestamp = models.DateTimeField()
+    fk_paciente_receta = models.ForeignKey('PacienteReceta', on_delete=models.PROTECT, db_column='fk_paciente_receta')
+    fk_estado_seguimiento = models.ForeignKey('EstadoSeguimiento', on_delete=models.PROTECT, db_column='fk_estado_seguimiento')
+    
+
+    class Meta:
+        db_table = 'paciente_seguimiento'
+        verbose_name_plural = "paciente seguimientos"
+
+    def __str__(self):
+        return f'Seguimiento N°{self.id_paciente_segui}' 
+
 
 class Pais(models.Model):
     id_pais = models.AutoField(primary_key=True)

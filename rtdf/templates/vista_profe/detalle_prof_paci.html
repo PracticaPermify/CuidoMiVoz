@@ -54,7 +54,8 @@
                       <th>Hipertension:</th>
                       <td scope="row">{{ paciente_info.fk_tipo_hipertension }}</td>
                     </tr>
-      
+                  {% if tipo_usuario %}
+                    {% if tipo_usuario == 'Fonoaudiologo' %}
                     <div id="resultado-container">
                       <tr>
                           <th>Criticidad vocal:</th>
@@ -67,9 +68,9 @@
                               </div>
                           </td>
                       </tr>
-      
                   </div>
-      
+                    {% endif %}
+                  {% endif %}
                     
                 </table>
               </div>
@@ -77,6 +78,9 @@
           </div>
 
       </section>
+
+      {% if tipo_usuario %}
+        {% if tipo_usuario == 'Fonoaudiologo' %}
 
       <section id="tabla_fonos">
 
@@ -170,6 +174,59 @@
 
   </section>
 
+      {% endif %}
+    {% endif %}
+
+
+    {% if tipo_usuario %}
+    {% if tipo_usuario == 'Neurologo' %}
+
+  <section id="tabla_fonos">
+
+    <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
+        <h1 class=" display-5 fw-bolder sub_titulo">Listado de <span class="span_title"> Recetas </span></h1>
+        <p class="texto_pauta">Aquí se listan todas las recetas asociadas al paciente {{ paciente.primer_nombre }} {{ paciente.ap_paterno }}. Para más detalles, haz clic en el ID azul de la receta:</p>
+    </div>
+
+    <div class="col-lg-12 col-xl-12 col-xxl-12">
+      <div class="table-responsive">
+        <table class="table">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Indicaciones</th>
+                <th scope="col">Dosis Total</th>
+                <th scope="col">Medicamento</th>
+                <th scope="col">Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for receta in recetas_paciente %}
+              <tr>
+                <th><a href="{% url 'detalle_receta' paciente.id_usuario receta.id_paciente_receta %}">
+                 Receta N°{{ receta.id_paciente_receta}}</a></th>
+                <td>{{ receta.indicacion_ingesta }}</td>
+                <td >{{ receta.total_dosis }} mg</td>
+                <td >{{ receta.fk_medicamento.presentacion }}</td>
+                <td >{{ receta.timestamp }}</td>
+
+              </tr>
+              {% empty %}
+              <tr>
+                  <td colspan="5">Este paciente aún no cuenta con recetas adjuntas.</td>
+              </tr>
+              {% endfor %}   
+            </tbody>
+          </table>
+        </div>
+    </div>
+
+</section>
+
+
+
+  {% endif %}
+{% endif %}
 
 
 

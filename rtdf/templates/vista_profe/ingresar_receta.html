@@ -1,0 +1,85 @@
+{% extends 'rtdf/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/ingresar_informe.css' %}" />
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<body class="is-preload">
+    <div class="global-container">
+        <div class="card general-form">
+            <div class="card-body">
+                <h3 class="card-title text-center">Ingresar Receta</h3>
+                <div class="card-text">
+
+                    {% if error_message %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error_message }}
+                    </div>
+                    {% endif %}
+
+                    <p class="required-message">
+                        <span class="asterisk">* </span> Campos requeridos
+                    </p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <br>
+                        <div class="form-row">  
+                        
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="fk_relacion_pa_pro"><i class="fas fa-user"></i>Paciente <span class="required">*</span></label>
+                                {{ form.fk_relacion_pa_pro }}
+                            </div>
+                        </div>
+
+
+                        <div class="form-row">  
+                        
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="fk_medicamento"><i class="fa-solid fa-prescription-bottle-medical"></i>Medicamento <span class="required">*</span></label>
+                                {{ form.fk_medicamento }}
+                            </div>
+
+                            <div class="form-group col-md-6 col-sm-6">
+                                <label for="total_dosis"><i class="fa-solid fa-notes-medical"></i>Total dosis (mg) <span class="required">*</span></label>
+                                <br>
+                                {{ form.total_dosis }}
+                            </div>
+                        </div>
+
+                    <div class="form-row">
+                        <div class="form-group col">
+                            <label for="indicacion_ingesta"><i class="fa-solid fa-notes-medical"></i>Indicaciones ingesta <span class="required">*</span></label>
+                            {{ form.indicacion_ingesta }}
+                        </div>
+                    </div>
+
+
+
+
+                        <button type="submit" class="btn btn-primary btn-block mx-auto">Ingresar receta</button>
+
+                </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('form').addEventListener('submit', function(event) {
+            var tipoInforme = document.querySelector('select[name="tp_protocolo"]').value;
+            if (!tipoInforme) {
+                alert('El campo Tipo de Informe es requerido.');
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+
+<script src="{% static 'app/js/formularios.js' %}"></script>
+{% endblock %}

@@ -35,7 +35,7 @@ from django.core.mail import EmailMessage
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.utils.text import slugify 
-
+from decimal import Decimal
 from plotly.offline import plot
 import plotly.graph_objs as go
 from plotly.colors import DEFAULT_PLOTLY_COLORS
@@ -1097,6 +1097,129 @@ def mi_fonoaudiologo(request):
 
     return render(request, 'vista_paciente/mi_fonoaudiologo.html', {'tipo_usuario': tipo_usuario, 'usuario': usuarios, 'pacientes': pacientes})
 
+
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Paciente'])
+def mis_recetas(request):
+
+    tipo_usuario = None 
+    usuarios = Usuario.objects.all()
+
+    if request.user.is_authenticated:
+        tipo_usuario = request.user.id_tp_usuario.tipo_usuario
+
+        id_usuario = request.user.id_usuario 
+
+        try:
+            paciente_salud = Paciente.objects.get(id_usuario=id_usuario)
+        except Paciente.DoesNotExist:
+            paciente_salud = None
+
+        
+
+        profesional_relacionados = []
+
+        
+        if paciente_salud:
+            profesional_relacionados = RelacionPaPro.objects.filter(id_paciente=paciente_salud )
+            recetas_relacionados = PacienteReceta.objects.filter(fk_relacion_pa_pro__id_paciente = paciente_salud).order_by('-timestamp')
+        # lista de los pacientes con datos de usuario y paciente
+            
+        recetas = []
+
+        for relacion in recetas_relacionados:
+
+
+
+            receta_dicc = {
+                'receta_id' : relacion.id_paciente_receta,
+                'medicamento': relacion.fk_medicamento,
+                'total_dosis':relacion.total_dosis,
+                'indicacion_ingesta':relacion.indicacion_ingesta,
+                'nombre_profesional':relacion.fk_relacion_pa_pro.fk_profesional_salud,
+            }
+            recetas.append(receta_dicc)
+
+    return render(request, 'vista_paciente/mis_recetas.html', 
+                {'tipo_usuario': tipo_usuario, 
+                'usuario': usuarios, 
+                'recetas': recetas})
+
+
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Paciente'])
+def ingresar_seguimiento(request, receta_id):
+    tipo_usuario = None
+
+    if request.user.is_authenticated:
+        tipo_usuario = request.user.id_tp_usuario.tipo_usuario
+        receta = get_object_or_404(PacienteReceta, pk=receta_id)
+        receta_tt_dosis= Decimal(receta.total_dosis) 
+        medicamento_mg_comprimido= Decimal(receta.fk_medicamento.total_mg) 
+
+        nombre_paciente= f"{receta.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre} {receta.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno}"
+        nombre_profesional = f"{receta.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.primer_nombre} {receta.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.ap_paterno}"
+        medicamento = f"{receta.fk_medicamento.presentacion}"
+        print(medicamento)
+
+        if request.method == 'POST':
+            ingestas = request.POST.getlist('ingesta')
+            horas_ingesta = request.POST.getlist('hora_ingesta')
+
+            # Crear la lista de descripciones de las ingestas con sus respectivas horas
+            ingesta_horas = [f"Ingesta{i + 1}: {hora} Hr." for i, hora in enumerate(horas_ingesta)]
+            # Unir todas las descripciones en una sola cadena
+            detalle_ingestas = ' ; '.join(ingesta_horas)
+
+            if ingestas and horas_ingesta:
+                total_ingesta = sum(Decimal(ingesta) for ingesta in ingestas) * medicamento_mg_comprimido
+
+                if total_ingesta < receta_tt_dosis :
+                    resta_dosis =  receta_tt_dosis - total_ingesta 
+                    estado_seguimiento = EstadoSeguimiento.objects.get(id_estado_seguimiento = 3)
+                    seguimiento= f"{detalle_ingestas}"
+                    #seguimiento= f"Al paciente {nombre_paciente} le han faltado {resta_dosis}mg de {medicamento} para alcanzar la dosis total de {receta_tt_dosis}mg prescrita por el neurólogo {nombre_profesional}."
+                elif total_ingesta > receta_tt_dosis:
+                    resta_dosis =   total_ingesta - receta_tt_dosis
+                    estado_seguimiento =  EstadoSeguimiento.objects.get(id_estado_seguimiento = 2)
+                    seguimiento= f"{detalle_ingestas}"
+                    #seguimiento= f"El paciente {nombre_paciente} ha excedido la dosis recomendada por {resta_dosis} mg de {medicamento} en su intento de cumplir con la dosis total de {receta_tt_dosis}mg prescrita por el neurólogo {nombre_profesional}."
+                else:
+                    seguimiento= f"{detalle_ingestas}"
+                    estado_seguimiento =  EstadoSeguimiento.objects.get(id_estado_seguimiento = 1)
+                    #seguimiento= f"El paciente {nombre_paciente} ha cumplido con la dosis total de {receta_tt_dosis} mg de {medicamento} prescrita por el neurólogo {nombre_profesional}."
+
+                seguimiento = PacienteSeguimiento.objects.create(
+                    paciente_seguimiento=seguimiento,
+                    total_ingesta=total_ingesta,
+                    timestamp=timezone.now(), 
+                    fk_paciente_receta=receta,  
+                    fk_estado_seguimiento=estado_seguimiento  
+                )
+
+                for ingesta, hora in zip(ingestas, horas_ingesta):
+                    PacienteIngesta.objects.create(
+                        ingesta=ingesta,
+                        hora_ingesta=hora,
+                        fk_paciente_segui=seguimiento
+                )
+
+
+                messages.success(request, "Formulario Seguimiento guardado correctamente")  
+                return HttpResponseRedirect(request.path_info)
+            else:
+                messages.error(request, "Hay errores en el formulario. Por favor, corrígelos e intenta nuevamente.")
+        
+
+
+        return render(request, 'vista_paciente/ingresar_seguimiento.html', {
+            
+            'tipo_usuario': tipo_usuario,
+        })
+    else:
+        return redirect('rtdf/index.html')
+
+
 # FIN DE VISTAS DE PACIENTES ------------------------------------------------------------------------------->
 
 # VISTAS DE FAMILIARES ------------------------------------------------------------------------------->
@@ -1174,6 +1297,137 @@ def detalle_familiar(request, paciente_id):
 
 # VISTAS DE PROFESIONALES ------------------------------------------------------------------------------->
 
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Neurologo'])
+def ingresar_receta(request):
+    tipo_usuario = None
+
+    if request.user.is_authenticated:
+        tipo_usuario = request.user.id_tp_usuario.tipo_usuario
+        
+        profesional_salud = request.user.profesionalsalud
+        relaciones_pacientes = RelacionPaPro.objects.filter(fk_profesional_salud=profesional_salud)
+
+        if request.method == 'POST':
+            form = RecetaForm(request.POST)
+
+
+            form.fields['fk_relacion_pa_pro'].queryset = relaciones_pacientes
+
+            if form.is_valid():
+                receta = form.save(commit=False)  
+                
+                receta.timestamp = timezone.now()
+                receta.save() 
+
+
+                messages.success(request, "Receta ingresada correctamente")  
+                return redirect('ingresar_receta')
+        else:
+            form = RecetaForm()
+            form.fields['fk_relacion_pa_pro'].queryset = relaciones_pacientes
+
+        return render(request, 'vista_profe/ingresar_receta.html', {
+            'form': form,
+            'tipo_usuario': tipo_usuario,
+        })
+    else:
+        return redirect('vista_profe/index.html')
+
+@never_cache
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Neurologo'])
+def detalle_receta(request, paciente_id,receta_id):
+
+    if request.user.is_authenticated:
+        tipo_usuario = request.user.id_tp_usuario.tipo_usuario
+
+        receta = get_object_or_404(PacienteReceta, 
+                                id_paciente_receta=receta_id,
+                                fk_relacion_pa_pro__id_paciente__id_usuario=paciente_id)
+        try:
+            seguimientos = PacienteSeguimiento.objects.filter(fk_paciente_receta=receta).annotate(
+                numero_ingestas=Count('pacienteingesta')
+            ).order_by('-timestamp')
+
+           
+            ingestas = PacienteIngesta.objects.filter(
+                fk_paciente_segui=seguimientos.first()
+            ) if seguimientos.exists() else None
+           
+
+            ingestas_data = []
+            if ingestas:
+                for ingesta in ingestas:
+                    multiplicacion = ingesta.ingesta * receta.fk_medicamento.total_mg
+                    multiplicacion_redondeada = round(multiplicacion, 1)  
+                    ingestas_data.append({
+                        'ingesta': ingesta,
+                        'multiplicacion': multiplicacion_redondeada
+                    })
+            
+        except PacienteSeguimiento.DoesNotExist:
+            seguimientos = None
+            ingestas = None
+            conteo_ingesta = None
+
+
+        elementos_por_pagina = 5  
+
+        paginator = Paginator(seguimientos, elementos_por_pagina)
+
+
+
+        page = request.GET.get('page')
+
+        #PAGINATOR 1
+        try:
+            seguimientos = paginator.page(page)
+            
+        except PageNotAnInteger:
+           
+            seguimientos = paginator.page(1)
+        except EmptyPage:
+
+            seguimientos = paginator.page(paginator.num_pages)
+
+    return render(request, 'vista_profe/detalle_receta.html', {
+        'tipo_usuario': tipo_usuario,
+        'receta' : receta,
+        'seguimientos' : seguimientos,
+        'ingestas_data': ingestas_data,
+        'paciente_id':paciente_id,
+        
+
+    })
+
+@never_cache
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Neurologo'])
+def obtener_ingestas(request, seguimiento_id):
+    if request.user.is_authenticated:
+        try:
+            seguimiento = PacienteSeguimiento.objects.get(id_paciente_segui=seguimiento_id)
+            ingestas = PacienteIngesta.objects.filter(fk_paciente_segui=seguimiento)
+            ingestas_data = []
+
+            for ingesta in ingestas:
+                multiplicacion = ingesta.ingesta * seguimiento.fk_paciente_receta.fk_medicamento.total_mg
+                multiplicacion_redondeada = round(multiplicacion, 1)
+                hora_formateada = ingesta.hora_ingesta.strftime('%H:%M')
+
+                ingestas_data.append({
+                    'hora_ingesta': hora_formateada,
+                    'ingesta': ingesta.ingesta,
+                    'multiplicacion': multiplicacion_redondeada,
+                    'principio_activo': seguimiento.fk_paciente_receta.fk_medicamento.principio_activo
+                })
+
+            return JsonResponse({'ingestas': ingestas_data})
+        except PacienteSeguimiento.DoesNotExist:
+            return JsonResponse({'error': 'Seguimiento no encontrado'}, status=404)
+
+    return JsonResponse({'error': 'Usuario no autenticado'}, status=403)
 
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Fonoaudiologo'])
@@ -1404,7 +1658,7 @@ def esv(request):
     })
 
 @user_passes_test(validate)
-@tipo_usuario_required(allowed_types=['Fonoaudiologo'])
+@tipo_usuario_required(allowed_types=['Fonoaudiologo', 'Neurologo'])
 def listado_pacientes(request):
 
     tipo_usuario = None 
@@ -2152,9 +2406,183 @@ def deepnote_analisis_ejecutar(request):
     else:
         return render(request, 'exploracion_datos.html')
 
-##Detalles por paciente de los fonoaudiologos
+
+##*DEEPNOTE DE PRUEBA-----------------------------------
+
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Fonoaudiologo'])
+def exploracion_datos_prueba(request):
+    tipo_usuario = None
+    imagenes = []
+
+    if request.user.is_authenticated:
+        tipo_usuario = request.user.id_tp_usuario.tipo_usuario
+
+        categoria = request.GET.get('categoria', 'general')
+        categorias_validas = ['dispersion_hvm', 'dispersion_hvm_edad', 'dispersion_hvm_generos'
+                              ,'dispersion_hvm_hr_grabacion','dispersion_hvm_hr_paciente','variacion_m_hora']
+
+        if categoria not in categorias_validas:
+            categoria = 'dispersion_hvm'
+        
+        ruta_carpeta = os.path.join(settings.MEDIA_ROOT, 'graficos', 'deepnote_analisis_prueba', categoria)
+
+
+        if os.path.exists(ruta_carpeta):
+            imagenes = [f'graficos/deepnote_analisis_prueba/{categoria}/{img}' for img in os.listdir(ruta_carpeta) if img.endswith('.png') or img.endswith('.jpg')]
+ 
+
+    return render(request, 'vista_profe/exploracion_datos_pruebas.html', { 
+        'tipo_usuario': tipo_usuario,
+        'imagenes': imagenes,
+        'categoria': categoria
+    })
+
+def deepnote_analisis_prueba_ejecutar(request):
+    if request.method == 'POST':
+
+        
+        response = exportar_a_xlsx(request)
+        if response.status_code != 200:
+            messages.error(request, "Error al generar el archivo XLSX.")
+            return redirect('exploracion_datos_prueba')
+
+        
+        ruta_notebook = os.path.join(settings.NOTE_ROOT, 'deepnote_analisis_pruebas.ipynb')
+
+        
+        hvm_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote_analisis_prueba','dispersion_hvm')
+        edad_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote_analisis_prueba','dispersion_hvm_edad')
+        generos_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote_analisis_prueba','dispersion_hvm_generos')
+        grabacion_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote_analisis_prueba','dispersion_hvm_hr_grabacion')
+        paciente_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote_analisis_prueba','dispersion_hvm_hr_paciente')
+        hora_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote_analisis_prueba','variacion_m_hora')
+        
+        if not os.path.exists(hvm_graf_path):
+            os.makedirs(hvm_graf_path)
+        if not os.path.exists(edad_graf_path):
+            os.makedirs(edad_graf_path)
+        if not os.path.exists(generos_graf_path):
+            os.makedirs(generos_graf_path)
+        if not os.path.exists(grabacion_graf_path):
+            os.makedirs(grabacion_graf_path)
+        if not os.path.exists(paciente_graf_path):
+            os.makedirs(paciente_graf_path)
+        if not os.path.exists(hora_graf_path):
+            os.makedirs(hora_graf_path)    
+
+
+        entorno = settings.ENTORNO
+
+        with open(ruta_notebook, 'r', encoding='utf-8') as f:
+            nb = nbformat.read(f, as_version=4)
+
+        
+        ep = ExecutePreprocessor(timeout=600, kernel_name=entorno)
+
+        # eject
+        try:
+            ep.preprocess(nb, {'metadata': {'path': settings.NOTE_ROOT}})
+            messages.success(request, "Notebook ejecutado con éxito")
+            return redirect('exploracion_datos_prueba')         
+        except Exception as e:
+            messages.error(request, f"Error durante la ejecución del notebook: {e}")
+            return redirect('exploracion_datos_prueba')  
+    else:
+        return render(request, 'exploracion_datos_prueba.html')
+
+import openpyxl
+
+def exportar_a_xlsx(request):
+    # xlsx
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Datos de Audio"
+
+    
+    columnas = [
+        'Paciente','Archivo_audio', 'F0', 'F1', 'F2', 'F3', 'F4',
+        'Intensidad_Media', 'Jitter', 'Shimmer%', 'ShimmerdB', 'HNR',
+        'F0_H', 'F1_H', 'F2_H', 'F3_H', 'F4_H', 'Intensidad_Media_H',
+        'Jitter_H', 'Shimmer%_H', 'ShimmerdB_H', 'HNR_H','Año_Nacimiento','Género', 'hora_Audio'
+    ]
+    ws.append(columnas)
+
+    
+    audios = Audio.objects.all()
+
+    for audio in audios:
+        # coef
+        coef_1 = Audioscoeficientes.objects.filter(id_audio=audio, fk_tipo_llenado=1).first()
+        coef_2 = Audioscoeficientes.objects.filter(id_audio=audio, fk_tipo_llenado=2).first()
+
+        # coef
+        if coef_1 and coef_2:
+            p_nombre = audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre
+            ap_paterno = audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno
+            paciente_nombre = f"{p_nombre} {ap_paterno}"
+
+            paciente_genero = audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.id_genero.genero
+
+            if paciente_genero == "Masculino":
+                paciente_genero = "H"
+            elif paciente_genero == "Femenino":
+                paciente_genero = "M"
+
+            año_nacimiento = audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.fecha_nacimiento.year
+            audio_hora = audio.fecha_audio.hour
+
+            fila = [
+                paciente_nombre,
+                coef_1.nombre_archivo,
+                coef_1.f0,
+                coef_1.f1,
+                coef_1.f2,
+                coef_1.f3,
+                coef_1.f4,
+                coef_1.intensidad,
+                coef_1.local_jitter,
+                coef_1.local_shimmer,
+                coef_1.local_db_shimmer,
+                coef_1.hnr,
+                coef_2.f0,
+                coef_2.f1,
+                coef_2.f2,
+                coef_2.f3,
+                coef_2.f4,
+                coef_2.intensidad,
+                coef_2.local_jitter,
+                coef_2.local_shimmer,
+                coef_2.local_db_shimmer,
+                coef_2.hnr,
+                año_nacimiento,
+                paciente_genero,
+                audio_hora
+            ]
+            ws.append(fila)
+
+
+    ruta_guardado = os.path.join(settings.NOTE_ROOT, 'bdd', 'audios_datos.xlsx')
+    os.makedirs(os.path.dirname(ruta_guardado), exist_ok=True)
+    wb.save(ruta_guardado)
+
+    # Deswcarga
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename={os.path.basename(ruta_guardado)}'
+
+    with open(ruta_guardado, 'rb') as f:
+        response.write(f.read())
+        
+
+    return response
+
+##*DEEPNOTE DE PRUEBA-----------------------------------
+
+##Detalles por paciente de los fonoaudiologos
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Fonoaudiologo', 'Neurologo'])
 def detalle_prof_paci(request, paciente_id):
 
     paciente = get_object_or_404(Usuario, id_usuario=paciente_id, id_tp_usuario__tipo_usuario='Paciente')
@@ -2162,9 +2590,11 @@ def detalle_prof_paci(request, paciente_id):
 
     obtener_rasati = Rasati.objects.filter(id_protocolo__fk_relacion_pa_pro__id_paciente=traer_paciente)
     obtener_grbas = Grbas.objects.filter(id_protocolo__fk_relacion_pa_pro__id_paciente=traer_paciente)
+    obtener_recetas = PacienteReceta.objects.filter(fk_relacion_pa_pro__id_paciente =traer_paciente ).order_by('-timestamp')
 
     informes_rasati = obtener_rasati 
-    informes_grbas = obtener_grbas    
+    informes_grbas = obtener_grbas   
+    recetas_paciente =  obtener_recetas
 
     tipo_usuario = None
     if request.user.is_authenticated:
@@ -2192,7 +2622,11 @@ def detalle_prof_paci(request, paciente_id):
                                                                  'informes_rasati': informes_rasati,
                                                                  'informes_grbas': informes_grbas,
                                                                  'edad': edad,
+                                                                 'recetas_paciente': recetas_paciente,
                                                                  })
+
+
+
 
 def enviar_correo_paciente(paciente, profesional_salud):
     usuario_paciente = Usuario.objects.get(paciente=paciente)

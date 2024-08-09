@@ -7,6 +7,7 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	{% load static %}
+	<link rel="icon" href="{% static 'app\recursos\img\favicon.png' %}" type="image/x-icon">
 	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 	<link rel="stylesheet" href="{% static 'app/css/mains.css' %}" />
 	<link rel="stylesheet" href="{% static 'app/css/buttons.css' %}" />
@@ -62,6 +63,9 @@
 					{% if tipo_usuario == 'Paciente' %}
 						{% comment %} <li><a href="{% url 'vocalizacion' %}">Vocalización</a></li> {% endcomment %}
 						{% comment %} <li><a href="{% url 'intensidad' %}">Intensidad</a></li> {% endcomment %}
+						<li {% if request.path == '/mis_recetas/' %}class="current"{% endif %}>
+							<a href="{% url 'mis_recetas' %}">Mis Recetas</a>
+						</li>
 						<li><a href="{% url 'mi_fonoaudiologo' %}">Fonoaudiólogo</a></li>
 						{% comment %} <li><a href="{% url 'escalas_vocales' %}">Escalas vocales</a></li> {% endcomment %}
 						{% comment %} <li><a href="{% url 'vocalizacion' %}">Vocalización</a></li> {% endcomment %}
@@ -84,6 +88,7 @@
 					{% endif %}
 					{% if tipo_usuario == 'Neurologo' %}
 						<li><a href="{% url 'listado_pacientes' %}">Listado de pacientes</a></li>
+						<li {% if request.path == '/ingresar_receta/' %}class="current"{% endif %}><a href="{% url 'ingresar_receta' %}">Ingresar receta</a></li>
 						<li><a href="{% url 'perfil' request.user.id_usuario %}">Mi perfil</a></li>
 					{% endif %}
 				{% endif %}

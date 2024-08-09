@@ -1,0 +1,47 @@
+.btn-agregar {
+    border: none !important;
+    background: none !important;
+    color: rgb(146, 223, 45) !important;
+    font-size: 35px !important;
+    cursor: pointer !important;
+    width: 20px !important;
+}
+
+
+.btn-eliminar{
+    border: none !important;
+    background: none !important;
+    color: rgb(207, 0, 0) !important;
+    font-size: 35px !important ;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    width: 60px !important;
+    height: 60px !important;
+}
+
+
+.agregar{
+    color: black;
+    font-size: 15px !important;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+
+.input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.input-group input {
+    flex: 1;
+    padding-right: 4rem; /* Ajusta este valor si es necesario */
+}
+.input-group .input-group-text {
+    position: absolute;
+    right: 0.75rem;
+    pointer-events: none;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: #495057;
+}

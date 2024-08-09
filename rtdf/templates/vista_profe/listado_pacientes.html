@@ -12,6 +12,8 @@
                     
                 {% if tipo_usuario == 'Fonoaudiologo' %}   
                     Fonoaudiólogo
+                {% elif tipo_usuario == 'Neurologo' %}
+                    Neurólogo
                 {% else %}
                     {{user.id_tp_usuario}} 
                 {% endif %}    
@@ -81,10 +83,7 @@
                     </div>
 
                         {% elif tipo_usuario == 'Neurologo' %}
-                        <h2><p>Pacientes del neurologo <b>{{ user.primer_nombre }} {{ user.ap_paterno }}</b></p></h2>
-                        <p>
-                            Listado de mis pacientes:
-                        </p>
+
                         <!-- Listado de pacientes del fonoaudiologo-->
                         <table class="table">
                             <thead class="thead-dark">
@@ -104,9 +103,9 @@
                                 {% for paciente in pacientes %}
                                 <tr>
                                     <td>{{ paciente.id_paciente }}</td>
-                                    <td><a href="{% url 'detalle_prof_paci' paciente.id_usuario %}">
+                                    <th><a href="{% url 'detalle_prof_paci' paciente.id_usuario %}">
                                         {{ paciente.primer_nombre }} {{ paciente.ap_paterno }}
-                                        </a></td>
+                                        </a></th>
                                     <td>{{ paciente.email }}</td>
                                     <td>{{ paciente.numero_telefonico }}</td>
                                     <td>{{ paciente.telegram }}</td>

@@ -306,15 +306,84 @@
                        
                                 </p>
                             {% elif tipo_usuario == 'Neurologo' %}
-                                <h2><p>Bienvenido, {{ user.primer_nombre }}.</p></h2>
-                                <p>
-                                    Tu experiencia y conocimientos en neurología son fundamentales para el diagnóstico y tratamiento de trastornos neurológicos relacionados con la voz y el habla. 
-                                    En esta plataforma, encontrarás todas las herramientas necesarias para llevar a cabo evaluaciones detalladas, realizar seguimiento de casos y colaborar estrechamente 
-                                    con otros profesionales de la salud.Entendemos la importancia de tu labor en el equipo médico y estamos comprometidos a brindarte el apoyo que necesitas. 
-                                    Aquí podrás acceder a historias clínicas, informes de pacientes, registros de tratamientos y comunicarte eficazmente con otros miembros del equipo de atención médica.
-                                    Valoramos tu dedicación en la mejora de la salud vocal y la calidad de vida de nuestros pacientes. Si en algún momento requieres asistencia técnica o tienes consultas, 
-                                    nuestro equipo de soporte estará a tu disposición.
-                                </p>               
+                            <body class="fondo-negro">
+                                <div class="container">
+                                    <header class="row text-left titulo_header">
+                                        <div class="col-lg-8">
+                                            <h1 class="titulo_index">Bienvenid@ <span class="span_title">{{ user.primer_nombre }} {{ user.ap_paterno }}</span></h1>
+                                            <p class="texto_header">Recursos Terapéuticos para Fonoaudiólogos</p>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <h1 id="logo"><a class="w-50 float-right" href="{% url 'index' %}">RTDF</a></h1>
+                                        </div>
+                                    </header>
+                                    
+
+
+                                        <section class="py-3" id="perfil">
+
+                                            <div class="row">
+                                                <div class="col-lg-8 col-xl-7 col-xxl-6 d-flex align-items-center texto_inicio">
+                                                    <div class="my-5 text-center text-xl-start">
+                                                        <h1 class="display-5 fw-bolder mb-3">Perfil <span class="span_title">Neurólogo</span></h1>
+                                                        <p class="lead fw-normal  mb-4 pr-mb-3">Bienvenida a nuestra plataforma de atención en línea diseñada para mejorar la salud vocal de tus pacientes.
+                                                            En tu panel de usuario, encontrarás herramientas y recursos para llevar a cabo evaluaciones vocales, crear pautas terapéuticas personalizadas 
+                                                            y dar seguimiento a los progresos de tus pacientes.</p>
+                                                        <p class="pr-mb-3">Si tienes alguna pregunta o necesitas asistencia, no dudes en contactarnos.
+                                                            ¡Tu experiencia y conocimientos son valiosos para nosotros!</p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center"><img class="img-fluid rounded-3 my-5 float-right" src="{% static 'app\recursos\img\neurologo_index.jpg' %}" alt="..." /></div>
+                                            </div>
+
+                                        </section>
+
+
+                                        <section class="py-3" id="features">
+                                            <div class=" ">
+                                                <div class="col-lg-8 col-xl-7 col-xxl-6  align-items-center centrar">
+                                                    <h1 class=" display-5 fw-bolder mb-4">Accesos <span class="span_title">directos</span></h1>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                      <div class="card card h-100">
+                                                        <img src="{% static 'app\recursos\img\listado_pacientes.jpg' %}" height="220" width="600" class="card-img-top" alt="Imagen de la tarjeta">
+                                                        <div class="card-body">
+                                                          <h5 class="card-title display-6" >Listado de <span class="span_title">pacientes</span></h5>
+                                                          <p class="card-text">En este apartado puede revisar rápidamente la información esencial de cada paciente, como nombres, antecedentes medicos y detalles de contacto.</p>
+                                                          <a href="{% url 'listado_pacientes' %}" class="btn btn-primary float-right w-50 mt-3">Ver →</a>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                      <div class="card card h-100">
+                                                        <img src="{% static 'app\recursos\img\imagen_informes.png' %}" height="220" width="600" class="card-img-top" alt="Imagen de la tarjeta">
+                                                        <div class="card-body">
+                                                          <h5 class="card-title display-6">Próximamente <span class="span_title"></span></h5>
+                                                          <p class="card-text">Este apartado proporciona una visión general de los informes disponibles, permitiendo una rápida identificación y acceso a la información necesitada. </p>
+                                                          <a href="{% url 'listado_informes' %}" class="btn btn-primary float-right w-50 mt-3">Ver →</a>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                      <div class="card card h-100">
+                                                        <img src="{% static 'app\recursos\img\audios.png' %}" height="220" width="600" class="card-img-top" alt="Imagen de la tarjeta">
+                                                        <div class="card-body">
+                                                          <h5 class="card-title display-6">Próximamente <span class="span_title"></span></h5>
+                                                          <p class="card-text">Este apartado proporciona información relacionada al análisis de los audios generados por los pacientes, respecto a sus ejercicios terapéuticos realizados.</p>
+                                                          <a href="{% url 'analisis_profe' %}" class="btn btn-primary float-right w-50 mt-3">Ver →</a>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+
+                                            </div>
+
+                                        </section>
+                                </div>
+                            </body>             
                                 {% elif tipo_usuario == 'Admin' %}
                                 <body class="fondo-negro">
                                     <div class="container">
