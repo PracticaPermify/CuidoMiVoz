@@ -88,6 +88,42 @@ class AudioscoefIndepe(models.Model):
         return self.nombre_archivo    
 
 
+class AudioscoefIngesta(models.Model):
+    id_audiocoeficientes = models.AutoField(primary_key=True)
+    paciente = models.CharField(max_length=100)
+    genero = models.CharField(max_length=1)
+    nombre_archivo = models.CharField(max_length=100)
+    fecha_coeficiente = models.DateTimeField()
+    fecha_audio = models.DateField()
+    dosis_ingesta = models.DecimalField(max_digits=5, decimal_places=2)
+    dt_ingesta = models.IntegerField()
+    f0 = models.CharField(max_length=100)
+    f1 = models.CharField(max_length=100)
+    f2 = models.CharField(max_length=100)
+    f3 = models.CharField(max_length=100)
+    f4 = models.CharField(max_length=100)
+    intensidad = models.CharField(max_length=100)
+    hnr = models.CharField(max_length=100)
+    local_jitter = models.CharField(max_length=100)
+    local_absolute_jitter = models.CharField(max_length=100)
+    rap_jitter = models.CharField(max_length=100)
+    ppq5_jitter = models.CharField(max_length=100)
+    ddp_jitter = models.CharField(max_length=100)
+    local_shimmer = models.CharField(max_length=100)
+    local_db_shimmer = models.CharField(max_length=100)
+    apq3_shimmer = models.CharField(max_length=100)
+    aqpq5_shimmer = models.CharField(max_length=100)
+    apq11_shimmer = models.CharField(max_length=100)
+    #fk_tipo_llenado = models.ForeignKey('TpLlenado', on_delete=models.PROTECT, null=True, db_column='fk_tipo_llenado')
+    id_audio = models.ForeignKey('PacienteAudioIngesta', on_delete=models.CASCADE, db_column='id_audio')
+
+    class Meta:
+        db_table = 'audioscoeficientes_ingesta'
+        verbose_name_plural = "audiocoeficiente ingesta"
+
+    def __str__(self):
+        return self.nombre_archivo    
+
 class Audioscoeficientes(models.Model):
     id_audiocoeficientes = models.AutoField(primary_key=True)
     nombre_archivo = models.CharField(max_length=100)
@@ -337,11 +373,28 @@ class Paciente(models.Model):
     def __str__(self):
         return f'{self.id_usuario.primer_nombre} {self.id_usuario.ap_paterno}'
     
+class PacienteAudioIngesta(models.Model):
+    id_audio_ingesta = models.AutoField(primary_key=True)
+    url_audio = models.CharField(max_length=200)
+    fecha_audio = models.DateTimeField()
+    fk_paciente = models.ForeignKey('Paciente', on_delete=models.CASCADE, db_column='fk_paciente')
+
+    class Meta:
+        db_table = 'paciente_audio_ingesta'
+        verbose_name_plural = "audios paciente ingesta"
+
+    def __str__(self):
+        return self.url_audio
+
+    
 class PacienteIngesta(models.Model):
     id_paciente_ingesta = models.AutoField(primary_key=True)
     ingesta = models.DecimalField(max_digits=3, decimal_places=2)
-    hora_ingesta = models.TimeField()
-    fk_paciente_segui = models.ForeignKey('PacienteSeguimiento', on_delete=models.PROTECT, db_column='fk_paciente_segui')
+    hora_ingesta = models.DateTimeField(blank=True, null=True)
+    recordatorio_1 = models.DateTimeField(blank=True, null=True)
+    recordatorio_2 = models.DateTimeField(blank=True, null=True)
+    recordatorio_3 = models.DateTimeField(blank=True, null=True)
+    fk_paciente_segui = models.ForeignKey('PacienteSeguimiento', on_delete=models.CASCADE, db_column='fk_paciente_segui')
 
     class Meta:
         db_table = 'paciente_ingesta'
@@ -356,6 +409,7 @@ class PacienteReceta(models.Model):
     indicacion_ingesta = models.CharField(max_length=100)
     total_dosis = models.DecimalField(max_digits=5, decimal_places=2)
     timestamp = models.DateTimeField()
+    estado = models.CharField(max_length=1, default=0)
     fk_medicamento = models.ForeignKey('Medicamento', on_delete=models.PROTECT, db_column='fk_medicamento')
     fk_relacion_pa_pro = models.ForeignKey('RelacionPaPro', on_delete=models.PROTECT, db_column='fk_relacion_pa_pro')
     
@@ -373,7 +427,7 @@ class PacienteSeguimiento(models.Model):
     paciente_seguimiento = models.TextField()
     total_ingesta = models.DecimalField(max_digits=5, decimal_places=2)
     timestamp = models.DateTimeField()
-    fk_paciente_receta = models.ForeignKey('PacienteReceta', on_delete=models.PROTECT, db_column='fk_paciente_receta')
+    fk_paciente_receta = models.ForeignKey('PacienteReceta', on_delete=models.CASCADE, db_column='fk_paciente_receta')
     fk_estado_seguimiento = models.ForeignKey('EstadoSeguimiento', on_delete=models.PROTECT, db_column='fk_estado_seguimiento')
     
 

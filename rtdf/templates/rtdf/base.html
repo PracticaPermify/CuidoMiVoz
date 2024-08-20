@@ -51,10 +51,10 @@
 							<a href="{% url 'analisis_profe' %}">Análisis de audios</a>
 						</li>
 						<li {% if request.path == '/analisis_estadistico/' %}class="current"{% endif %}>
-							<a href="{% url 'analisis_estadistico' %}">Deepnote</a>
+							<a href="{% url 'analisis_estadistico' %}">Análisis Tiempo/Ingesta</a>
 						</li>
 						<li {% if request.path == '/exploracion_datos/' %}class="current"{% endif %}>
-							<a href="{% url 'exploracion_datos' %}">Deepnote Exploración</a>
+							<a href="{% url 'exploracion_datos' %}">Comparativo Coef. H/M</a>
 						</li>
 						<li {% if '/perfil/' in request.path %}class="current"{% endif %}>
 							<a href="{% url 'perfil' request.user.id_usuario %}">Mi perfil</a>

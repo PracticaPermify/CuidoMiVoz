@@ -1026,6 +1026,32 @@ class RecetaForm(forms.ModelForm):
         ]
 
 
+class UploadFile2Form(forms.Form):
+    hora_ingesta = forms.TimeField(
+        label='Hora de la Ingesta',
+        widget=forms.TimeInput(format='%H:%M', attrs={'class': 'form-control'})
+    )
+    file = forms.FileField(
+        label='Seleccione un archivo',
+        widget=forms.ClearableFileInput(attrs={'multiple': True})
+    )
+
+    def clean_file(self):
+        files = self.files.getlist('file')
+        valid_mime_types = ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/flac', 'audio/aac']
+        max_file_size = 5 * 1024 * 1024  # 5MB
+
+        for file in files:
+            # Validar tipo de archivo
+            if file.content_type not in valid_mime_types:
+                raise forms.ValidationError(f'El archivo {file.name} no es un tipo de audio permitido.')
+
+            # Validar tamaño del archivo
+            if file.size > max_file_size:
+                raise forms.ValidationError(f'El archivo {file.name} supera los 5MB.')
+
+        return files
+
 # class PacienteIngestaForm(forms.ModelForm):
 
 #     ingesta = forms.DecimalField(

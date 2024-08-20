@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 import os
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -97,6 +98,8 @@ else:
 ALLOWED_HOSTS = [host]
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
+#MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
+#MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 # Application definition
 
@@ -223,6 +226,7 @@ NOTEBOOK_ARGUMENTS = [
     '--notebook-dir={NOTE_ROOT}',
 ]
 
+TELEGRAM_TOKEN = '7276964571:AAHaIIsfETRrpqmEFfRnoq_6n0OTH3U6uW4'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 

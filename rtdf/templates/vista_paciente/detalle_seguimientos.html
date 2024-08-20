@@ -11,7 +11,7 @@
 <body class="fondo-negro">
     <header class="row text-left titulo_header">
         <div class="col-lg-8">
-            <a class="btn btn-outline-primary" href="{% url 'detalle_prof_paci' paciente_id %}"><i class="fa-solid fa-arrow-left"></i>  Volver al detalle del paciente</a>
+            <a class="btn btn-outline-primary" href="{% url 'mis_recetas' %}"><i class="fa-solid fa-arrow-left mr-1"></i>  Volver al listado</a>
         </div>
     </header>
 
@@ -25,10 +25,11 @@
         </div>
 
         <div class="col-lg-12 col-xl-12 col-xxl-12">
+            {% comment %}
             <a href="#" onclick="eliminarReceta({{ receta.id_paciente_receta }})" class="btn btn-danger btn-derecha">
                 Eliminar<i class="fas fa-trash-alt" style="margin-left: 5px;"></i>
             </a>
-            {% comment %}
+            
             <a href="" class="btn btn-primary btn-derecha">
                 Editar <i class="fas fa-pencil-alt" style="margin-left: 5px;"></i>
             </a>
@@ -99,14 +100,53 @@
 
         <div class="col-lg-12 col-xl-12 col-xxl-12">
             
-            <div class="row">
+            
+                
+                
+            <div class="form-group col-md-6 col-sm-6 ml-3">
+                        <a href="javascript:void(0);" class="btn btn-primary mx-auto" onclick="subirAudio({{ receta.fk_relacion_pa_pro.id_paciente_id }})">
+                            Subir Audio <i class="fa-solid fa-arrow-up-from-bracket ml-1"></i>
+                        </a>
+                    
+                    
+                    
+                
+                    
+                        <a href="javascript:void(0);" class="btn btn-primary mx-auto" onclick="verAudios({{ receta.fk_relacion_pa_pro.id_paciente_id }})">
+                            Ver Audios Asociados <i class="fa-solid fa-list ml-1"></i>
+                        </a>
+                    </div>
+               
+            
+                
+                
+
+            <div class="row mt-1">
                 {% for ingesta in ingestas_data %}
-                <div class="col-sm-3 mb-3 mb-sm-0">
+                <div class="col-sm-3 col-md-3">
                   <div class="card">
                     <div class="card-body">
-                      <h1 class="card-title" style="text-align: center;">{{ingesta.ingesta.hora_ingesta}} Hrs.</h1>
+                      <h1 class="card-title" style="text-align: center;">{{ingesta.hora_ingesta}} Hrs.</h1>
                       <h3 class="card-text" style="text-align: center;"><span class="span_title"> {{ingesta.ingesta.ingesta}}%</span> de un comprimido</h3>
                       <p class="card-text" style="text-align: center;">Equivale a <span class="span_title"> {{ingesta.multiplicacion}}mg</span> de {{ingesta.ingesta.fk_paciente_segui.fk_paciente_receta.fk_medicamento.principio_activo}}</p>
+                      <div class="form-row " style="text-align: center;"> 
+                        
+                        {% comment %}
+                        <div class="form-group col-md-6 col-sm-6">
+                            <a href="javascript:void(0);" class="btn btn-primary mx-auto" onclick="subirAudio({{ ingesta.ingesta.id_paciente_ingesta }})">
+                                Subir Audio <i class="fa-solid fa-arrow-up-from-bracket ml-1"></i>
+                            </a>
+                        </div>
+                        
+                    
+                        <div class="form-group col-md-6 col-sm-6 mx-auto">
+                            <a href="javascript:void(0);" class="btn btn-primary mx-auto" onclick="verAudios({{ ingesta.ingesta.id_paciente_ingesta }})">
+                                Ver Audios Asociados <i class="fa-solid fa-list ml-1"></i>
+                            </a>
+                        </div>
+                        {% endcomment %}
+                        
+                    </div>
                     </div>
                   </div>
                 </div>
@@ -195,30 +235,11 @@
 </body>
 
 
+<script src="{% static 'app/js/template/ingesta_audio.js' %}"></script>
 
 
 
 <script>
-
-function eliminarReceta(id_receta) {
-        Swal.fire({
-            "title":"¿Estas seguro?",
-            "text": "esta acción no se puede deshacer.",
-            "icon":"error",
-            "showCancelButton": true,
-            "cancelButtonText": "No, Cancelar",
-            "cancelButtonColor": "#3085d6",
-            "confirmButtonText": "Si, Eliminar",
-            "reverseButtons":true,
-            "confirmButtonColor":"#d33"
-        })
-            .then(function(result){
-                if(result.isConfirmed){
-                    window.location.href = "/eliminar_receta/"+id_receta+"/"
-                }
-            })
-
-    }
 
 
 
@@ -261,6 +282,95 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+
+function subirAudio(paciente_id) {
+    Swal.fire({
+        title: 'Subir Audio',
+        html: `
+            <form id="form-audio" enctype="multipart/form-data">
+                <label for="hora_ingesta">Hora de la Ingesta:</label>
+                <input type="time" name="hora_ingesta" class="swal2-input" required>
+                <label for="file">Seleccione un archivo de audio:</label>
+                <input type="file" name="file" accept="audio/*" class="swal2-input" required multiple>
+            </form>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Subir',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: "#13993b",
+        cancelButtonColor: "#d33",
+        preConfirm: () => {
+            const form = document.getElementById('form-audio');
+            const formData = new FormData(form);
+
+            return fetch('/subir_audio/' + paciente_id + '/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}' // Asegúrate de que este código está en una plantilla de Django.
+                }
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error(response.statusText);
+                }
+                return response.json();
+            }).then(data => {
+                if (!data.success) {
+                    Swal.showValidationMessage('Error: ' + (data.errors || 'Hubo un problema al subir el audio.'));
+                }
+                return data;
+            });
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire('Audio Subido', '', 'success').then(() => {
+                location.reload(); 
+            });
+        }
+    });
+}
+
+function verAudios(paciente_id) {
+    fetch('/obtener_audios_ingesta_general/' + paciente_id + '/')
+        .then(response => response.json())
+        .then(audios => {
+            if (audios.length === 0) {
+                Swal.fire('No hay audios disponibles', '', 'info');
+            } else {
+                let cardsHtml = audios.map(audio => {
+                    return `
+                    <div class="col-sm-4 mb-4 mb-sm-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h1 class="card-title" style="text-align: center;">${audio.hora_audio} Hrs.</h1>
+                                <audio controls>
+                                    <source src="/media/audios_ingestas/${audio.url_audio}" type="audio/wav">
+                                    Tu navegador no soporta la reproducción de audio.
+                                </audio>
+                                <p class="card-subtitle mt-2" style="text-align: center;">Ingesta: <span class="span_title">${audio.hora_ingesta}</span> Hrs.</p>
+                                <p class="card-text " style="text-align: center;">Tiempo transcurrido: <span class="span_title">${audio.diferencia_horas}h ${audio.diferencia_minutos}m</span></p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                }).join('');
+
+                Swal.fire({
+                    title: 'Audios Subidos',
+                    html: `<div class="row">${cardsHtml}</div>`,
+                    width: '80%',
+                    showCloseButton: true,
+                    showConfirmButton: false
+                });
+            }
+        })
+        .catch(error => {
+            Swal.fire('Error al cargar los audios', '', 'error');
+        });
+}
+
 
 </script>
 

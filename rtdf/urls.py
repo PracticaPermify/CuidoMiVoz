@@ -62,13 +62,20 @@ urlpatterns = [
     path('mi_fonoaudiologo/',views.mi_fonoaudiologo,name='mi_fonoaudiologo'),
     path('mis_recetas/',views.mis_recetas,name='mis_recetas'),
     path('mis_recetas/ingresar_seguimiento/<int:receta_id>',views.ingresar_seguimiento,name='ingresar_seguimiento'),
+    path('mis_recetas/detalle_seguimientos/<int:receta_id>',views.detalle_seguimientos,name='detalle_seguimientos'),
+    path('subir_audio/<int:paciente_id>/', views.subir_audio, name='subir_audio'),
+    path('obtener_audios_ingesta/<int:ingesta_id>/', views.obtener_audios_ingesta, name='obtener_audios_ingesta'),
+    path('obtener_audios_ingesta_general/<int:paciente_id>/', views.obtener_audios_ingesta_general, name='obtener_audios_ingesta_general'),
+
+    
     ##*PACIENTE
 
 
     ##*NEURÓLOGO
     path('ingresar_receta/', views.ingresar_receta, name='ingresar_receta'),
     path('detalle_prof_paci/<int:paciente_id>/detalle_receta/<int:receta_id>/', views.detalle_receta, name='detalle_receta'),
-    path('ruta-a-vista-ingestas/<int:seguimiento_id>/', views.obtener_ingestas, name='obtener_ingestas'),
+    path('historial_ingestas/<int:seguimiento_id>/', views.obtener_ingestas, name='obtener_ingestas'),
+    path('eliminar_receta/<int:receta_id>/', views.eliminar_receta, name='eliminar_receta'),
     ##*NEURÓLOGO
 
 
@@ -130,7 +137,10 @@ urlpatterns = [
 
     path('exploracion_datos_prueba/', views.exploracion_datos_prueba, name='exploracion_datos_prueba'),
     path('deepnote_analisis_prueba_ejecutar/', views.deepnote_analisis_prueba_ejecutar, name='deepnote_analisis_prueba_ejecutar'),
-    path('exportar_a_xlsx/', views.exportar_a_xlsx, name='exportar_a_xlsx'),
+    path('exportar_a_xlsx/<str:mensaje>/', views.exportar_a_xlsx, name='exportar_a_xlsx'),
+
+    path('analisis_estadistico_prueba/', views.analisis_estadistico_pruebas, name='analisis_estadistico_pruebas'),
+    path('deepnote_ejecutar_prueba/', views.deepnote_ejecutar_prueba, name='deepnote_ejecutar_prueba'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 #urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

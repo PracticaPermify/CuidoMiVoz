@@ -9,19 +9,20 @@ from django.views.decorators.cache import never_cache
 from django.utils import timezone
 from django.urls import reverse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db.models import Count,Avg, Sum, F
+from django.db.models import Count,Avg, Sum, F,Min
 from django.db.models.functions import Coalesce
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 import os
 from functools import wraps
 from django.conf import settings
-from rtdf.audio_coef import audio_analysis , formulario_audio_analysis
+from rtdf.audio_coef import audio_analysis , formulario_audio_analysis, ingesta_audio_analysis
 from rtdf.analisis_estadistico import *
 from rtdf.ciencia_datos import *
+from django.utils.timezone import make_aware,now, localtime
 from django.http import FileResponse
 from django.conf import settings
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.contrib.auth.hashers import make_password
 from django.utils.crypto import get_random_string
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
@@ -36,6 +37,7 @@ from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.utils.text import slugify 
 from decimal import Decimal
+from django.utils.dateparse import parse_datetime
 from plotly.offline import plot
 import plotly.graph_objs as go
 from plotly.colors import DEFAULT_PLOTLY_COLORS
@@ -1157,6 +1159,10 @@ def ingresar_seguimiento(request, receta_id):
         receta_tt_dosis= Decimal(receta.total_dosis) 
         medicamento_mg_comprimido= Decimal(receta.fk_medicamento.total_mg) 
 
+
+        print(timezone.now())  # Esto debería imprimir la hora actual en UTC
+        print(timezone.localtime())
+
         nombre_paciente= f"{receta.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre} {receta.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno}"
         nombre_profesional = f"{receta.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.primer_nombre} {receta.fk_relacion_pa_pro.fk_profesional_salud.id_usuario.ap_paterno}"
         medicamento = f"{receta.fk_medicamento.presentacion}"
@@ -1198,11 +1204,37 @@ def ingresar_seguimiento(request, receta_id):
                 )
 
                 for ingesta, hora in zip(ingestas, horas_ingesta):
+                    # Obtener la fecha actual en la zona horaria local
+                    fecha_actual = datetime.now().date()
+                    
+                    # Combinar la fecha actual con la hora ingresada y hacerla consciente de la zona horaria
+                    fecha_hora_ingesta = datetime.combine(fecha_actual, datetime.strptime(hora, '%H:%M').time())
+                    fecha_hora_ingesta = make_aware(fecha_hora_ingesta)
+                    
+                    # Inicializar los recordatorios como None
+                    recordatorio_1 = None
+                    recordatorio_2 = None
+                    recordatorio_3 = None
+
+                    # Verificar si la hora es anterior a las 22:00
+                    if fecha_hora_ingesta.time() < datetime.strptime('22:00', '%H:%M').time():
+                        recordatorio_1 = fecha_hora_ingesta + timedelta(hours=1)
+                        # Verificar si el primer recordatorio es anterior a las 22:00
+                        if recordatorio_1.time() < datetime.strptime('22:00', '%H:%M').time():
+                            recordatorio_2 = fecha_hora_ingesta + timedelta(hours=2)
+                            # Verificar si el segundo recordatorio es anterior a las 22:00
+                            if recordatorio_2.time() < datetime.strptime('22:00', '%H:%M').time():
+                                recordatorio_3 = fecha_hora_ingesta + timedelta(hours=3)
+
+                    # Crear el registro en la base de datos
                     PacienteIngesta.objects.create(
                         ingesta=ingesta,
-                        hora_ingesta=hora,
-                        fk_paciente_segui=seguimiento
-                )
+                        hora_ingesta=fecha_hora_ingesta,
+                        fk_paciente_segui=seguimiento,
+                        recordatorio_1=recordatorio_1,
+                        recordatorio_2=recordatorio_2,
+                        recordatorio_3=recordatorio_3
+                    )   
 
 
                 messages.success(request, "Formulario Seguimiento guardado correctamente")  
@@ -1220,7 +1252,376 @@ def ingresar_seguimiento(request, receta_id):
         return redirect('rtdf/index.html')
 
 
+@never_cache
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Paciente'])
+def detalle_seguimientos(request,receta_id):
+
+    if request.user.is_authenticated:
+        tipo_usuario = request.user.id_tp_usuario.tipo_usuario
+
+        paciente_id = request.user.id_usuario
+
+        receta = get_object_or_404(PacienteReceta, 
+                                id_paciente_receta=receta_id,
+                                fk_relacion_pa_pro__id_paciente__id_usuario=paciente_id)
+        try:
+            seguimientos = PacienteSeguimiento.objects.filter(fk_paciente_receta=receta).annotate(
+                numero_ingestas=Count('pacienteingesta')
+            ).order_by('-timestamp')
+
+           
+            ingestas = PacienteIngesta.objects.filter(
+                fk_paciente_segui=seguimientos.first()
+            ) if seguimientos.exists() else None
+           
+
+            ingestas_data = []
+            if ingestas:
+                for ingesta in ingestas:
+                    multiplicacion = ingesta.ingesta * receta.fk_medicamento.total_mg
+                    multiplicacion_redondeada = round(multiplicacion, 1)  
+                    hora_ingesta = timezone.localtime(ingesta.hora_ingesta).time()
+                    ingestas_data.append({
+                        'ingesta': ingesta,
+                        'multiplicacion': multiplicacion_redondeada,
+                        'hora_ingesta': hora_ingesta
+                    })
+            
+        except PacienteSeguimiento.DoesNotExist:
+            seguimientos = None
+            ingestas = None
+            conteo_ingesta = None
+
+
+        elementos_por_pagina = 5  
+
+        paginator = Paginator(seguimientos, elementos_por_pagina)
+
+
+
+        page = request.GET.get('page')
+
+        #PAGINATOR 1
+        try:
+            seguimientos = paginator.page(page)
+            
+        except PageNotAnInteger:
+           
+            seguimientos = paginator.page(1)
+        except EmptyPage:
+
+            seguimientos = paginator.page(paginator.num_pages)
+
+    return render(request, 'vista_paciente/detalle_seguimientos.html', {
+        'tipo_usuario': tipo_usuario,
+        'receta' : receta,
+        'seguimientos' : seguimientos,
+        'ingestas_data': ingestas_data,
+        'paciente_id':paciente_id,
+        
+
+    })
+
+
+@never_cache
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Paciente'])
+def subir_audio(request,paciente_id):
+    if request.method == 'POST':
+        form = UploadFile2Form(request.POST, request.FILES)
+        if form.is_valid():
+            hora_ingesta = form.cleaned_data['hora_ingesta']
+
+            fecha_actual = datetime.now().date()
+            # Combinar la fecha actual con la hora de ingesta para obtener un objeto datetime
+            fecha_hora_ingesta = datetime.combine(fecha_actual, hora_ingesta)
+            fecha_hora_ingesta = make_aware(fecha_hora_ingesta)  # Asegurarse de que la fecha y hora sean conscientes de la zona horaria
+
+            files = form.cleaned_data['file']
+
+            paciente = Paciente.objects.get(id_paciente=paciente_id)##cambiar
+            id_paci = paciente.id_paciente
+            nom_paci = paciente.id_usuario.primer_nombre
+            ap_paci = paciente.id_usuario.ap_paterno
+            genero_paci = paciente.id_usuario.id_genero.genero
+
+
+            nombre_paciente_coef = f"{nom_paci} {ap_paci}"
+            
+            if genero_paci == "Femenino":
+                genero = "M"
+            elif genero_paci == "Masculino":
+                genero = "H"
+            else:
+                genero = genero_paci
+
+
+            # Creación de la carpeta audios_form y subcarpeta con el nombre del fonoaudiólogo
+            audios_form_path = os.path.join(settings.MEDIA_ROOT, 'audios_ingestas')
+            if not os.path.exists(audios_form_path):
+                os.makedirs(audios_form_path)
+
+            paci_nombre = slugify(f"{id_paci}_{nom_paci}_{ap_paci}")
+            paciente_path = os.path.join(audios_form_path, paci_nombre)
+            if not os.path.exists(paciente_path):
+                os.makedirs(paciente_path)
+
+
+            # Obtener el primer nombre y apellido paterno del paciente
+            paciente_nombre = slugify(f"{nom_paci}_{ap_paci}")
+
+            for file in files:
+
+                # Construir el nuevo nombre del archivo
+                fecha = datetime.now().strftime("%Y%m%d_%H%M%S")
+                extension = os.path.splitext(file.name)[1]
+                new_file_name = f"{paciente_nombre}_{fecha}{extension}"
+                file_path = os.path.join(paciente_path, new_file_name)
+
+
+                with open(file_path, 'wb+') as destination:
+                    for chunk in file.chunks():
+                        destination.write(chunk)
+
+                ruta_db = f"{paci_nombre}/{new_file_name}"
+
+                # Guardar la instancia en la base de datos
+                audio_ingesta = PacienteAudioIngesta.objects.create(
+                                    url_audio=ruta_db,
+                                    #hora_audio=datetime.now().time(),
+                                    fecha_audio=fecha_hora_ingesta, 
+                                    fk_paciente=paciente
+                                )
+
+                audio_ingesta.save()
+
+                ##TODO: OBTENER LA INGESTA ASOCIADA
+
+                receta = get_object_or_404(PacienteReceta, fk_relacion_pa_pro__id_paciente=paciente_id, estado='1')
+
+                seguimiento = PacienteSeguimiento.objects.filter(
+                    fk_paciente_receta=receta
+                ).order_by('-timestamp').first()
+
+                ingestas = PacienteIngesta.objects.filter(
+                    fk_paciente_segui=seguimiento
+                ).order_by('hora_ingesta')
+
+                ingesta_asociada = None
+                diferencia_minutos_total = None
+                hora_audio_local = localtime(audio_ingesta.fecha_audio).time()
+
+                for i, ingesta in enumerate(ingestas):
+                    hora_ingesta_local = localtime(ingesta.hora_ingesta).time()
+
+                    if i + 1 < len(ingestas):
+                        hora_siguiente_ingesta_local = localtime(ingestas[i + 1].hora_ingesta).time()
+                    else:
+                        hora_siguiente_ingesta_local = None
+
+                    if hora_audio_local < hora_ingesta_local and hora_audio_local.hour < 4 and not hora_siguiente_ingesta_local:
+                        diferencia_minutos_total = (hora_audio_local.hour * 60 + hora_audio_local.minute + 24 * 60) - \
+                                                (hora_ingesta_local.hour * 60 + hora_ingesta_local.minute)
+                        ingesta_asociada = ingesta
+                        break
+                    elif (hora_siguiente_ingesta_local and
+                        hora_ingesta_local <= hora_audio_local < hora_siguiente_ingesta_local) or \
+                        (not hora_siguiente_ingesta_local and hora_ingesta_local <= hora_audio_local):
+                        diferencia_minutos_total = (hora_audio_local.hour * 60 + hora_audio_local.minute) - \
+                                                (hora_ingesta_local.hour * 60 + hora_ingesta_local.minute)
+                        ingesta_asociada = ingesta
+                        break
+
+                
+                if ingesta_asociada and diferencia_minutos_total is not None:
+
+                    # Si tienes un campo en tu modelo para almacenar la diferencia en minutos, podrías hacer algo como:
+                   
+                    print(f"Ingesta asociada: {ingesta_asociada}")
+                    print(f"Ingesta : {ingesta_asociada.ingesta}")
+                    print(f"Diferencia en minutos almacenada: {diferencia_minutos_total}")
+
+
+                    ##TODO: CALCULAR EL COEFICIENTE A AUDIO INGESTA
+
+                    id_audio_registrado = audio_ingesta.id_audio_ingesta
+
+                    #obtencion del id del audio
+                    id_audio = PacienteAudioIngesta.objects.get(id_audio_ingesta=id_audio_registrado)
+                    fecha_data = timezone.now()
+                    res = ingesta_audio_analysis(ruta_db, new_file_name, fecha_data)
+                    is_coefs=AudioscoefIngesta.objects.all().filter(nombre_archivo=new_file_name)
+
+                    if not is_coefs.exists():
+                        print('analizando')
+                        coefs=AudioscoefIngesta.objects.create(
+                            paciente = nombre_paciente_coef,
+                            genero = genero ,
+                            fecha_audio = id_audio.fecha_audio.date() ,
+                            dosis_ingesta = ingesta_asociada.ingesta,
+                            dt_ingesta = diferencia_minutos_total,
+                            nombre_archivo = new_file_name,
+                            fecha_coeficiente = res['date'],               
+                            f0  = res['f0'],
+                            f1  = res['f1'],
+                            f2  = res['f2'],
+                            f3  = res['f3'],
+                            f4  = res['f4'],
+                            intensidad  = res['Intensity'],
+                            hnr  = res['HNR'],
+                            local_jitter  = res['localJitter'],
+                            local_absolute_jitter  = res['localabsoluteJitter'],
+                            rap_jitter  = res['rapJitter'],
+                            ppq5_jitter  = res['ppq5Jitter'],
+                            ddp_jitter = res['ddpJitter'],
+                            local_shimmer = res['localShimmer'],
+                            local_db_shimmer = res['localdbShimmer'],
+                            apq3_shimmer = res['apq3Shimmer'],
+                            aqpq5_shimmer = res['aqpq5Shimmer'],
+                            apq11_shimmer = res['apq11Shimmer'],
+                            id_audio = id_audio,
+                            
+                        )
+                        coefs.save()
+                        print('analizado')
+
+                    ##TODO: CALCULAR EL COEFICIENTE A AUDIO INGESTA
+
+
+                else:
+                    print("No se encontró una ingesta asociada o no se pudo calcular la diferencia en minutos.")
+
+                ##TODO: OBTENER LA INGESTA ASOCIADA
+
+
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+
+def obtener_audios_ingesta(request, ingesta_id):
+    if request.method == 'GET':
+        ingesta = PacienteIngesta.objects.get(id_paciente_ingesta=ingesta_id)
+        audios = PacienteAudioIngesta.objects.filter(fk_paciente_ingesta_id=ingesta_id)
+
+        audios_data = []
+        for audio in audios:
+            ingesta_datetime = datetime.combine(datetime.today(), ingesta.hora_ingesta)
+            audio_datetime = datetime.combine(datetime.today(), audio.hora_audio)
+            diferencia = audio_datetime - ingesta_datetime
+            horas, remainder = divmod(diferencia.total_seconds(), 3600)
+            minutos = remainder // 60
+
+            audios_data.append({
+                'url_audio': audio.url_audio,
+                'hora_audio': audio.hora_audio.strftime('%H:%M'),
+                'diferencia_horas': int(horas),
+                'diferencia_minutos': int(minutos)
+            })
+
+        return JsonResponse(audios_data, safe=False)
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+def obtener_audios_ingesta_general(request, paciente_id):
+    if request.method == 'GET':
+        
+        receta = get_object_or_404(PacienteReceta, fk_relacion_pa_pro__id_paciente=paciente_id, estado='1')
+        receta_vigente = PacienteReceta.objects.filter(fk_relacion_pa_pro__id_paciente=paciente_id, estado=1)
+
+
+        audios_maria = PacienteAudioIngesta.objects.filter(
+            fk_paciente=paciente_id
+        )
+        print(audios_maria)
+        #print(receta)
+        
+        
+        
+        seguimiento = PacienteSeguimiento.objects.filter(
+            fk_paciente_receta=receta
+        ).order_by('-timestamp').first()
+        print(f"Seguimiento activo de la receta de María: {seguimiento}")
+
+        
+        ingestas = PacienteIngesta.objects.filter(
+            fk_paciente_segui=seguimiento
+        ).order_by('hora_ingesta')
+        
+
+        #print(ingestas)
+        
+        un_dia_antes = receta.timestamp - timedelta(days=1)
+
+        audios_data = []
+        audios = PacienteAudioIngesta.objects.filter(
+            fecha_audio__gte=un_dia_antes,
+            fk_paciente=receta.fk_relacion_pa_pro.id_paciente_id
+        ).order_by('fecha_audio')
+
+        # print(f"Receta Timestamp: {receta.timestamp}")
+        # for audio in PacienteAudioIngesta.objects.filter(fk_paciente=receta.fk_relacion_pa_pro.id_paciente_id):
+        #     print(f"Audio Timestamp: {audio.fecha_audio}, URL: {audio.url_audio}")
+
+        for i, ingesta in enumerate(ingestas):
+
+            
+            hora_ingesta_local = localtime(ingesta.hora_ingesta).time()
+
+            # rango de tiempo: desde la ingesta actual hasta la siguiente ingesta
+            if i + 1 < len(ingestas):
+                hora_siguiente_ingesta_local = localtime(ingestas[i + 1].hora_ingesta).time()
+            else:
+                hora_siguiente_ingesta_local = None
+
+            for audio in audios:
+                #print(f"Audio URL: {audio.url_audio}, Fecha: {audio.fecha_audio}")
+
+                hora_audio_local = localtime(audio.fecha_audio).time()
+                diferencia_minutos = None  # Inicializar diferencia_minutos
+
+                # filtro especifico para las horas que pasan de las 00:00
+                if hora_audio_local < hora_ingesta_local and hora_audio_local.hour < 4 and not hora_siguiente_ingesta_local:
+                    diferencia_minutos = (hora_audio_local.hour * 60 + hora_audio_local.minute + 24 * 60) - \
+                                        (hora_ingesta_local.hour * 60 + hora_ingesta_local.minute)
+                elif (hora_siguiente_ingesta_local and
+                    hora_ingesta_local <= hora_audio_local < hora_siguiente_ingesta_local) or \
+                    (not hora_siguiente_ingesta_local and hora_ingesta_local <= hora_audio_local):
+                    diferencia_minutos = (hora_audio_local.hour * 60 + hora_audio_local.minute) - \
+                                        (hora_ingesta_local.hour * 60 + hora_ingesta_local.minute)
+
+                # asignacion d e la diferencia_minutos
+                if diferencia_minutos is not None:
+                    diferencia_horas, diferencia_minutos = divmod(diferencia_minutos, 60)
+
+                    audios_data.append({
+                        'hora_audio': hora_audio_local.strftime('%H:%M'),
+                        'url_audio': audio.url_audio,
+                        'hora_ingesta': hora_ingesta_local.strftime('%H:%M'),
+                        'diferencia_horas': diferencia_horas,
+                        'diferencia_minutos': diferencia_minutos,
+                    })
+                else:
+                    # manejo de error
+                    continue
+            
+        return JsonResponse(audios_data, safe=False)
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+
 # FIN DE VISTAS DE PACIENTES ------------------------------------------------------------------------------->
+
+
+##! TELEGRAM EXPERIMENTAL
+
+
+##! TELEGRAM EXPERIMENTAL
+
+
 
 # VISTAS DE FAMILIARES ------------------------------------------------------------------------------->
 
@@ -1401,9 +1802,20 @@ def detalle_receta(request, paciente_id,receta_id):
 
     })
 
-@never_cache
+
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Neurologo'])
+def eliminar_receta(request, receta_id, ):
+
+    receta = get_object_or_404(PacienteReceta, id_paciente_receta=receta_id)
+    id_paciente = receta.fk_relacion_pa_pro.id_paciente.id_usuario_id
+    receta.delete()
+    messages.success(request, "Receta N°" + str(receta_id) + " eliminada correctamente")
+    return redirect('detalle_prof_paci', id_paciente)
+
+@never_cache
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Neurologo','Paciente'])
 def obtener_ingestas(request, seguimiento_id):
     if request.user.is_authenticated:
         try:
@@ -2264,6 +2676,35 @@ def analisis_estadistico_profe(request, protocolo_id):
 
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Fonoaudiologo'])
+def analisis_estadistico_pruebas(request):
+    tipo_usuario = None
+    imagenes = []
+
+    if request.user.is_authenticated:
+        tipo_usuario = request.user.id_tp_usuario.tipo_usuario
+
+        categoria = request.GET.get('categoria', 'general')
+        categorias_validas = ['general', 'hombres', 'mujeres']
+
+        if categoria not in categorias_validas:
+            categoria = 'general'
+        
+        ruta_carpeta = os.path.join(settings.MEDIA_ROOT, 'graficos', 'deepnote_prueba', categoria)
+
+
+        if os.path.exists(ruta_carpeta):
+            imagenes = [f'graficos/deepnote_prueba/{categoria}/{img}' for img in os.listdir(ruta_carpeta) if img.endswith('.png') or img.endswith('.jpg')]
+ 
+
+    return render(request, 'vista_profe/analisis_estadistico_pruebas.html', { 
+        'tipo_usuario': tipo_usuario,
+        'imagenes': imagenes,
+        'categoria': categoria
+    })
+
+
+@user_passes_test(validate)
+@tipo_usuario_required(allowed_types=['Fonoaudiologo'])
 def analisis_estadistico(request):
     tipo_usuario = None
     imagenes = []
@@ -2294,9 +2735,11 @@ def analisis_estadistico(request):
 import subprocess
 import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor
+from django.contrib.messages.api import get_messages
 
 def deepnote_ejecutar(request):
     if request.method == 'POST':
+
         # Carga el cuaderno en memoria
         ruta_notebook = os.path.join(settings.NOTE_ROOT, 'deepnote.ipynb')
 
@@ -2329,7 +2772,54 @@ def deepnote_ejecutar(request):
             return redirect('analisis_estadistico')  
     else:
         return render(request, 'analisis_estadistico.html')
-    
+
+
+
+def deepnote_ejecutar_prueba(request):
+    if request.method == 'POST':
+
+        mensaje = "analysis_ingesta"
+        response = exportar_a_xlsx(request,mensaje)
+        if response.status_code != 200:
+            messages.error(request, "Error al generar el archivo XLSX.")
+            return redirect('exploracion_datos_prueba')
+
+
+        # Carga el cuaderno en memoria
+        ruta_notebook = os.path.join(settings.NOTE_ROOT, 'deepnote-pruebas.ipynb')
+
+        # Creación de la carpeta audios_form y subcarpeta con el nombre del fonoaudiólogo
+        general_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote_prueba','general')
+        hombres_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote_prueba','hombres')
+        mujeres_graf_path = os.path.join(settings.MEDIA_ROOT, 'graficos','deepnote_prueba','mujeres')
+        if not os.path.exists(general_graf_path):
+            os.makedirs(general_graf_path)
+        if not os.path.exists(hombres_graf_path):
+            os.makedirs(hombres_graf_path)
+        if not os.path.exists(mujeres_graf_path):
+            os.makedirs(mujeres_graf_path)
+
+        entorno = settings.ENTORNO
+        with open(ruta_notebook, 'r', encoding='utf-8') as f:
+            nb = nbformat.read(f, as_version=4)
+
+        # Se crea un preprocesador de ejecución Local
+        ep = ExecutePreprocessor(timeout=600, kernel_name=entorno)
+
+        # Se ejecuta el cuaderno
+        try:
+            ep.preprocess(nb, {'metadata': {'path': settings.NOTE_ROOT}})
+            messages.success(request, "Notebook ejecutado con éxito")
+            return redirect('analisis_estadistico_pruebas')         
+        except Exception as e:
+            # Maneja cualquier excepción que ocurra durante la ejecución
+            print(e)
+            messages.error(request, f"Error durante la ejecución del notebook:")
+            return redirect('analisis_estadistico_pruebas')  
+    else:
+        return render(request, 'analisis_estadistico_pruebas.html')
+
+
 @user_passes_test(validate)
 @tipo_usuario_required(allowed_types=['Fonoaudiologo'])
 def exploracion_datos(request):
@@ -2441,8 +2931,8 @@ def exploracion_datos_prueba(request):
 def deepnote_analisis_prueba_ejecutar(request):
     if request.method == 'POST':
 
-        
-        response = exportar_a_xlsx(request)
+        mensaje= "analysis_exploracion"
+        response = exportar_a_xlsx(request,mensaje)
         if response.status_code != 200:
             messages.error(request, "Error al generar el archivo XLSX.")
             return redirect('exploracion_datos_prueba')
@@ -2492,92 +2982,163 @@ def deepnote_analisis_prueba_ejecutar(request):
         return render(request, 'exploracion_datos_prueba.html')
 
 import openpyxl
-
-def exportar_a_xlsx(request):
+import urllib.parse
+from django.utils.timezone import make_naive
+def exportar_a_xlsx(request, mensaje):
     # xlsx
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Datos de Audio"
 
+    mensaje_decodificado = urllib.parse.unquote(mensaje)
     
-    columnas = [
-        'Paciente','Archivo_audio', 'F0', 'F1', 'F2', 'F3', 'F4',
-        'Intensidad_Media', 'Jitter', 'Shimmer%', 'ShimmerdB', 'HNR',
-        'F0_H', 'F1_H', 'F2_H', 'F3_H', 'F4_H', 'Intensidad_Media_H',
-        'Jitter_H', 'Shimmer%_H', 'ShimmerdB_H', 'HNR_H','Año_Nacimiento','Género', 'hora_Audio'
-    ]
-    ws.append(columnas)
+    if mensaje_decodificado == 'analysis_exploracion':
+        columnas = [
+            'Paciente','Archivo_audio', 'F0', 'F1', 'F2', 'F3', 'F4',
+            'Intensidad_Media', 'Jitter', 'Shimmer%', 'ShimmerdB', 'HNR',
+            'F0_H', 'F1_H', 'F2_H', 'F3_H', 'F4_H', 'Intensidad_Media_H',
+            'Jitter_H', 'Shimmer%_H', 'ShimmerdB_H', 'HNR_H','Año_Nacimiento','Género', 'hora_Audio'
+        ]
+        ws.append(columnas)
 
-    
-    audios = Audio.objects.all()
+        
+        audios = Audio.objects.all()
 
-    for audio in audios:
-        # coef
-        coef_1 = Audioscoeficientes.objects.filter(id_audio=audio, fk_tipo_llenado=1).first()
-        coef_2 = Audioscoeficientes.objects.filter(id_audio=audio, fk_tipo_llenado=2).first()
+        for audio in audios:
+            # coef
+            coef_1 = Audioscoeficientes.objects.filter(id_audio=audio, fk_tipo_llenado=1).first()
+            coef_2 = Audioscoeficientes.objects.filter(id_audio=audio, fk_tipo_llenado=2).first()
 
-        # coef
-        if coef_1 and coef_2:
-            p_nombre = audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre
-            ap_paterno = audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno
+            # coef
+            if coef_1 and coef_2:
+                p_nombre = audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.primer_nombre
+                ap_paterno = audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.ap_paterno
+                paciente_nombre = f"{p_nombre} {ap_paterno}"
+
+                paciente_genero = audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.id_genero.genero
+
+                if paciente_genero == "Masculino":
+                    paciente_genero = "H"
+                elif paciente_genero == "Femenino":
+                    paciente_genero = "M"
+
+                año_nacimiento = audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.fecha_nacimiento.year
+                audio_hora = audio.fecha_audio.hour
+
+                fila = [
+                    paciente_nombre,
+                    coef_1.nombre_archivo,
+                    coef_1.f0,
+                    coef_1.f1,
+                    coef_1.f2,
+                    coef_1.f3,
+                    coef_1.f4,
+                    coef_1.intensidad,
+                    coef_1.local_jitter,
+                    coef_1.local_shimmer,
+                    coef_1.local_db_shimmer,
+                    coef_1.hnr,
+                    coef_2.f0,
+                    coef_2.f1,
+                    coef_2.f2,
+                    coef_2.f3,
+                    coef_2.f4,
+                    coef_2.intensidad,
+                    coef_2.local_jitter,
+                    coef_2.local_shimmer,
+                    coef_2.local_db_shimmer,
+                    coef_2.hnr,
+                    año_nacimiento,
+                    paciente_genero,
+                    audio_hora
+                ]
+                ws.append(fila)
+
+
+        ruta_guardado = os.path.join(settings.NOTE_ROOT, 'bdd', 'audios_datos.xlsx')
+        os.makedirs(os.path.dirname(ruta_guardado), exist_ok=True)
+        wb.save(ruta_guardado)
+
+        # Deswcarga
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename={os.path.basename(ruta_guardado)}'
+
+        with open(ruta_guardado, 'rb') as f:
+            response.write(f.read())
+            
+
+        return response
+
+    elif mensaje_decodificado == 'analysis_ingesta':
+
+        columnas = [
+            'id_paciente','id_audio','sexo','t_audio','dosis_ingesta', 'dt_ingesta','F0', 'F1', 'F2', 'F3', 'F4',
+            'Intensidad_Media', 'Jitter', 'Shimmer%', 'ShimmerdB', 'HNR'
+        ]
+        ws.append(columnas)
+
+        audios = PacienteAudioIngesta.objects.all()
+        print(audios)
+
+        for audio in audios:
+            
+            coef_audios = AudioscoefIngesta.objects.filter(id_audio=audio).first()
+
+            p_nombre = coef_audios.id_audio.fk_paciente.id_usuario.primer_nombre
+            ap_paterno = coef_audios.id_audio.fk_paciente.id_usuario.ap_paterno
             paciente_nombre = f"{p_nombre} {ap_paterno}"
 
-            paciente_genero = audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.id_genero.genero
+            t_audio = make_naive(coef_audios.id_audio.fecha_audio)
 
+            paciente_genero = coef_audios.id_audio.fk_paciente.id_usuario.id_genero.genero
             if paciente_genero == "Masculino":
-                paciente_genero = "H"
+                paciente_genero = "1"
             elif paciente_genero == "Femenino":
-                paciente_genero = "M"
-
-            año_nacimiento = audio.fk_pauta_terapeutica.fk_protocolo.fk_relacion_pa_pro.id_paciente.id_usuario.fecha_nacimiento.year
-            audio_hora = audio.fecha_audio.hour
+                paciente_genero = "0"
 
             fila = [
-                paciente_nombre,
-                coef_1.nombre_archivo,
-                coef_1.f0,
-                coef_1.f1,
-                coef_1.f2,
-                coef_1.f3,
-                coef_1.f4,
-                coef_1.intensidad,
-                coef_1.local_jitter,
-                coef_1.local_shimmer,
-                coef_1.local_db_shimmer,
-                coef_1.hnr,
-                coef_2.f0,
-                coef_2.f1,
-                coef_2.f2,
-                coef_2.f3,
-                coef_2.f4,
-                coef_2.intensidad,
-                coef_2.local_jitter,
-                coef_2.local_shimmer,
-                coef_2.local_db_shimmer,
-                coef_2.hnr,
-                año_nacimiento,
-                paciente_genero,
-                audio_hora
-            ]
+                    paciente_nombre,
+                    coef_audios.nombre_archivo,
+                    paciente_genero,
+                    t_audio,
+                    coef_audios.dosis_ingesta,
+                    coef_audios.dt_ingesta,
+                    coef_audios.f0,
+                    coef_audios.f1,
+                    coef_audios.f2,
+                    coef_audios.f3,
+                    coef_audios.f4,
+                    coef_audios.intensidad,
+                    coef_audios.local_jitter,
+                    coef_audios.local_shimmer,
+                    coef_audios.local_db_shimmer,
+                    coef_audios.hnr,
+                ]
             ws.append(fila)
+            
+
+        ruta_guardado = os.path.join(settings.NOTE_ROOT, 'bdd', 'audios_datos_ingesta.xlsx')
+        os.makedirs(os.path.dirname(ruta_guardado), exist_ok=True)
+        wb.save(ruta_guardado)
+
+        # Deswcarga
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename={os.path.basename(ruta_guardado)}'
+
+        with open(ruta_guardado, 'rb') as f:
+            response.write(f.read())
+            
+
+        return response
 
 
-    ruta_guardado = os.path.join(settings.NOTE_ROOT, 'bdd', 'audios_datos.xlsx')
-    os.makedirs(os.path.dirname(ruta_guardado), exist_ok=True)
-    wb.save(ruta_guardado)
-
-    # Deswcarga
-    response = HttpResponse(
-        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    )
-    response['Content-Disposition'] = f'attachment; filename={os.path.basename(ruta_guardado)}'
-
-    with open(ruta_guardado, 'rb') as f:
-        response.write(f.read())
+    else:
+        return redirect('exploracion_datos') 
         
-
-    return response
-
 ##*DEEPNOTE DE PRUEBA-----------------------------------
 
 ##Detalles por paciente de los fonoaudiologos

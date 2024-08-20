@@ -19,15 +19,20 @@
     <section id="tabla_fonos">
 
         <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
-            <h1 class=" display-5 fw-bolder sub_titulo">Comparativo coeficientes <span class="span_title"> Algoritmo vs Humano </span></h1>
-            <p class="texto_pauta">Imágenes generadas por deepnote.</p>
+            <h1 class=" display-5 fw-bolder sub_titulo">Análisis<span class="span_title"> Tiempo Ingesta </span></h1>
+            <p class="texto_pauta">Imágenes generadas por Deepnote con CSV estático.</p>
         </div>
 
         <div class="col-lg-12 col-xl-12 col-xxl-12">
             <!-- Segmentación Simple-->
-            <form method="post" action="{% url 'deepnote_ejecutar' %}">
+            <form method="post" action="{% url 'deepnote_ejecutar'  %}">
                 {% csrf_token %}
-                <button id="boton-ejecutar" onclick="showWaitMessage()" type="submit" >Ejecutar Deepnote</button>
+                <button id="boton-ejecutar" onclick="showWaitMessage()" type="submit" >Ejecutar Deepnote Estático</button>
+            </form>
+            <p></p>
+
+            <form action="{% url 'analisis_estadistico_pruebas'  %}" method="get">
+                <button type="submit">Ir a Deepnote Milan BDD</button>
             </form>
 
             <!-- Mensaje de espera -->
@@ -89,6 +94,8 @@
             counter = (counter % 3) + 1;
         }, 500);
     }
+
+
 
 </script>
 

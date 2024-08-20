@@ -8,9 +8,6 @@
 <link rel="stylesheet" href="{% static 'app/css/tablas_titulo.css' %}"/>
 <link rel="stylesheet" href="{% static 'app/css/css_profesionales/exploracion_datos.css' %}"/>
 
-<style>
-
-</style>
 
 <body class="fondo-negro">
     <header class="row text-left titulo_header">
@@ -22,20 +19,21 @@
     <section id="tabla_fonos">
 
         <div class="col-lg-12 col-xl-12 col-xxl-12  align-items-center centrar my-5">
-            <h1 class=" display-5 fw-bolder sub_titulo">Comparativo coeficientes <span class="span_title"> Algoritmo vs Humano </span></h1>
-            <p class="texto_pauta">Imágenes generadas por Deepnote con CSV estático.</p>
+            <h1 class=" display-5 fw-bolder sub_titulo">Análisis<span class="span_title"> Tiempo Ingesta </span></h1>
+            <p class="texto_pauta">Imágenes generadas por Deepnote Milan, con datos obtenidos desde la BDD</p>
         </div>
 
         <div class="col-lg-12 col-xl-12 col-xxl-12">
             <!-- Segmentación Simple-->
-            <form method="post" action="{% url 'deepnote_analisis_ejecutar' %}">
+            <form method="post" action="{% url 'deepnote_ejecutar_prueba'  %}">
                 {% csrf_token %}
-                <button id="boton-ejecutar" onclick="showWaitMessage()" type="submit" >Ejecutar Deepnote Estático</button>
+                <button id="boton-ejecutar" onclick="showWaitMessage()" type="submit" >Ejecutar Deepnote con BDD</button>
             </form>
             <p></p>
-            <form action="{% url 'exploracion_datos_prueba'  %}" method="get">
-                <button type="submit">Ir a Deepnote Benjamin BDD</button>
+            <form action="{% url 'exportar_a_xlsx' 'analysis_ingesta'|urlencode %}" method="get">
+                <button type="submit">Descargar XLSX</button>
             </form>
+
             <!-- Mensaje de espera -->
             <div id="mensaje-espera" style="display: none;">
                 <p>Por favor, espera mientras se ejecuta el Deepnote<span class="loading-dots"></span></p>
@@ -46,20 +44,16 @@
 
             <h1 class=" display-5 fw-bolder sub_titulo mt-5">Filtro actual: <span class="span_title">  {{ categoria|title }} </span></h1>
             <p class="texto_pauta">Seleccione uno de los siguientes filtros.</p>
-            <button onclick="cargarImagenes('dispersion_hvm')">Dispersión Maquina/Humana</button>
-            <button onclick="cargarImagenes('dispersion_hvm_edad')">Edad</button>
-            <button onclick="cargarImagenes('dispersion_hvm_generos')">Género</button>
-            <button onclick="cargarImagenes('dispersion_hvm_hr_grabacion')">Dispersión por Hr.</button>
-            <button onclick="cargarImagenes('dispersion_hvm_hr_paciente')">Dispersión por paciente</button>
-            <button onclick="cargarImagenes('variacion_m_hora')">Variación maquina</button>
+            <button onclick="cargarImagenes('general')">General</button>
+            <button onclick="cargarImagenes('hombres')">Hombres</button>
+            <button onclick="cargarImagenes('mujeres')">Mujeres</button>
             
             <h1 class=" display-5 fw-bolder sub_titulo  mt-5">Graficos:<span class="span_title">  </span></h1>
             <div class="imagenes ">
                 {% for imagen in imagenes %}
                     <div>
-                        <p>Ruta: {{ imagen }}</p>
-                        <img src="{{ MEDIA_URL }}{{ imagen }}" alt="Imagen"
-                         class="{% if categoria == 'dispersion_hvm_hr_paciente' %}custom-size-dispersion-hvm-hr-paciente{% elif categoria == 'variacion_m_hora' %}custom-size-variacion-m-hora{% endif %}">>
+                        <p>Ruta: {{ imagen}}</p>
+                        <img src="{{ MEDIA_URL }}{{ imagen }}" alt="Imagen">
                         
                     </div>
                 {% endfor %}
