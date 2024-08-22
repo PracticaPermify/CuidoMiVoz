@@ -2675,7 +2675,7 @@ def analisis_estadistico_profe(request, protocolo_id):
     
 
 @user_passes_test(validate)
-@tipo_usuario_required(allowed_types=['Fonoaudiologo'])
+@tipo_usuario_required(allowed_types=['Fonoaudiologo','Admin'])
 def analisis_estadistico_pruebas(request):
     tipo_usuario = None
     imagenes = []
@@ -2704,7 +2704,7 @@ def analisis_estadistico_pruebas(request):
 
 
 @user_passes_test(validate)
-@tipo_usuario_required(allowed_types=['Fonoaudiologo'])
+@tipo_usuario_required(allowed_types=['Fonoaudiologo','Admin'])
 def analisis_estadistico(request):
     tipo_usuario = None
     imagenes = []
@@ -2821,7 +2821,7 @@ def deepnote_ejecutar_prueba(request):
 
 
 @user_passes_test(validate)
-@tipo_usuario_required(allowed_types=['Fonoaudiologo'])
+@tipo_usuario_required(allowed_types=['Fonoaudiologo','Admin'])
 def exploracion_datos(request):
     tipo_usuario = None
     imagenes = []
@@ -2900,7 +2900,7 @@ def deepnote_analisis_ejecutar(request):
 ##*DEEPNOTE DE PRUEBA-----------------------------------
 
 @user_passes_test(validate)
-@tipo_usuario_required(allowed_types=['Fonoaudiologo'])
+@tipo_usuario_required(allowed_types=['Fonoaudiologo','Admin'])
 def exploracion_datos_prueba(request):
     tipo_usuario = None
     imagenes = []
@@ -3085,39 +3085,42 @@ def exportar_a_xlsx(request, mensaje):
         for audio in audios:
             
             coef_audios = AudioscoefIngesta.objects.filter(id_audio=audio).first()
-
-            p_nombre = coef_audios.id_audio.fk_paciente.id_usuario.primer_nombre
-            ap_paterno = coef_audios.id_audio.fk_paciente.id_usuario.ap_paterno
-            paciente_nombre = f"{p_nombre} {ap_paterno}"
-
-            t_audio = make_naive(coef_audios.id_audio.fecha_audio)
-
-            paciente_genero = coef_audios.id_audio.fk_paciente.id_usuario.id_genero.genero
-            if paciente_genero == "Masculino":
-                paciente_genero = "1"
-            elif paciente_genero == "Femenino":
-                paciente_genero = "0"
-
-            fila = [
-                    paciente_nombre,
-                    coef_audios.nombre_archivo,
-                    paciente_genero,
-                    t_audio,
-                    coef_audios.dosis_ingesta,
-                    coef_audios.dt_ingesta,
-                    coef_audios.f0,
-                    coef_audios.f1,
-                    coef_audios.f2,
-                    coef_audios.f3,
-                    coef_audios.f4,
-                    coef_audios.intensidad,
-                    coef_audios.local_jitter,
-                    coef_audios.local_shimmer,
-                    coef_audios.local_db_shimmer,
-                    coef_audios.hnr,
-                ]
-            ws.append(fila)
             
+
+            if coef_audios:
+                p_nombre = coef_audios.id_audio.fk_paciente.id_usuario.primer_nombre
+                ap_paterno = coef_audios.id_audio.fk_paciente.id_usuario.ap_paterno
+                paciente_nombre = f"{p_nombre} {ap_paterno}"
+
+                t_audio = make_naive(coef_audios.id_audio.fecha_audio)
+
+                paciente_genero = coef_audios.id_audio.fk_paciente.id_usuario.id_genero.genero
+                if paciente_genero == "Masculino":
+                    paciente_genero = "1"
+                elif paciente_genero == "Femenino":
+                    paciente_genero = "0"
+
+                fila = [
+                        paciente_nombre,
+                        coef_audios.nombre_archivo,
+                        paciente_genero,
+                        t_audio,
+                        coef_audios.dosis_ingesta,
+                        coef_audios.dt_ingesta,
+                        coef_audios.f0,
+                        coef_audios.f1,
+                        coef_audios.f2,
+                        coef_audios.f3,
+                        coef_audios.f4,
+                        coef_audios.intensidad,
+                        coef_audios.local_jitter,
+                        coef_audios.local_shimmer,
+                        coef_audios.local_db_shimmer,
+                        coef_audios.hnr,
+                    ]
+                ws.append(fila)
+            else:
+                print(f"No se encontró coeficiente para el audio con id {audio.id_audio}")
 
         ruta_guardado = os.path.join(settings.NOTE_ROOT, 'bdd', 'audios_datos_ingesta.xlsx')
         os.makedirs(os.path.dirname(ruta_guardado), exist_ok=True)

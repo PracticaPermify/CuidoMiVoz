@@ -303,7 +303,7 @@ function subirAudio(paciente_id) {
         preConfirm: () => {
             const form = document.getElementById('form-audio');
             const formData = new FormData(form);
-
+            console.log('/subir_audio/' + paciente_id + '/');
             return fetch('/subir_audio/' + paciente_id + '/', {
                 method: 'POST',
                 body: formData,

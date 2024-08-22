@@ -80,6 +80,11 @@
 						<li {% if request.path == '/analisis_admin/' %}class="current"{% endif %}><a href="{% url 'analisis_admin' %}">Análisis</a></li>
 						<li {% if request.path == '/listado_audios/' %}class="current"{% endif %}><a href="{% url 'listado_audios_admin' %}">Listado Audios</a></li>
 						<li {% if request.path == '/listado_preregistros/' %}class="current"{% endif %}><a href="{% url 'listado_preregistros' %}">Pre-registros</a></li>
+						<li {% if request.path == '/analisis_estadistico/' %}class="current"{% endif %}>
+							<a href="{% url 'analisis_estadistico' %}">Análisis Tiempo/Ingesta</a>
+						</li>
+						<li {% if request.path == '/exploracion_datos/' %}class="current"{% endif %}>
+							<a href="{% url 'exploracion_datos' %}">Comparativo Coef. H/M</a>
 						<li {% if '/perfil/' in request.path %}class="current"{% endif %}><a href="{% url 'perfil' request.user.id_usuario %}">Mi perfil</a></li>
 					{% endif %}
 					{% if tipo_usuario == 'Familiar' %}
